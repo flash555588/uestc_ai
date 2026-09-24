@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { SessionProvider } from "@/app/components/SessionProvider";
 import { ToastProvider } from "@/app/components/ToastProvider";
 import "./globals.css";
+import "./theme.css";
+import "./reference-video-sections.css";
+import "./public-detail.css";
 
 export const metadata: Metadata = {
   title: "UESTC AI 社 | 赛事与作品档案",

@@ -7,6 +7,7 @@ import { AppShell } from "@/app/components/AppShell";
 import { Markdown } from "@/app/components/Markdown";
 import { PageError, PageLoading, StatusPill } from "@/app/components/ui";
 import type { ProblemDetail } from "@/app/lib/domain";
+import { stripRepeatedLead } from "@/app/lib/markdownDisplay";
 import { useApiResource } from "@/app/lib/useApiResource";
 
 const fieldLabels: Record<string, string> = {
@@ -19,12 +20,12 @@ export default function ProblemPage() {
   const { competitionSlug, trackSlug, problemSlug } = params;
   const { data, loading, error, reload } = useApiResource<ProblemDetail>(problemSlug ? `/problems/${problemSlug}` : null);
   return (
-    <AppShell title={data?.title ?? "题目详情"} eyebrow={data?.code ?? "PROBLEM"} actions={<Link className="outline-button" href={`/competitions/${competitionSlug}/tracks/${trackSlug}`}><ArrowLeft size={15} />返回赛道</Link>}>
+    <AppShell variant="detail" title={data?.title ?? "题目详情"} eyebrow={data?.code ?? "PROBLEM"} actions={<Link className="outline-button" href={`/competitions/${competitionSlug}/tracks/${trackSlug}`}><ArrowLeft size={15} />返回赛道</Link>}>
       {loading ? <PageLoading /> : error || !data ? <PageError message={error || "题目不存在。"} retry={reload} /> : (
         <div className="problem-layout">
           <div className="problem-content">
             <div className="problem-summary"><StatusPill tone={data.status === "published" ? "live" : "warm"}>{data.status === "published" ? "正式赛题" : "候选题目"}</StatusPill><p>{data.summary}</p></div>
-            <Markdown>{data.statement_md ?? "题面正在整理。"}</Markdown>
+            <Markdown>{stripRepeatedLead(data.statement_md ?? "题面正在整理。", data.title, data.summary)}</Markdown>
             <section className="detail-section"><h2>提交材料</h2><div className="requirement-list">{(data.submission_schema.fields ?? []).map((field) => <div key={field}><FileCheck2 size={16} /><span><strong>{fieldLabels[field] ?? field}</strong><small>在作品表单中填写或上传</small></span></div>)}</div></section>
             <section className="detail-section"><h2>评分构成</h2><div className="rubric-list">{Object.entries(data.judging_schema.rubric ?? {}).map(([name, weight]) => <div key={name}><span>{fieldLabels[name] ?? name}</span><i /><strong>{Math.round(weight * 100)}%</strong></div>)}</div></section>
           </div>

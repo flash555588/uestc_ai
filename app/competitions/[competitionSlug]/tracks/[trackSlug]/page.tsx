@@ -13,7 +13,7 @@ export default function TrackPage() {
   const { competitionSlug, trackSlug } = params;
   const { data, loading, error, reload } = useApiResource<Track>(competitionSlug && trackSlug ? `/competitions/${competitionSlug}/tracks/${trackSlug}` : null);
   return (
-    <AppShell title={data?.name ?? "赛道"} eyebrow="TRACK" actions={<Link className="outline-button" href={`/competitions/${competitionSlug}`}><ArrowLeft size={15} />返回赛事</Link>}>
+    <AppShell variant="detail" title={data?.name ?? "赛道"} eyebrow="TRACK" actions={<Link className="outline-button" href={`/competitions/${competitionSlug}`}><ArrowLeft size={15} />返回赛事</Link>}>
       {loading ? <PageLoading /> : error || !data ? <PageError message={error || "赛道不存在。"} retry={reload} /> : (
         <>
           <section className="track-overview"><div><span className="mono-label">{data.config?.short ?? data.slug.toUpperCase()}</span><p>{data.description}</p></div><dl><div><dt>题目数量</dt><dd>{data.problems?.length ?? 0}</dd></div><div><dt>参赛方式</dt><dd>个人 / 组队</dd></div></dl></section>
@@ -34,4 +34,3 @@ export default function TrackPage() {
     </AppShell>
   );
 }
-

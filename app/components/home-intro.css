@@ -1,0 +1,82 @@
+/* Palette sampled from the supplied avatar: slate hoodie, lime hair, mint UI glow, warm skin white. */
+.home-intro {
+  --intro-background: #58666c;
+  --intro-background-deep: #405553;
+  --intro-accent: #a8c83e;
+  --intro-outline: #86f2df;
+  --intro-control: #fff3e8;
+  --intro-control-ink: #3d4f50;
+  position: fixed; inset: 0; margin: 0; padding: 0; border: 0;
+  width: 100%; max-width: none; height: 100dvh; max-height: none;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 82% 18%, rgba(134, 242, 223, .28), transparent 32%),
+    radial-gradient(circle at 16% 78%, rgba(168, 200, 62, .22), transparent 38%),
+    linear-gradient(135deg, var(--intro-background-deep), var(--intro-background) 58%, #607870);
+  color: var(--intro-accent);
+  overscroll-behavior: contain;
+}
+.home-intro::backdrop { background: transparent; }
+.home-intro[open] { display: block; }
+.home-intro[data-phase="exit"] {
+  animation: intro-curtain-out var(--intro-exit-duration) cubic-bezier(.76, 0, .24, 1) forwards;
+}
+.intro-heading {
+  position: absolute; z-index: 2; inset: 32px 0 auto; text-align: center;
+  font-family: Arial, Helvetica, sans-serif; font-size: clamp(18px, 1.5vw, 26px);
+  font-weight: 800; letter-spacing: -.035em; margin: 0; color: var(--intro-control);
+}
+.intro-diagonal {
+  position: absolute; top: 50%; left: -15%; width: 130%;
+  height: 1em; font-size: clamp(140px, 20vw, 440px);
+  transform: translateY(-35%) rotate(-15deg); transform-origin: center;
+  pointer-events: none; user-select: none;
+}
+.intro-band {
+  position: absolute; left: -20%; top: 0; white-space: nowrap;
+  font-family: "Arial Black", "Arial", "Helvetica Neue", sans-serif;
+  font-size: inherit; font-weight: 900; line-height: 1;
+  letter-spacing: -.065em;
+}
+.intro-ticker { display: flex; width: max-content; animation: intro-type-drift 8s linear infinite; }
+.intro-word-group { display: flex; flex: 0 0 auto; }
+.intro-word-group span { display: block; padding-right: .28em; }
+.intro-band-outline {
+  top: -.29em; left: -28%; color: transparent;
+  -webkit-text-stroke: 1.5px var(--intro-outline);
+  opacity: .58;
+}
+.intro-band-outline .intro-ticker { animation-direction: reverse; animation-duration: 11s; }
+.intro-band-solid { top: .06em; text-shadow: 0 0 .2em rgba(168, 200, 62, .2); }
+.intro-bottom {
+  position: absolute; bottom: max(26px, env(safe-area-inset-bottom));
+  left: clamp(20px, 3vw, 56px); right: clamp(20px, 3vw, 56px);
+  display: flex; justify-content: space-between; align-items: center; gap: 20px;
+  font: 600 11px/1.4 ui-monospace, Consolas, monospace; letter-spacing: .1em; color: var(--intro-control);
+}
+.intro-skip {
+  display: inline-flex; align-items: center; gap: 12px; min-height: 44px;
+  padding: 10px 14px; background: transparent; border: 1px solid currentColor;
+  color: var(--intro-control); font-size: 12px; letter-spacing: 0;
+}
+.intro-skip:hover { background: var(--intro-accent); border-color: var(--intro-accent); color: var(--intro-control-ink); }
+.intro-skip:focus-visible { outline: 2px solid var(--intro-outline); outline-offset: 5px; }
+.intro-replay {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 0;
+  min-height: 32px; border: 0; background: transparent; color: var(--muted);
+  font: inherit; font-size: 11px; letter-spacing: 0; white-space: nowrap;
+}
+.intro-replay:hover { color: var(--coral); }
+@keyframes intro-type-drift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes intro-curtain-out { to { transform: translateY(-100%); } }
+@media (max-width: 600px) {
+  .intro-diagonal { font-size: clamp(150px, 35vw, 240px); transform: translateY(-35%) rotate(-18deg); }
+  .intro-heading { top: 26px; }
+  .intro-bottom { align-items: flex-end; }
+  .intro-bottom > span { max-width: 115px; font-size: 10px; }
+  .hero-title-meta { flex-wrap: wrap; align-items: center; gap: 6px 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-intro[data-phase="exit"], .intro-ticker { animation: none; }
+}
+@media print { .home-intro, .intro-replay { display: none !important; } }
