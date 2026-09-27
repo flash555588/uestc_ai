@@ -13,3 +13,6 @@
 *.webp binary
 *.zip binary
 *.gz binary
+
+# Whitespace is part of the supplied terminal art.
+public/terminal-art/*.txt whitespace=-blank-at-eol

@@ -7,13 +7,20 @@ import { AppShell } from "@/app/components/AppShell";
 import { Markdown } from "@/app/components/Markdown";
 import { PageError, PageLoading, StatusPill } from "@/app/components/ui";
 import type { ContentItem } from "@/app/lib/domain";
+import { stripRepeatedLead } from "@/app/lib/markdownDisplay";
 import { formatBeijing } from "@/app/lib/time";
 import { useApiResource } from "@/app/lib/useApiResource";
+
+const kindLabels: Record<string, string> = {
+  announcement: "公告",
+  research: "研究",
+  blog: "文章",
+};
 
 export default function ArticlePage() {
   const params = useParams<{ slug: string }>();
   const { data, loading, error, reload } = useApiResource<ContentItem>(params.slug ? `/content/${params.slug}` : null);
-  return <AppShell title={data?.title ?? "文章"} eyebrow="ARTICLE" actions={<Link className="outline-button" href="/news"><ArrowLeft size={15} />返回资讯</Link>}>
-    {loading ? <PageLoading /> : error || !data ? <PageError message={error || "文章不存在。"} retry={reload} /> : <div className="article-layout"><aside><StatusPill tone="neutral">{data.kind}</StatusPill><dl><div><dt>作者</dt><dd>{data.author ?? "UESTC AI 社"}</dd></div><div><dt>发布时间</dt><dd>{data.published_at ? formatBeijing(data.published_at, { dateStyle: "long" }) : "尚未发布"}</dd></div></dl></aside><Markdown className="markdown-body article-body">{data.body_md ?? ""}</Markdown></div>}
+  return <AppShell variant="detail" title={data?.title ?? "文章"} eyebrow="ARTICLE" actions={<Link className="outline-button" href="/news"><ArrowLeft size={15} />返回资讯</Link>}>
+    {loading ? <PageLoading /> : error || !data ? <PageError message={error || "文章不存在。"} retry={reload} /> : <div className="article-layout"><aside><StatusPill tone={data.kind === "announcement" ? "live" : data.kind === "research" ? "warm" : "neutral"}>{kindLabels[data.kind] ?? data.kind}</StatusPill><dl><div><dt>作者</dt><dd>{data.author ?? "UESTC AI 社"}</dd></div><div><dt>发布时间</dt><dd>{data.published_at ? formatBeijing(data.published_at, { dateStyle: "long" }) : "尚未发布"}</dd></div></dl></aside><Markdown className="markdown-body article-body">{stripRepeatedLead(data.body_md ?? "", data.title)}</Markdown></div>}
   </AppShell>;
 }

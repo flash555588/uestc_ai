@@ -1,0 +1,1875 @@
+/* Reference video section rhythm: latest updates, product matrix, flagship series, about. */
+.public-shell:has(.home-updates) .home-updates {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 84px clamp(24px, 5vw, 80px) 72px;
+  background: #e9e7e5;
+  color: #101010;
+}
+.public-shell:has(.home-updates) .home-updates .section-header { border-color: #101010; }
+.public-shell:has(.home-updates) .home-updates .section-header h2,
+.public-shell:has(.home-updates) .home-updates .section-header > a { color: #101010; }
+.news-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: 28px;
+  border: 1px solid #d8d5ca;
+  background: #d8d5ca;
+}
+.update-card {
+  min-height: 238px;
+  padding: 24px;
+  background: #ebebeb;
+  color: #101010;
+  display: flex;
+  flex-direction: column;
+  transition: background .2s ease, transform .2s ease;
+}
+.update-card:hover { background: #e6d9cb; transform: translateY(-3px); }
+.update-card-top { display: flex; justify-content: space-between; gap: 12px; color: #736c66; font-size: 12px; }
+.update-card-top span { color: #563d3b; }
+.update-card strong { margin-top: 46px; font-family: var(--display-font); font-size: 25px; font-weight: 400; line-height: 1.25; }
+.update-card p { color: #736c66; font-size: 13px; line-height: 1.7; margin: 12px 0 22px; }
+.update-card > svg { margin-top: auto; color: #563d3b; }
+.public-shell:has(.home-updates) .home-manifesto {
+  max-width: 1440px;
+  background: #101010;
+  border-color: #101010;
+  color: #f3f1ed;
+}
+.public-shell:has(.home-updates) .home-manifesto > div { border-color: #4b4945; min-height: 190px; }
+.public-shell:has(.home-updates) .home-manifesto span { color: #c3b5a3; }
+.public-shell:has(.home-updates) .home-manifesto strong { color: #f3f1ed; }
+.public-shell:has(.home-updates) .home-manifesto p { color: #b8b3ad; }
+.public-shell:has(.home-updates) .flagship-section .section-header { border-color: #101010; }
+.public-shell:has(.home-updates) .track-coral { background: #563d3b; color: #f6f1eb; }
+.public-shell:has(.home-updates) .track-ink { background: #101010; color: #f3f1ed; }
+.public-shell:has(.home-updates) .track-sage { background: #afb59e; color: #24231f; }
+.public-shell:has(.home-updates) .track-sand { background: #e6d9cb; color: #3b2d29; }
+.public-shell:has(.home-updates) .home-about { padding-top: 48px; }
+.about-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, .8fr) minmax(0, 1.2fr);
+  gap: clamp(36px, 8vw, 130px);
+  padding-top: 42px;
+}
+.about-statement {
+  margin: 0;
+  font-family: var(--display-font);
+  font-size: clamp(32px, 4vw, 58px);
+  line-height: 1.12;
+  letter-spacing: -.045em;
+}
+.about-copy { max-width: 650px; }
+.about-copy p { color: #514b47; font-family: Georgia, "Times New Roman", serif; font-size: clamp(18px, 2vw, 28px); line-height: 1.55; margin: 0 0 24px; }
+.about-links { display: flex; flex-wrap: wrap; gap: 22px; padding-top: 18px; }
+.about-links a { align-items: center; display: inline-flex; gap: 7px; font-size: 14px; }
+.about-links a:hover { color: #563d3b; }
+@media (max-width: 820px) {
+  .news-cards { grid-template-columns: 1fr; }
+  .update-card { min-height: 210px; }
+  .about-layout { grid-template-columns: 1fr; gap: 26px; }
+}
+@media (max-width: 600px) {
+  .public-shell:has(.home-updates) .home-updates { padding: 54px 18px 48px; }
+  .update-card strong { margin-top: 30px; font-size: 22px; }
+  .public-shell:has(.home-updates) .home-manifesto > div { min-height: 0; }
+}
+/* Reference-video black footer. */
+.public-shell .app-footer-rich {
+  display: block;
+  min-height: 360px;
+  margin: 0;
+  padding: 64px clamp(24px, 7vw, 112px) 22px;
+  border: 0;
+  background: #090909;
+  color: #f2f2ef;
+}
+.footer-main {
+  display: grid;
+  grid-template-columns: minmax(280px, 1.7fr) repeat(3, minmax(110px, .55fr));
+  gap: clamp(36px, 7vw, 108px);
+  min-height: 226px;
+}
+.footer-brand { max-width: 420px; }
+.footer-brand-mark {
+  display: block;
+  margin-bottom: 26px;
+  color: #aeb79e;
+  font: 700 11px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .18em;
+}
+.footer-brand strong {
+  display: block;
+  font-family: "Microsoft YaHei UI", "PingFang SC", sans-serif;
+  font-size: clamp(28px, 3vw, 48px);
+  font-weight: 600;
+  letter-spacing: -.055em;
+}
+.footer-brand p {
+  max-width: 350px;
+  margin: 18px 0 28px;
+  color: #969693;
+  font-size: 13px;
+  line-height: 1.75;
+}
+.footer-location {
+  color: #666763;
+  font: 600 10px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .14em;
+}
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 13px;
+}
+.footer-column strong {
+  margin-bottom: 8px;
+  color: #f2f2ef;
+  font-size: 14px;
+}
+.footer-column a {
+  position: relative;
+  color: #989995;
+  font-size: 12px;
+  transition: color .18s ease, transform .18s ease;
+}
+.footer-column a::after {
+  content: "↗";
+  display: inline-block;
+  margin-left: 7px;
+  opacity: 0;
+  transform: translate(-4px, 3px);
+  transition: opacity .18s ease, transform .18s ease;
+}
+.footer-column a:hover { color: #f0f0eb; transform: translateX(2px); }
+.footer-column a:hover::after { opacity: 1; transform: translate(0, 0); }
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px 20px;
+  padding-top: 0;
+  border-top: 0;
+  color: #5e5f5c;
+  font: 600 9px/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .12em;
+}
+.footer-code-rule {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 3px 8px;
+  width: 100%;
+  color: inherit;
+  cursor: default;
+  font: 500 8px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .18em;
+  opacity: .55;
+}
+.footer-code-rule > span { white-space: pre; }
+@media (max-width: 820px) {
+  .public-shell .app-footer-rich { min-height: 0; padding: 48px 22px 20px; }
+  .footer-main { grid-template-columns: repeat(3, 1fr); min-height: 0; gap: 36px 18px; }
+  .footer-brand { grid-column: 1 / -1; }
+}
+@media (max-width: 520px) {
+  .footer-main { grid-template-columns: 1fr 1fr; }
+  .footer-column:last-child { grid-column: 1 / -1; }
+  .footer-bottom { flex-direction: column; gap: 6px; }
+}
+
+/* Cohesive home sections: purposeful empty state and calm discovery cards. */
+.public-shell:has(.home-updates) .home-updates {
+  max-width: none;
+  padding: clamp(64px, 8vw, 112px) clamp(24px, 6vw, 104px);
+}
+.public-shell:has(.home-updates) .home-updates .section-header,
+.public-shell:has(.home-updates) .flagship-section .section-header {
+  border-color: #758675;
+}
+.news-cards {
+  gap: 14px;
+  border: 0;
+  background: transparent;
+}
+.update-card {
+  min-height: 280px;
+  padding: 30px;
+  border: 1px solid rgba(49, 65, 53, .1);
+  border-radius: 20px;
+  background: #f7f7f1;
+}
+.update-card:hover { background: #ecf0e5; transform: translateY(-4px); }
+.update-card-top span, .update-card > svg { color: #4f7053; }
+.updates-fallback {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) repeat(2, minmax(0, .7fr));
+  gap: 14px;
+  margin-top: 28px;
+}
+.updates-fallback-feature,
+.updates-fallback-link {
+  min-height: 290px;
+  padding: clamp(24px, 3vw, 42px);
+  border-radius: 22px;
+  display: flex;
+  flex-direction: column;
+}
+.updates-fallback-feature {
+  color: #f8f7ee;
+  background: radial-gradient(circle at 88% 12%, rgba(174, 206, 151, .22), transparent 38%), linear-gradient(135deg, #354b43, #52685b);
+}
+.updates-fallback-kicker,
+.updates-fallback-link > span {
+  font: 700 11px/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .13em;
+}
+.updates-fallback-kicker { color: #c8ddbd; }
+.updates-fallback-feature h3 {
+  max-width: 550px;
+  margin: auto 0 14px;
+  font-family: "Microsoft YaHei UI", "PingFang SC", sans-serif;
+  font-size: clamp(28px, 3.1vw, 48px);
+  font-weight: 600;
+  letter-spacing: -.055em;
+  line-height: 1.18;
+}
+.updates-fallback-feature p { max-width: 490px; margin: 0 0 24px; color: #d4dfd2; font-size: 14px; line-height: 1.7; }
+.updates-fallback-feature a,
+.updates-fallback-feature button {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 8px;
+  padding: 10px 0;
+  border: 0;
+  border-bottom: 1px solid rgba(244, 247, 238, .55);
+  background: transparent;
+  color: #fff;
+  font-size: 13px;
+}
+.updates-fallback-link { position: relative; overflow: hidden; background: #dfe7d9; color: #2e4234; transition: background .22s ease, transform .22s ease; }
+.updates-fallback-link:nth-child(3) { background: #e7e7df; }
+.updates-fallback-link::before {
+  content: "";
+  position: absolute;
+  right: -44px;
+  bottom: -64px;
+  width: 210px;
+  height: 210px;
+  border: 1px solid rgba(54, 80, 60, .14);
+  border-radius: 50%;
+  box-shadow: 0 0 0 34px rgba(54, 80, 60, .035), 0 0 0 75px rgba(54, 80, 60, .025);
+}
+.updates-fallback-link > * { position: relative; }
+.updates-fallback-link strong { margin-top: auto; font-size: clamp(25px, 2vw, 36px); font-weight: 600; letter-spacing: -.05em; }
+.updates-fallback-link svg { align-self: flex-end; margin-top: 16px; }
+.updates-fallback-link:hover { transform: translateY(-4px); background: #d3e0cd; }
+.public-shell:has(.home-updates) .home-manifesto {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  max-width: none;
+  margin: 0;
+  padding: 80px clamp(24px, 6vw, 104px);
+  border: 0;
+  background: #f4f1ea;
+  color: #26382c;
+}
+.public-shell:has(.home-updates) .home-manifesto > .manifesto-intro {
+  grid-column: 1 / -1;
+  min-height: 0;
+  padding: 0 0 32px;
+  border: 0;
+}
+.manifesto-intro span { color: #608263; font: 700 11px/1.3 ui-monospace, Consolas, monospace; letter-spacing: .12em; }
+.manifesto-intro h2 { margin: 12px 0 8px; font-family: "Microsoft YaHei UI", "PingFang SC", sans-serif; font-size: clamp(32px, 4.5vw, 64px); font-weight: 600; letter-spacing: -.06em; }
+.manifesto-intro p { margin: 0; color: #627065; font-size: 14px; }
+.manifesto-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+  overflow: hidden;
+  padding: 30px;
+  border: 1px solid rgba(49, 65, 53, .08);
+  border-radius: 22px;
+  background: #e5eadf;
+  color: #25382b;
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+.manifesto-card:nth-of-type(2) { background: #eae9df; }
+.manifesto-card:nth-of-type(3) { background: #dfe9e7; }
+.manifesto-card > span { color: #5d7660; font: 700 11px/1.3 ui-monospace, Consolas, monospace; letter-spacing: .11em; }
+.manifesto-card strong { display: block; margin-top: auto; font-size: clamp(29px, 2.7vw, 43px); font-weight: 600; letter-spacing: -.055em; }
+.manifesto-card p { max-width: 290px; margin: 8px 0 24px; color: #55685a; font-size: 14px; line-height: 1.65; }
+.manifesto-card svg { align-self: flex-end; }
+.manifesto-card:hover { transform: translateY(-5px); box-shadow: 0 18px 34px rgba(46, 66, 48, .1); }
+.public-shell:has(.home-updates) .home-sections { max-width: none; padding: 80px clamp(24px, 6vw, 104px); background: #f7f6f1; }
+.public-shell:has(.home-updates) .flagship-section .track-grid { gap: 14px; border: 0; }
+.public-shell:has(.home-updates) .flagship-section .track-card,
+.public-shell:has(.home-updates) .flagship-section .track-card.track-coral,
+.public-shell:has(.home-updates) .flagship-section .track-card.track-ink,
+.public-shell:has(.home-updates) .flagship-section .track-card.track-sage,
+.public-shell:has(.home-updates) .flagship-section .track-card.track-sand {
+  min-height: 290px;
+  border: 1px solid rgba(49, 65, 53, .1);
+  border-radius: 20px;
+  background: #e8eee4;
+  color: #26382c;
+}
+.public-shell:has(.home-updates) .flagship-section .track-card:nth-child(even) { background: #eeeae1; }
+.public-shell:has(.home-updates) .flagship-section .track-card:hover { background: #dde9d8; }
+@media (max-width: 900px) {
+  .updates-fallback { grid-template-columns: 1fr 1fr; }
+  .updates-fallback-feature { grid-column: 1 / -1; min-height: 255px; }
+  .public-shell:has(.home-updates) .home-manifesto { grid-template-columns: 1fr 1fr; }
+  .public-shell:has(.home-updates) .home-manifesto > .manifesto-intro { grid-column: 1 / -1; }
+}
+@media (max-width: 600px) {
+  .public-shell:has(.home-updates) .home-updates,
+  .public-shell:has(.home-updates) .home-sections,
+  .public-shell:has(.home-updates) .home-manifesto { padding: 52px 18px; }
+  .updates-fallback { grid-template-columns: 1fr; }
+  .updates-fallback-feature { grid-column: auto; min-height: 280px; }
+  .updates-fallback-link { min-height: 190px; }
+  .public-shell:has(.home-updates) .home-manifesto { grid-template-columns: 1fr; }
+  .public-shell:has(.home-updates) .home-manifesto > .manifesto-intro { padding-bottom: 14px; }
+  .manifesto-card { min-height: 230px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .update-card, .updates-fallback-link, .manifesto-card { transition: none; }
+}
+/* Compact handoff after the bounded intro window. */
+.public-shell:has(.home-updates) .scroll-film + .home-updates {
+  padding-top: 24px;
+}
+@media (max-width: 600px) {
+  .public-shell:has(.home-updates) .scroll-film + .home-updates { padding-top: 18px; }
+}
+/* One continuous editorial surface for the post-film homepage. */
+.public-shell:has(.home-updates),
+.public-shell:has(.home-updates) .app-main,
+.public-shell:has(.home-updates) .app-content,
+.public-shell:has(.home-updates) .home-updates,
+.public-shell:has(.home-updates) .home-sections,
+.public-shell:has(.home-updates) .home-manifesto,
+.public-shell:has(.home-updates) .app-footer-rich {
+  background: #f4f1ea;
+  color: #26382c;
+}
+.public-shell:has(.home-updates) .home-updates,
+.public-shell:has(.home-updates) .home-sections,
+.public-shell:has(.home-updates) .home-manifesto {
+  max-width: none;
+  margin: 0;
+  border: 0;
+  box-shadow: none;
+}
+.public-shell:has(.home-updates) .home-updates {
+  padding: 74px clamp(24px, 6vw, 104px) 70px;
+}
+.public-shell:has(.home-updates) .home-updates .section-header,
+.public-shell:has(.home-updates) .flagship-section .section-header,
+.public-shell:has(.home-updates) .section-header {
+  border-top: 0;
+  border-bottom: 0;
+  padding-top: 0;
+}
+.news-cards {
+  gap: clamp(32px, 5vw, 88px);
+  border: 0;
+  background: transparent;
+}
+.update-card {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.update-card:hover { background: transparent; transform: translateY(-4px); }
+.update-card strong { margin-top: 54px; color: #26382c; }
+.update-card p { color: #6d786d; }
+.update-card > svg { color: #5c7a5b; }
+.updates-fallback { gap: clamp(32px, 5vw, 88px); }
+.updates-fallback-feature,
+.updates-fallback-link {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #26382c;
+  box-shadow: none;
+}
+.updates-fallback-feature { color: #26382c; }
+.updates-fallback-feature .updates-fallback-kicker { color: #5c7a5b; }
+.updates-fallback-feature h3 { margin: 42px 0 14px; color: #26382c; }
+.updates-fallback-feature p { color: #6d786d; }
+.updates-fallback-feature a,
+.updates-fallback-feature button {
+  border-color: #6c8065;
+  color: #26382c;
+}
+.updates-fallback-link,
+.updates-fallback-link:nth-child(3) { background: transparent; }
+.updates-fallback-link::before { display: none; }
+.updates-fallback-link > span { color: #5c7a5b; }
+.updates-fallback-link strong { color: #26382c; }
+.updates-fallback-link:hover { background: transparent; box-shadow: none; transform: translateY(-4px); }
+.public-shell:has(.home-updates) .home-manifesto {
+  display: grid;
+  grid-template-columns: minmax(240px, 1.25fr) repeat(3, minmax(0, 1fr));
+  gap: clamp(24px, 4vw, 72px);
+  padding: 74px clamp(24px, 6vw, 104px);
+}
+.public-shell:has(.home-updates) .home-manifesto > .manifesto-intro,
+.public-shell:has(.home-updates) .home-manifesto > .manifesto-card {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.public-shell:has(.home-updates) .home-manifesto > .manifesto-intro {
+  grid-column: auto;
+  align-self: start;
+  padding-top: 4px;
+}
+.manifesto-intro h2 { color: #26382c; }
+.manifesto-intro p { color: #6d786d; }
+.manifesto-card { color: #26382c; }
+.manifesto-card:nth-of-type(2),
+.manifesto-card:nth-of-type(3),
+.manifesto-card:nth-of-type(4) { background: transparent; }
+.manifesto-card > span { color: #5c7a5b; }
+.manifesto-card strong { color: #26382c; }
+.manifesto-card p { color: #6d786d; }
+.manifesto-card:hover { background: transparent; box-shadow: none; transform: translateY(-4px); }
+.public-shell:has(.home-updates) .home-sections {
+  padding: 74px clamp(24px, 6vw, 104px) 96px;
+}
+.public-shell:has(.home-updates) .flagship-section .track-grid {
+  gap: clamp(28px, 4vw, 72px);
+  border: 0;
+  background: transparent;
+}
+.public-shell:has(.home-updates) .flagship-section .track-card,
+.public-shell:has(.home-updates) .flagship-section .track-card.track-coral,
+.public-shell:has(.home-updates) .flagship-section .track-card.track-ink,
+.public-shell:has(.home-updates) .flagship-section .track-card.track-sage,
+.public-shell:has(.home-updates) .flagship-section .track-card.track-sand {
+  min-height: 250px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #26382c;
+  box-shadow: none;
+}
+.public-shell:has(.home-updates) .flagship-section .track-card:hover { background: transparent; box-shadow: none; transform: translateY(-4px); }
+.public-shell:has(.home-updates) .flagship-section .track-card::after { display: none; }
+.public-shell:has(.home-updates) .problem-line,
+.public-shell:has(.home-updates) .news-line {
+  border: 0;
+  background: transparent;
+}
+.public-shell:has(.home-updates) .problem-line:hover,
+.public-shell:has(.home-updates) .news-line:hover { background: transparent; color: #5c7a5b; }
+.public-shell:has(.home-updates) .deadline-block,
+.public-shell:has(.home-updates) .page-state,
+.public-shell:has(.home-updates) .empty-state {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.public-shell:has(.home-updates) .home-about { padding-top: 50px; }
+.public-shell:has(.home-updates) .app-footer-rich {
+  min-height: 330px;
+  padding-top: 70px;
+  border: 0;
+}
+.public-shell:has(.home-updates) .app-footer-rich .footer-main { border: 0; }
+@media (max-width: 900px) {
+  .public-shell:has(.home-updates) .home-manifesto { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .public-shell:has(.home-updates) .home-manifesto > .manifesto-intro { grid-column: 1 / -1; }
+}
+@media (max-width: 600px) {
+  .public-shell:has(.home-updates) .home-updates,
+  .public-shell:has(.home-updates) .home-sections,
+  .public-shell:has(.home-updates) .home-manifesto { padding: 52px 18px; }
+  .public-shell:has(.home-updates) .home-manifesto { grid-template-columns: 1fr; gap: 28px; }
+  .public-shell:has(.home-updates) .home-manifesto > .manifesto-intro { grid-column: auto; }
+  .public-shell:has(.home-updates) .app-footer-rich { padding-top: 50px; }
+}
+/* Subtle two-tone edges inspired by the reference product cards. */
+.public-shell:has(.home-updates) .update-card,
+.public-shell:has(.home-updates) .updates-fallback-link,
+.public-shell:has(.home-updates) .manifesto-card,
+.public-shell:has(.home-updates) .flagship-section .track-card,
+.public-shell:has(.home-updates) .page-state,
+.public-shell:has(.home-updates) .deadline-block {
+  border: 1px solid var(--edge-outer, #dfe6d8);
+  border-radius: 20px;
+  box-shadow:
+    0 0 0 1px var(--edge-inner, rgba(255, 255, 250, .78)),
+    0 10px 26px rgba(54, 72, 54, .045);
+}
+.public-shell:has(.home-updates) .update-card,
+.public-shell:has(.home-updates) .updates-fallback-link,
+.public-shell:has(.home-updates) .manifesto-card {
+  background: linear-gradient(145deg, #faf9f3 0%, var(--edge-surface, #f0f2e8) 100%);
+}
+.public-shell:has(.home-updates) .update-card:nth-child(2),
+.public-shell:has(.home-updates) .updates-fallback-link:nth-child(3),
+.public-shell:has(.home-updates) .manifesto-card:nth-of-type(3) {
+  --edge-outer: #e2ddd0;
+  --edge-surface: #f1ece2;
+}
+.public-shell:has(.home-updates) .update-card:nth-child(3),
+.public-shell:has(.home-updates) .manifesto-card:nth-of-type(4) {
+  --edge-outer: #d7e3db;
+  --edge-surface: #e8f0e7;
+}
+.public-shell:has(.home-updates) .updates-fallback-feature {
+  border: 1px solid #b9cdb9;
+  border-radius: 20px;
+  box-shadow:
+    0 0 0 1px rgba(239, 244, 231, .65),
+    0 12px 28px rgba(54, 72, 54, .08);
+}
+.public-shell:has(.home-updates) .flagship-section .track-card {
+  --edge-outer: #d5e1d4;
+  --edge-surface: #e9eee5;
+  background: linear-gradient(145deg, #f7f8f1 0%, var(--edge-surface) 100%) !important;
+}
+.public-shell:has(.home-updates) .flagship-section .track-card:nth-child(even) {
+  --edge-outer: #e2ddd0;
+  --edge-surface: #f1ece2;
+}
+.public-shell:has(.home-updates) .page-state {
+  --edge-outer: #e2e6dc;
+  --edge-inner: rgba(255, 255, 250, .9);
+  background: rgba(250, 249, 243, .7);
+}
+.public-shell:has(.home-updates) .deadline-block {
+  --edge-outer: #cfdccb;
+  --edge-inner: rgba(247, 249, 239, .85);
+  background: #e5ecdf;
+}
+.public-shell:has(.home-updates) .update-card:hover,
+.public-shell:has(.home-updates) .updates-fallback-link:hover,
+.public-shell:has(.home-updates) .manifesto-card:hover,
+.public-shell:has(.home-updates) .flagship-section .track-card:hover {
+  border-color: #9eb398;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 250, .88),
+    0 14px 32px rgba(54, 72, 54, .1);
+}
+/* Borderless editorial card pass. */
+.public-shell:has(.home-updates) .news-cards,
+.public-shell:has(.home-updates) .updates-fallback,
+.public-shell:has(.home-updates) .flagship-section .track-grid {
+  gap: clamp(18px, 2vw, 30px);
+  border: 0;
+  background: transparent;
+}
+.public-shell:has(.home-updates) .update-card,
+.public-shell:has(.home-updates) .updates-fallback-feature,
+.public-shell:has(.home-updates) .updates-fallback-link,
+.public-shell:has(.home-updates) .manifesto-card,
+.public-shell:has(.home-updates) .flagship-section .track-card,
+.public-shell:has(.home-updates) .page-state,
+.public-shell:has(.home-updates) .deadline-block {
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: 0;
+}
+.public-shell:has(.home-updates) .update-card,
+.public-shell:has(.home-updates) .updates-fallback-feature,
+.public-shell:has(.home-updates) .updates-fallback-link,
+.public-shell:has(.home-updates) .manifesto-card,
+.public-shell:has(.home-updates) .flagship-section .track-card {
+  border-radius: 24px;
+  padding: clamp(26px, 3vw, 42px);
+}
+.public-shell:has(.home-updates) .update-card {
+  min-height: 270px;
+  background: #f1f3eb;
+}
+.public-shell:has(.home-updates) .update-card:nth-child(2) { background: #f3eee5; }
+.public-shell:has(.home-updates) .update-card:nth-child(3) { background: #eaf1ec; }
+.public-shell:has(.home-updates) .update-card strong {
+  margin-top: auto;
+  font-family: "Microsoft YaHei UI", "PingFang SC", sans-serif;
+  font-size: clamp(22px, 2.3vw, 34px);
+  font-weight: 650;
+  letter-spacing: -.055em;
+}
+.public-shell:has(.home-updates) .updates-fallback {
+  grid-template-columns: minmax(0, 1.45fr) repeat(2, minmax(0, .7fr));
+}
+.public-shell:has(.home-updates) .updates-fallback-feature {
+  min-height: 270px;
+  padding: clamp(26px, 3vw, 42px);
+  border-radius: 24px;
+}
+.public-shell:has(.home-updates) .updates-fallback-link {
+  min-height: 270px;
+  padding: clamp(26px, 3vw, 42px);
+}
+.public-shell:has(.home-updates) .home-manifesto {
+  grid-template-columns: minmax(260px, 1.2fr) repeat(3, minmax(0, 1fr));
+  gap: clamp(18px, 2vw, 30px);
+  padding-top: 58px;
+  padding-bottom: 68px;
+}
+.public-shell:has(.home-updates) .home-manifesto > .manifesto-card {
+  min-height: 250px;
+  padding: 28px;
+  border-radius: 24px;
+}
+.public-shell:has(.home-updates) .manifesto-card:nth-of-type(2) { background: #e8efe4; }
+.public-shell:has(.home-updates) .manifesto-card:nth-of-type(3) { background: #f0ece4; }
+.public-shell:has(.home-updates) .manifesto-card:nth-of-type(4) { background: #e6f0ee; }
+.public-shell:has(.home-updates) .manifesto-card strong { margin-top: auto; font-size: clamp(25px, 2.2vw, 36px); color: #26382c; }
+.public-shell:has(.home-updates) .manifesto-card p { color: #5f7162; }
+.public-shell:has(.home-updates) .flagship-section .track-card {
+  min-height: 270px;
+  background: #e9efe5 !important;
+}
+.public-shell:has(.home-updates) .flagship-section .track-card:nth-child(even) { background: #f1ede5 !important; }
+.public-shell:has(.home-updates) .flagship-section .track-card h3 { font-size: clamp(24px, 2.2vw, 34px); }
+.public-shell:has(.home-updates) .flagship-section .track-card p { color: #5f7162; }
+.public-shell:has(.home-updates) .problem-line,
+.public-shell:has(.home-updates) .news-line { border: 0 !important; }
+@media (max-width: 900px) {
+  .public-shell:has(.home-updates) .home-manifesto { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .public-shell:has(.home-updates) .home-manifesto > .manifesto-intro { grid-column: 1 / -1; }
+}
+@media (max-width: 600px) {
+  .public-shell:has(.home-updates) .updates-fallback { grid-template-columns: 1fr; }
+  .public-shell:has(.home-updates) .update-card,
+  .public-shell:has(.home-updates) .updates-fallback-feature,
+  .public-shell:has(.home-updates) .updates-fallback-link,
+  .public-shell:has(.home-updates) .home-manifesto > .manifesto-card,
+  .public-shell:has(.home-updates) .flagship-section .track-card {
+    min-height: 220px;
+    padding: 22px;
+    border-radius: 20px;
+  }
+  .public-shell:has(.home-updates) .home-manifesto { grid-template-columns: 1fr; }
+  .public-shell:has(.home-updates) .home-manifesto > .manifesto-intro { grid-column: auto; }
+}
+/* Unified public typography scale. */
+.public-shell:has(.home-updates) {
+  --home-ui-font: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --home-display-font: "Microsoft YaHei UI", "PingFang SC", "Segoe UI", sans-serif;
+  --home-label-size: 11px;
+  --home-body-size: 14px;
+  --home-card-title-size: clamp(21px, 1.9vw, 28px);
+  --home-section-title-size: clamp(34px, 3.7vw, 50px);
+  font-family: var(--home-ui-font);
+}
+.public-shell:has(.home-updates) .section-header h2,
+.public-shell:has(.home-updates) .home-about h2,
+.public-shell:has(.home-updates) .problem-feature h2,
+.public-shell:has(.home-updates) .flagship-section h2 {
+  margin: 12px 0 0;
+  font-family: var(--home-display-font);
+  font-size: var(--home-section-title-size);
+  font-weight: 600;
+  letter-spacing: -.06em;
+  line-height: 1.12;
+}
+.public-shell:has(.home-updates) .eyebrow,
+.public-shell:has(.home-updates) .update-card-top,
+.public-shell:has(.home-updates) .updates-fallback-kicker,
+.public-shell:has(.home-updates) .updates-fallback-link > span,
+.public-shell:has(.home-updates) .manifesto-intro span,
+.public-shell:has(.home-updates) .manifesto-card > span,
+.public-shell:has(.home-updates) .track-card small,
+.public-shell:has(.home-updates) .mono-label,
+.public-shell:has(.home-updates) .footer-brand-mark,
+.public-shell:has(.home-updates) .footer-location {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: var(--home-label-size);
+  font-weight: 600;
+  letter-spacing: .12em;
+  line-height: 1.35;
+}
+.public-shell:has(.home-updates) .update-card p,
+.public-shell:has(.home-updates) .updates-fallback-feature p,
+.public-shell:has(.home-updates) .updates-fallback-link p,
+.public-shell:has(.home-updates) .manifesto-card p,
+.public-shell:has(.home-updates) .track-card p,
+.public-shell:has(.home-updates) .problem-line span,
+.public-shell:has(.home-updates) .news-line time,
+.public-shell:has(.home-updates) .news-line > span,
+.public-shell:has(.home-updates) .about-copy p,
+.public-shell:has(.home-updates) .deadline-block p {
+  font-family: var(--home-ui-font);
+  font-size: var(--home-body-size);
+  line-height: 1.7;
+}
+.public-shell:has(.home-updates) .update-card strong,
+.public-shell:has(.home-updates) .updates-fallback-link strong,
+.public-shell:has(.home-updates) .manifesto-card strong,
+.public-shell:has(.home-updates) .track-card h3,
+.public-shell:has(.home-updates) .problem-line strong,
+.public-shell:has(.home-updates) .news-line strong {
+  font-family: var(--home-display-font);
+  font-size: var(--home-card-title-size);
+  font-weight: 650;
+  letter-spacing: -.045em;
+  line-height: 1.2;
+}
+.public-shell:has(.home-updates) .about-statement {
+  font-family: var(--home-display-font);
+  font-size: clamp(32px, 3.4vw, 52px);
+  font-weight: 600;
+  letter-spacing: -.065em;
+  line-height: 1.14;
+}
+.public-shell:has(.home-updates) .about-copy p {
+  font-family: var(--home-ui-font);
+  font-size: clamp(15px, 1.35vw, 19px);
+  line-height: 1.65;
+}
+.public-shell:has(.home-updates) .footer-brand strong {
+  font-family: var(--home-display-font);
+  font-size: clamp(26px, 2.5vw, 40px);
+  font-weight: 650;
+  letter-spacing: -.06em;
+  line-height: 1.1;
+}
+.public-shell:has(.home-updates) .home-updates > .section-header > a,
+.public-shell:has(.home-updates) .section-header > a,
+.public-shell:has(.home-updates) .about-links a,
+.public-shell:has(.home-updates) .problem-feature > header > a {
+  font-family: var(--home-ui-font);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+@media (max-width: 600px) {
+  .public-shell:has(.home-updates) .section-header h2,
+  .public-shell:has(.home-updates) .home-about h2,
+  .public-shell:has(.home-updates) .problem-feature h2,
+  .public-shell:has(.home-updates) .flagship-section h2 {
+    font-size: clamp(29px, 7.5vw, 37px);
+  }
+  .public-shell:has(.home-updates) .about-statement { font-size: clamp(29px, 7.5vw, 37px); }
+  .public-shell:has(.home-updates) .about-copy p { font-size: 16px; }
+}
+/* Reference screenshot grid and rhythm pass. */
+.public-shell:has(.home-updates) {
+  --home-content-width: 1720px;
+  --home-gutter: clamp(24px, 4.4vw, 84px);
+  --home-section-space: clamp(66px, 7vw, 108px);
+  --home-card-radius: 22px;
+}
+.public-shell:has(.home-updates) .home-updates,
+.public-shell:has(.home-updates) .home-manifesto,
+.public-shell:has(.home-updates) .home-sections {
+  width: min(100%, var(--home-content-width));
+  margin-inline: auto;
+  padding-inline: var(--home-gutter);
+}
+.public-shell:has(.home-updates) .home-updates {
+  padding-top: clamp(58px, 6vw, 88px);
+  padding-bottom: var(--home-section-space);
+}
+.public-shell:has(.home-updates) .section-header {
+  align-items: end;
+  margin-bottom: 28px;
+}
+.public-shell:has(.home-updates) .home-updates .section-header h2,
+.public-shell:has(.home-updates) .flagship-section .section-header h2 {
+  max-width: 620px;
+}
+.public-shell:has(.home-updates) .news-cards {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(18px, 2vw, 28px);
+  margin-top: 0;
+}
+.public-shell:has(.home-updates) .update-card {
+  min-height: 228px;
+  padding: clamp(26px, 2.3vw, 36px);
+  border-radius: var(--home-card-radius);
+}
+.public-shell:has(.home-updates) .update-card strong {
+  margin-top: 34px;
+  max-width: 95%;
+}
+.public-shell:has(.home-updates) .update-card p {
+  max-width: 92%;
+  margin-top: 10px;
+}
+.public-shell:has(.home-updates) .updates-fallback {
+  grid-template-columns: 1.5fr .7fr .7fr;
+  gap: clamp(18px, 2vw, 28px);
+  margin-top: 0;
+}
+.public-shell:has(.home-updates) .updates-fallback-feature,
+.public-shell:has(.home-updates) .updates-fallback-link {
+  min-height: 228px;
+  border-radius: var(--home-card-radius);
+  padding: clamp(26px, 2.3vw, 36px);
+}
+.public-shell:has(.home-updates) .updates-fallback-feature h3 { margin-top: auto; }
+.public-shell:has(.home-updates) .home-manifesto {
+  grid-template-columns: minmax(330px, 1.25fr) repeat(3, minmax(220px, 1fr));
+  align-items: stretch;
+  gap: clamp(18px, 2vw, 28px);
+  padding-top: 0;
+  padding-bottom: var(--home-section-space);
+}
+.public-shell:has(.home-updates) .home-manifesto > .manifesto-intro {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px 28px 10px 0;
+}
+.public-shell:has(.home-updates) .manifesto-intro h2 {
+  max-width: 500px;
+  margin-top: 24px;
+}
+.public-shell:has(.home-updates) .manifesto-card {
+  min-height: 218px;
+  padding: 28px;
+  border-radius: var(--home-card-radius);
+}
+.public-shell:has(.home-updates) .manifesto-card strong { margin-top: auto; }
+.public-shell:has(.home-updates) .manifesto-card p { margin-bottom: 16px; }
+.public-shell:has(.home-updates) .home-sections {
+  padding-top: 0;
+  padding-bottom: 88px;
+}
+.public-shell:has(.home-updates) .home-section {
+  margin-bottom: var(--home-section-space);
+}
+.public-shell:has(.home-updates) .home-section + .home-section { padding-top: 0; }
+.public-shell:has(.home-updates) .flagship-section .track-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(16px, 1.6vw, 24px);
+  margin-top: 0;
+}
+.public-shell:has(.home-updates) .flagship-section .track-card {
+  min-height: 252px;
+  padding: 24px;
+  border-radius: var(--home-card-radius);
+}
+.public-shell:has(.home-updates) .flagship-section .track-card > div:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 132px;
+  margin-top: auto;
+}
+.public-shell:has(.home-updates) .flagship-section .track-card h3 {
+  min-height: 2.4em;
+  margin: 8px 0 8px;
+}
+.public-shell:has(.home-updates) .flagship-section .track-card p {
+  min-height: 3.4em;
+  margin: 0;
+}
+.public-shell:has(.home-updates) .flagship-section .track-card footer {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(68, 88, 69, .16);
+}
+@media (max-width: 1100px) {
+  .public-shell:has(.home-updates) .home-manifesto {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .public-shell:has(.home-updates) .home-manifesto > .manifesto-intro {
+    grid-column: 1 / -1;
+    padding-right: 0;
+  }
+  .public-shell:has(.home-updates) .flagship-section .track-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .public-shell:has(.home-updates) .news-cards,
+  .public-shell:has(.home-updates) .updates-fallback,
+  .public-shell:has(.home-updates) .home-manifesto {
+    grid-template-columns: 1fr;
+  }
+  .public-shell:has(.home-updates) .home-manifesto > .manifesto-intro { grid-column: auto; }
+  .public-shell:has(.home-updates) .update-card,
+  .public-shell:has(.home-updates) .updates-fallback-feature,
+  .public-shell:has(.home-updates) .updates-fallback-link,
+  .public-shell:has(.home-updates) .manifesto-card { min-height: 200px; }
+}
+@media (max-width: 520px) {
+  .public-shell:has(.home-updates) {
+    --home-gutter: 18px;
+    --home-section-space: 56px;
+  }
+  .public-shell:has(.home-updates) .flagship-section .track-grid { grid-template-columns: 1fr; }
+  .public-shell:has(.home-updates) .flagship-section .track-card { min-height: 230px; }
+}
+/* Slight title lift after the grid refinement. */
+.public-shell:has(.home-updates) .update-card strong { font-size: clamp(22px, 2vw, 30px); }
+.public-shell:has(.home-updates) .updates-fallback-link strong,
+.public-shell:has(.home-updates) .manifesto-card strong { font-size: clamp(23px, 2.1vw, 31px); }
+.public-shell:has(.home-updates) .flagship-section .track-card h3 { font-size: clamp(22px, 2vw, 30px); }
+@media (max-width: 600px) {
+  .public-shell:has(.home-updates) .update-card strong,
+  .public-shell:has(.home-updates) .updates-fallback-link strong,
+  .public-shell:has(.home-updates) .manifesto-card strong,
+  .public-shell:has(.home-updates) .flagship-section .track-card h3 { font-size: 22px; }
+}
+/* Restored editorial display type. */
+.public-shell:has(.home-updates) {
+  --home-display-font: "Bodoni MT", Didot, "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", SimSun, Georgia, serif;
+}
+.public-shell:has(.home-updates) .section-header h2,
+.public-shell:has(.home-updates) .manifesto-intro h2,
+.public-shell:has(.home-updates) .about-statement,
+.public-shell:has(.home-updates) .footer-brand strong {
+  font-family: var(--home-display-font);
+  font-weight: 400;
+  letter-spacing: -.045em;
+}
+.public-shell:has(.home-updates) .update-card strong,
+.public-shell:has(.home-updates) .updates-fallback-feature h3,
+.public-shell:has(.home-updates) .updates-fallback-link strong,
+.public-shell:has(.home-updates) .manifesto-card strong,
+.public-shell:has(.home-updates) .flagship-section .track-card h3,
+.public-shell:has(.home-updates) .problem-line strong,
+.public-shell:has(.home-updates) .news-line strong {
+  font-family: var(--home-display-font);
+  font-weight: 500;
+  letter-spacing: -.035em;
+}
+/* Bolder editorial headings. */
+.public-shell:has(.home-updates) .section-header h2,
+.public-shell:has(.home-updates) .manifesto-intro h2,
+.public-shell:has(.home-updates) .about-statement,
+.public-shell:has(.home-updates) .footer-brand strong {
+  font-weight: 600;
+}
+.public-shell:has(.home-updates) .update-card strong,
+.public-shell:has(.home-updates) .updates-fallback-feature h3,
+.public-shell:has(.home-updates) .updates-fallback-link strong,
+.public-shell:has(.home-updates) .manifesto-card strong,
+.public-shell:has(.home-updates) .flagship-section .track-card h3,
+.public-shell:has(.home-updates) .problem-line strong,
+.public-shell:has(.home-updates) .news-line strong {
+  font-weight: 600;
+}
+/* Exact composition from the supplied homepage reference. */
+.public-shell:has(.home-updates) {
+  --reference-content-width: 1720px;
+  --reference-gutter: clamp(32px, 4.3vw, 82px);
+  --reference-card-gap: clamp(22px, 1.8vw, 30px);
+}
+.public-shell:has(.home-updates) .home-updates,
+.public-shell:has(.home-updates) .home-manifesto,
+.public-shell:has(.home-updates) .home-sections {
+  width: min(100%, var(--reference-content-width));
+  max-width: none;
+  margin-inline: auto;
+  padding-inline: var(--reference-gutter);
+}
+.public-shell:has(.home-updates) .home-updates {
+  padding-top: 42px;
+  padding-bottom: 104px;
+}
+.public-shell:has(.home-updates) .home-updates .section-header {
+  min-height: 62px;
+  margin-bottom: 24px;
+}
+.public-shell:has(.home-updates) .home-updates .section-header h2,
+.public-shell:has(.home-updates) .flagship-section .section-header h2 {
+  font-size: clamp(38px, 3.2vw, 52px);
+  font-weight: 650;
+  line-height: 1;
+}
+.public-shell:has(.home-updates) .home-updates .section-header > a,
+.public-shell:has(.home-updates) .flagship-section .section-header > a {
+  align-self: end;
+  margin-bottom: 5px;
+}
+.public-shell:has(.home-updates) .news-cards {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--reference-card-gap);
+}
+.public-shell:has(.home-updates) .update-card {
+  min-height: 225px;
+  padding: 34px 36px 30px;
+  border-radius: 20px;
+}
+.public-shell:has(.home-updates) .update-card-top {
+  align-items: center;
+  min-height: 18px;
+}
+.public-shell:has(.home-updates) .update-card strong {
+  margin-top: 30px;
+  min-height: 2.4em;
+  max-width: 100%;
+  font-size: clamp(22px, 1.55vw, 28px);
+  font-weight: 650;
+  line-height: 1.2;
+}
+.public-shell:has(.home-updates) .update-card p {
+  min-height: 3.2em;
+  max-width: 100%;
+  margin: 8px 0 16px;
+  color: #657066;
+  line-height: 1.55;
+}
+.public-shell:has(.home-updates) .update-card > svg { margin-top: auto; }
+.public-shell:has(.home-updates) .updates-fallback {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--reference-card-gap);
+}
+.public-shell:has(.home-updates) .updates-fallback-feature,
+.public-shell:has(.home-updates) .updates-fallback-link {
+  min-height: 225px;
+  padding: 34px 36px 30px;
+}
+.public-shell:has(.home-updates) .home-manifesto {
+  grid-template-columns: 1.35fr repeat(3, minmax(0, 1fr));
+  gap: var(--reference-card-gap);
+  align-items: stretch;
+  padding-top: 0;
+  padding-bottom: 112px;
+}
+.public-shell:has(.home-updates) .home-manifesto > .manifesto-intro {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px 48px 10px 0;
+}
+.public-shell:has(.home-updates) .manifesto-intro h2 {
+  max-width: 440px;
+  margin: 26px 0 18px;
+  font-size: clamp(42px, 3.8vw, 62px);
+  font-weight: 650;
+  line-height: 1.18;
+  letter-spacing: -.055em;
+}
+.public-shell:has(.home-updates) .manifesto-intro p {
+  max-width: 330px;
+  color: #8a8d84;
+}
+.public-shell:has(.home-updates) .manifesto-card {
+  min-height: 208px;
+  padding: 28px 26px 24px;
+  border-radius: 20px;
+}
+.public-shell:has(.home-updates) .manifesto-card:nth-of-type(2) { background: transparent; }
+.public-shell:has(.home-updates) .manifesto-card:nth-of-type(3) { background: #e6eee2; }
+.public-shell:has(.home-updates) .manifesto-card:nth-of-type(4) { background: #efeae1; }
+.public-shell:has(.home-updates) .manifesto-card strong {
+  margin-top: auto;
+  font-size: clamp(23px, 1.8vw, 30px);
+  font-weight: 650;
+  line-height: 1.15;
+}
+.public-shell:has(.home-updates) .manifesto-card p {
+  min-height: 3em;
+  margin: 7px 0 12px;
+  line-height: 1.5;
+}
+.public-shell:has(.home-updates) .manifesto-card svg { margin-left: auto; }
+.public-shell:has(.home-updates) .home-sections {
+  padding-top: 0;
+  padding-bottom: 96px;
+}
+.public-shell:has(.home-updates) .flagship-section {
+  margin-bottom: 104px;
+}
+.public-shell:has(.home-updates) .flagship-section .section-header {
+  min-height: 72px;
+  margin-bottom: 22px;
+}
+.public-shell:has(.home-updates) .flagship-section .track-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(18px, 1.4vw, 26px);
+}
+.public-shell:has(.home-updates) .flagship-section .track-card {
+  min-height: 210px;
+  padding: 0;
+  border-radius: 0;
+  background: #e7eee3 !important;
+}
+.public-shell:has(.home-updates) .flagship-section .track-card:nth-child(even) {
+  background: #f0ece4 !important;
+}
+.public-shell:has(.home-updates) .flagship-section .track-card-top {
+  padding: 4px 0 0;
+  font-size: 11px;
+}
+.public-shell:has(.home-updates) .flagship-section .track-card > div:nth-child(2) {
+  min-height: 142px;
+  padding: 30px 0 16px;
+}
+.public-shell:has(.home-updates) .flagship-section .track-card h3 {
+  min-height: auto;
+  margin: 8px 0 8px;
+  font-size: clamp(23px, 1.7vw, 31px);
+  font-weight: 650;
+  line-height: 1.12;
+}
+.public-shell:has(.home-updates) .flagship-section .track-card p {
+  min-height: 3.2em;
+  color: #69746a;
+  line-height: 1.55;
+}
+.public-shell:has(.home-updates) .flagship-section .track-card footer {
+  margin-top: 0;
+  padding: 10px 0 0;
+  border-top: 1px solid rgba(56, 74, 59, .28);
+}
+@media (max-width: 1100px) {
+  .public-shell:has(.home-updates) .home-manifesto {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .public-shell:has(.home-updates) .home-manifesto > .manifesto-intro {
+    grid-column: 1 / -1;
+    padding-right: 0;
+  }
+  .public-shell:has(.home-updates) .flagship-section .track-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .public-shell:has(.home-updates) {
+    --reference-gutter: 18px;
+  }
+  .public-shell:has(.home-updates) .news-cards,
+  .public-shell:has(.home-updates) .updates-fallback,
+  .public-shell:has(.home-updates) .home-manifesto { grid-template-columns: 1fr; }
+  .public-shell:has(.home-updates) .home-manifesto > .manifesto-intro { grid-column: auto; }
+  .public-shell:has(.home-updates) .manifesto-card:nth-of-type(2) { background: #e9eee4; }
+}
+@media (max-width: 520px) {
+  .public-shell:has(.home-updates) .flagship-section .track-grid { grid-template-columns: 1fr; }
+  .public-shell:has(.home-updates) .home-updates { padding-top: 36px; padding-bottom: 70px; }
+  .public-shell:has(.home-updates) .home-manifesto { padding-bottom: 74px; }
+}
+/* Balanced homepage grids and a consistent reading rhythm. */
+.public-shell:has(.home-updates) {
+  --reference-card-gap: clamp(16px, 1.6vw, 26px);
+  --home-section-space: clamp(56px, 5vw, 80px);
+}
+.public-shell:has(.home-updates) .home-updates {
+  padding-bottom: var(--home-section-space);
+}
+.public-shell:has(.home-updates) .news-cards,
+.public-shell:has(.home-updates) .updates-fallback {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: var(--reference-card-gap);
+}
+.public-shell:has(.home-updates) .update-card,
+.public-shell:has(.home-updates) .updates-fallback-feature,
+.public-shell:has(.home-updates) .updates-fallback-link {
+  min-height: 228px;
+}
+.public-shell:has(.home-updates) .update-card strong {
+  min-height: 0;
+  margin-top: 28px;
+}
+.public-shell:has(.home-updates) .update-card p {
+  min-height: 0;
+  margin-bottom: 18px;
+}
+.public-shell:has(.home-updates) .home-manifesto {
+  grid-template-columns: minmax(300px, 1.25fr) repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: var(--reference-card-gap);
+  padding-bottom: var(--home-section-space);
+}
+.public-shell:has(.home-updates) .home-manifesto > .manifesto-intro {
+  grid-column: auto;
+  align-self: center;
+  padding: 0 28px 0 0;
+}
+.public-shell:has(.home-updates) .manifesto-intro h2 {
+  margin: 20px 0 16px;
+  font-size: clamp(40px, 3.2vw, 56px);
+}
+.public-shell:has(.home-updates) .home-manifesto > .manifesto-card {
+  grid-column: auto;
+  min-height: 228px;
+  padding: 27px;
+}
+.public-shell:has(.home-updates) .home-manifesto > .manifesto-card:nth-child(2) { background: #e9eee4; }
+.public-shell:has(.home-updates) .home-manifesto > .manifesto-card:nth-child(3) { background: #e6eee2; }
+.public-shell:has(.home-updates) .home-manifesto > .manifesto-card:nth-child(4) { background: #efeae1; }
+.public-shell:has(.home-updates) .flagship-section .track-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  gap: var(--reference-card-gap);
+}
+.public-shell:has(.home-updates) .flagship-section .track-card:is(.track-coral, .track-ink, .track-sage, .track-sand) {
+  grid-column: auto;
+  min-height: 238px;
+  padding: 26px;
+  border-radius: 20px;
+}
+.public-shell:has(.home-updates) .flagship-section .track-card > div:nth-child(2) {
+  min-height: 0;
+  padding: 20px 0 12px;
+}
+.public-shell:has(.home-updates) .flagship-section .track-card h3,
+.public-shell:has(.home-updates) .flagship-section .track-card p {
+  min-height: 0;
+}
+.public-shell:has(.home-updates) .news-cards > *,
+.public-shell:has(.home-updates) .updates-fallback > *,
+.public-shell:has(.home-updates) .manifesto-card,
+.public-shell:has(.home-updates) .flagship-section .track-card {
+  transition: transform .24s cubic-bezier(.22, 1, .36, 1), background .2s ease;
+}
+@media (max-width: 1100px) {
+  .public-shell:has(.home-updates) .news-cards,
+  .public-shell:has(.home-updates) .updates-fallback,
+  .public-shell:has(.home-updates) .home-manifesto,
+  .public-shell:has(.home-updates) .flagship-section .track-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .public-shell:has(.home-updates) .home-manifesto > .manifesto-intro {
+    grid-column: 1 / -1;
+    padding-right: 0;
+  }
+  .public-shell:has(.home-updates) .home-manifesto > .manifesto-card:last-child { grid-column: 1 / -1; }
+}
+@media (min-width: 901px) and (max-width: 1100px) {
+  .public-shell:has(.home-updates) .home-manifesto { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .public-shell:has(.home-updates) .home-manifesto > .manifesto-card:last-child { grid-column: auto; }
+}
+@media (max-width: 680px) {
+  .public-shell:has(.home-updates) .news-cards,
+  .public-shell:has(.home-updates) .updates-fallback,
+  .public-shell:has(.home-updates) .home-manifesto,
+  .public-shell:has(.home-updates) .flagship-section .track-grid {
+    grid-template-columns: 1fr;
+  }
+  .public-shell:has(.home-updates) .home-manifesto > .manifesto-intro { grid-column: auto; }
+  .public-shell:has(.home-updates) .home-manifesto > .manifesto-card:last-child { grid-column: auto; }
+  .public-shell:has(.home-updates) .update-card,
+  .public-shell:has(.home-updates) .updates-fallback-feature,
+  .public-shell:has(.home-updates) .updates-fallback-link,
+  .public-shell:has(.home-updates) .home-manifesto > .manifesto-card,
+  .public-shell:has(.home-updates) .flagship-section .track-card:is(.track-coral, .track-ink, .track-sage, .track-sand) { min-height: 210px; }
+  .public-shell:has(.home-updates) .home-updates .section-header,
+  .public-shell:has(.home-updates) .flagship-section .section-header { align-items: start; }
+}
+
+/* Quiet notification cues that keep the editorial cards calm. */
+.public-shell:has(.home-updates) .update-card {
+  --card-accent: #718476;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.public-shell:has(.home-updates) .update-card > * {
+  position: relative;
+  z-index: 1;
+}
+.public-shell:has(.home-updates) .update-card[data-kind="announcement"] {
+  --card-accent: #86543b;
+  border: 1px solid #d8c3b0 !important;
+  background: #f6eadc;
+}
+.public-shell:has(.home-updates) .update-card[data-kind="announcement"]::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 36px;
+  width: 54px;
+  height: 4px;
+  border-radius: 0 0 4px 4px;
+  background: var(--card-accent);
+}
+.public-shell:has(.home-updates) .update-card[data-kind="research"] { --card-accent: #64847d; }
+.public-shell:has(.home-updates) .update-card[data-kind="blog"] { --card-accent: #71876b; }
+.public-shell:has(.home-updates) .update-card-top time {
+  color: #68766a;
+  font-weight: 600;
+}
+.public-shell:has(.home-updates) .update-card-top span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #5f6b61;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  line-height: 1.2;
+}
+.public-shell:has(.home-updates) .update-card-top span::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+  background: var(--card-accent);
+}
+.public-shell:has(.home-updates) .update-card[data-kind="announcement"] .update-card-top span {
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: var(--card-accent);
+  color: #fffaf4;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.public-shell:has(.home-updates) .update-card[data-kind="announcement"] .update-card-top span::before {
+  background: #e8c3a6;
+}
+.public-shell:has(.home-updates) .update-card[data-kind="announcement"] strong { color: #3f332d; }
+.public-shell:has(.home-updates) .update-card[data-kind="announcement"] .update-card-top time,
+.public-shell:has(.home-updates) .update-card[data-kind="announcement"] > svg { color: #86543b; }
+.public-shell:has(.home-updates) .update-card:focus-visible,
+.public-shell:has(.home-updates) .manifesto-card:focus-visible,
+.public-shell:has(.home-updates) .flagship-section .track-card:focus-visible {
+  outline: 2px solid #486c51;
+  outline-offset: 3px;
+  box-shadow: 0 16px 32px rgba(32, 60, 40, .12) !important;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .public-shell:has(.home-updates) .update-card,
+  .public-shell:has(.home-updates) .updates-fallback-link,
+  .public-shell:has(.home-updates) .manifesto-card,
+  .public-shell:has(.home-updates) .flagship-section .track-card {
+    transition: transform .32s cubic-bezier(.22, 1, .36, 1), box-shadow .32s ease, background-color .24s ease;
+  }
+  .public-shell:has(.home-updates) .update-card > svg,
+  .public-shell:has(.home-updates) .manifesto-card > svg,
+  .public-shell:has(.home-updates) .flagship-section .track-card footer svg {
+    transition: transform .32s cubic-bezier(.22, 1, .36, 1);
+  }
+}
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  .public-shell:has(.home-updates) .update-card:hover,
+  .public-shell:has(.home-updates) .updates-fallback-link:hover,
+  .public-shell:has(.home-updates) .manifesto-card:hover,
+  .public-shell:has(.home-updates) .flagship-section .track-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 26px rgba(35, 62, 43, .09) !important;
+  }
+  .public-shell:has(.home-updates) .update-card:hover { transform: translateY(-3px); }
+  .public-shell:has(.home-updates) .update-card:hover > svg,
+  .public-shell:has(.home-updates) .manifesto-card:hover > svg,
+  .public-shell:has(.home-updates) .flagship-section .track-card:hover footer svg {
+    transform: translateX(4px);
+  }
+  .public-shell:has(.home-updates) .update-card:active,
+  .public-shell:has(.home-updates) .updates-fallback-link:active,
+  .public-shell:has(.home-updates) .manifesto-card:active,
+  .public-shell:has(.home-updates) .flagship-section .track-card:active {
+    transform: translateY(-2px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .public-shell:has(.home-updates) .update-card:hover,
+  .public-shell:has(.home-updates) .updates-fallback-link:hover,
+  .public-shell:has(.home-updates) .manifesto-card:hover,
+  .public-shell:has(.home-updates) .flagship-section .track-card:hover { transform: none; }
+}
+
+/* Image-led updates: one lead story beside a vertical editorial feed. */
+.public-shell:has(.home-updates) .home-updates {
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+  padding-top: clamp(68px, 7vw, 112px);
+  padding-bottom: clamp(84px, 8vw, 128px);
+}
+.public-shell:has(.home-updates) .home-updates::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: calc(100vw - 32px);
+  transform: translateX(-50%);
+  background: linear-gradient(180deg,
+    #f4f1ea 0%,
+    #f8f6f0 15%,
+    #faf9f5 45%,
+    #f8f6f0 82%,
+    #f4f1ea 100%);
+  pointer-events: none;
+}
+.public-shell:has(.home-updates) .home-updates .section-header {
+  position: relative;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: clamp(34px, 4vw, 64px);
+}
+.public-shell:has(.home-updates) .home-updates .section-header .eyebrow { justify-content: center; }
+.public-shell:has(.home-updates) .home-updates .section-header > a {
+  position: absolute;
+  right: 0;
+  bottom: 6px;
+}
+.public-shell:has(.home-updates) .news-cards.news-showcase {
+  grid-template-columns: minmax(0, 2.85fr) minmax(260px, 1fr);
+  align-items: start;
+  gap: clamp(20px, 2vw, 34px);
+  margin-top: 0;
+}
+.public-shell:has(.home-updates) .news-showcase:not(:has(.updates-sidebar)) { grid-template-columns: 1fr; }
+.public-shell:has(.home-updates) .news-showcase .updates-featured-rail {
+  align-self: stretch;
+  min-width: 0;
+  min-height: 0;
+}
+.public-shell:has(.home-updates) .news-showcase .update-featured {
+  position: relative;
+  align-self: start;
+}
+@media (min-width: 1101px) {
+  .public-shell:has(.home-updates) .news-showcase:has(.updates-sidebar .update-small:nth-child(2)) .updates-featured-rail > .update-featured {
+    position: sticky;
+    top: 112px;
+  }
+}
+.public-shell:has(.home-updates) .news-showcase .update-card {
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0 !important;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #171e19;
+}
+.public-shell:has(.home-updates) .news-showcase .update-card::after { display: none; }
+.public-shell:has(.home-updates) .news-showcase .update-card:hover {
+  background: transparent;
+  box-shadow: none !important;
+}
+.public-shell:has(.home-updates) .news-showcase .update-card > * { position: relative; z-index: 1; }
+.public-shell:has(.home-updates) .news-showcase .update-visual {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  border-radius: 28px;
+  background: #eff1e8;
+  isolation: isolate;
+}
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  .public-shell:has(.home-updates) .news-showcase .update-visual {
+    transition: border-radius 360ms cubic-bezier(.22, 1, .36, 1), filter 360ms ease;
+  }
+  .public-shell:has(.home-updates) .news-showcase .update-visual::before,
+  .public-shell:has(.home-updates) .news-showcase .update-visual::after,
+  .public-shell:has(.home-updates) .news-showcase .update-visual span {
+    transition: transform 480ms cubic-bezier(.22, 1, .36, 1);
+  }
+  .public-shell:has(.home-updates) .news-showcase .update-card:is(:hover, :focus-visible) .update-visual {
+    border-radius: 22px;
+    filter: saturate(1.07);
+  }
+  .public-shell:has(.home-updates) .news-showcase .update-card:is(:hover, :focus-visible) .update-small-visual::before { transform: rotate(-18deg) scaleX(.64); }
+  .public-shell:has(.home-updates) .news-showcase .update-card:is(:hover, :focus-visible) .update-small-visual::after { transform: rotate(47deg) scaleX(.47); }
+  .public-shell:has(.home-updates) .news-showcase .update-card:is(:hover, :focus-visible) .update-small-visual span { transform: translateY(-4px); }
+}
+.public-shell:has(.home-updates) .news-showcase .update-featured-visual {
+  aspect-ratio: 2 / 1;
+  background:
+    radial-gradient(circle at 84% 19%, rgba(116, 148, 125, .23), transparent 29%),
+    radial-gradient(circle at 18% 89%, rgba(137, 168, 142, .25), transparent 35%),
+    #eef2e9;
+}
+.public-shell:has(.home-updates) .news-showcase .update-featured-visual::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 12% 9% -9%;
+  border: 1px solid rgba(85, 112, 94, .12);
+  border-radius: 20px 20px 0 0;
+  background:
+    linear-gradient(90deg, #f6f8f3 0 23%, transparent 23%),
+    repeating-linear-gradient(0deg, transparent 0 48px, rgba(79, 105, 85, .045) 48px 49px),
+    #fff;
+  box-shadow: 0 20px 55px rgba(64, 84, 65, .09);
+}
+.public-shell:has(.home-updates) .news-showcase .update-featured-visual span {
+  position: absolute;
+  z-index: 2;
+  top: 24%;
+  left: 37%;
+  color: #244b3c;
+  font-family: var(--display-font);
+  font-size: clamp(35px, 5vw, 84px);
+  font-weight: 650;
+  letter-spacing: -.06em;
+  line-height: 1;
+}
+.public-shell:has(.home-updates) .news-showcase .update-featured-visual i {
+  position: absolute;
+  z-index: 2;
+  left: 38%;
+  right: 15%;
+  top: 51%;
+  height: 27%;
+  border-radius: 14px;
+  background:
+    linear-gradient(#d9e6dc, #d9e6dc) 9% 24% / 70% 6px no-repeat,
+    linear-gradient(#e4ebe4, #e4ebe4) 9% 45% / 82% 6px no-repeat,
+    linear-gradient(#e4ebe4, #e4ebe4) 9% 66% / 56% 6px no-repeat,
+    #f6f8f3;
+}
+.public-shell:has(.home-updates) .news-showcase .update-small-visual { aspect-ratio: 1 / 1; }
+.public-shell:has(.home-updates) .news-showcase .update-small:nth-child(2n) .update-small-visual {
+  background: radial-gradient(circle at 62% 40%, #f9f8ee 0 22%, transparent 22.5%), #e9eee1;
+}
+.public-shell:has(.home-updates) .news-showcase .update-small:nth-child(2n + 1) .update-small-visual {
+  background: radial-gradient(circle at 30% 66%, #fff8ec 0 20%, transparent 20.5%), #f0eadd;
+}
+.public-shell:has(.home-updates) .news-showcase .update-small-visual::before,
+.public-shell:has(.home-updates) .news-showcase .update-small-visual::after {
+  content: "";
+  position: absolute;
+  width: 94%;
+  aspect-ratio: 1;
+  left: 3%;
+  top: 4%;
+  border: 1px solid rgba(70, 99, 74, .28);
+  border-radius: 50%;
+  transform: rotate(-25deg) scaleX(.64);
+}
+.public-shell:has(.home-updates) .news-showcase .update-small-visual::after {
+  transform: rotate(38deg) scaleX(.47);
+}
+.public-shell:has(.home-updates) .news-showcase .update-small-visual span {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #45654c;
+  font-family: var(--display-font);
+  font-size: clamp(48px, 6vw, 96px);
+  font-weight: 650;
+  letter-spacing: -.08em;
+}
+.public-shell:has(.home-updates) .news-showcase .update-small-visual i {
+  position: absolute;
+  z-index: 1;
+  inset: 10%;
+  background-image: radial-gradient(#829d82 1px, transparent 1px);
+  background-size: 9px 9px;
+  opacity: .25;
+  mask-image: linear-gradient(125deg, transparent 24%, #000 90%);
+}
+@keyframes updates-window-float {
+  50% { translate: 0 -9px; }
+}
+@keyframes updates-mark-float {
+  50% { translate: 0 -6px; }
+}
+@keyframes updates-orbit-drift {
+  50% { rotate: 13deg; }
+}
+@keyframes updates-texture-breathe {
+  50% { translate: 0 -7px; opacity: .42; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .public-shell:has(.home-updates) .news-showcase .update-featured-visual::before {
+    animation: updates-window-float 6.8s ease-in-out infinite paused;
+  }
+  .public-shell:has(.home-updates) .news-showcase .update-featured-visual span {
+    animation: updates-mark-float 5.4s ease-in-out infinite paused;
+  }
+  .public-shell:has(.home-updates) .news-showcase .update-featured-visual i {
+    animation: updates-texture-breathe 6.2s ease-in-out infinite paused;
+  }
+  .public-shell:has(.home-updates) .news-showcase .update-small-visual::before,
+  .public-shell:has(.home-updates) .news-showcase .update-small-visual::after {
+    animation: updates-orbit-drift 8s ease-in-out infinite paused;
+  }
+  .public-shell:has(.home-updates) .news-showcase .update-small-visual::after {
+    animation-direction: reverse;
+    animation-duration: 9.4s;
+  }
+  .public-shell:has(.home-updates) .news-showcase .update-small-visual i {
+    animation: updates-texture-breathe 7s ease-in-out infinite paused;
+  }
+  .public-shell:has(.home-updates) .home-updates[data-motion-active] .news-showcase .update-visual::before,
+  .public-shell:has(.home-updates) .home-updates[data-motion-active] .news-showcase .update-visual::after,
+  .public-shell:has(.home-updates) .home-updates[data-motion-active] .news-showcase .update-visual span,
+  .public-shell:has(.home-updates) .home-updates[data-motion-active] .news-showcase .update-visual i {
+    animation-play-state: running;
+  }
+}
+.public-shell:has(.home-updates) .news-showcase .update-featured-info,
+.public-shell:has(.home-updates) .news-showcase .update-small-info { position: relative; padding-top: 18px; }
+.public-shell:has(.home-updates) .news-showcase .update-card-top {
+  justify-content: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.public-shell:has(.home-updates) .news-showcase .update-card-top span {
+  padding: 0;
+  background: transparent;
+  color: var(--card-accent);
+  font-size: 11px;
+}
+.public-shell:has(.home-updates) .news-showcase .update-card-top span::before { background: var(--card-accent); }
+.public-shell:has(.home-updates) .news-showcase .update-card strong {
+  display: block;
+  min-height: 0;
+  margin: 0;
+  color: #171e19;
+  font-size: clamp(22px, 1.65vw, 30px);
+  line-height: 1.32;
+}
+.public-shell:has(.home-updates) .news-showcase .update-small strong { font-size: clamp(19px, 1.25vw, 23px); }
+.public-shell:has(.home-updates) .news-showcase .update-card p {
+  display: -webkit-box;
+  overflow: hidden;
+  min-height: 0;
+  margin: 5px 0 0;
+  color: #707670;
+  font-size: clamp(14px, 1.05vw, 17px);
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.public-shell:has(.home-updates) .news-showcase .update-featured-info > svg,
+.public-shell:has(.home-updates) .news-showcase .update-small-info > svg {
+  position: absolute;
+  top: 21px;
+  right: 0;
+  color: #52745c;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity .25s ease, transform .25s ease;
+}
+.public-shell:has(.home-updates) .news-showcase .update-card:is(:hover, :focus-visible) .update-featured-info > svg,
+.public-shell:has(.home-updates) .news-showcase .update-card:is(:hover, :focus-visible) .update-small-info > svg {
+  opacity: 1;
+  transform: translateX(0);
+}
+.public-shell:has(.home-updates) .news-showcase .updates-sidebar {
+  display: grid;
+  gap: clamp(32px, 3.4vw, 58px);
+}
+@media (max-width: 760px) {
+  .public-shell:has(.home-updates) .news-cards.news-showcase { grid-template-columns: 1fr; }
+  .public-shell:has(.home-updates) .news-showcase .update-featured { position: relative; top: auto; }
+  .public-shell:has(.home-updates) .news-showcase .updates-sidebar { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  .public-shell:has(.home-updates) .home-updates .section-header > a { bottom: -27px; }
+}
+@media (max-width: 520px) {
+  .public-shell:has(.home-updates) .home-updates .section-header > a { position: static; margin-top: 12px; }
+  .public-shell:has(.home-updates) .home-updates .section-header { display: block; }
+  .public-shell:has(.home-updates) .news-showcase .updates-sidebar { grid-template-columns: 1fr; gap: 10px; }
+  .public-shell:has(.home-updates) .news-showcase .update-featured-visual { aspect-ratio: 1.45 / 1; }
+  .public-shell:has(.home-updates) .news-showcase .update-featured-visual span { font-size: 39px; }
+  .public-shell:has(.home-updates) .news-showcase .updates-sidebar .update-small {
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr);
+    align-items: center;
+    gap: 14px;
+    padding: 8px;
+    border-radius: 16px;
+    background: rgba(234, 239, 229, .48);
+  }
+  .public-shell:has(.home-updates) .news-showcase .updates-sidebar .update-small:nth-child(even) { background: rgba(241, 235, 224, .53); }
+  .public-shell:has(.home-updates) .news-showcase .update-small-visual {
+    width: 90px;
+    height: 96px;
+    aspect-ratio: auto;
+    border-radius: 11px;
+  }
+  .public-shell:has(.home-updates) .news-showcase .update-small-visual span { font-size: 34px; }
+  .public-shell:has(.home-updates) .news-showcase .update-small-info { min-width: 0; padding: 0 14px 0 0; }
+  .public-shell:has(.home-updates) .news-showcase .update-small .update-card-top { gap: 7px; margin-bottom: 5px; }
+  .public-shell:has(.home-updates) .news-showcase .update-small .update-card-top time,
+  .public-shell:has(.home-updates) .news-showcase .update-small .update-card-top span { font-size: 10px; }
+  .public-shell:has(.home-updates) .news-showcase .update-small strong { font-size: 16px; line-height: 1.3; }
+  .public-shell:has(.home-updates) .news-showcase .update-small p { margin-top: 3px; font-size: 11.5px; line-height: 1.4; -webkit-line-clamp: 1; }
+  .public-shell:has(.home-updates) .news-showcase .update-small-info > svg { top: 50%; transform: translate(-5px, -50%); }
+  .public-shell:has(.home-updates) .news-showcase .update-small:is(:hover, :focus-visible) .update-small-info > svg { transform: translate(0, -50%); }
+}
+
+/* The wrapper remains transparent to the desktop grid. */
+.public-shell:has(.home-updates) .manifesto-cards { display: contents; }
+.public-shell:has(.home-updates) .manifesto-cards > .manifesto-card {
+  grid-column: auto;
+  min-height: 228px;
+  padding: 27px;
+}
+.public-shell:has(.home-updates) .manifesto-cards > .manifesto-card:nth-child(1) { background: #e9eee4; }
+.public-shell:has(.home-updates) .manifesto-cards > .manifesto-card:nth-child(2) { background: #e6eee2; }
+.public-shell:has(.home-updates) .manifesto-cards > .manifesto-card:nth-child(3) { background: #efeae1; }
+.public-shell:has(.home-updates) .mobile-swipe-hint { display: none; }
+@media (min-width: 681px) and (max-width: 900px) {
+  .public-shell:has(.home-updates) .manifesto-cards > .manifesto-card:last-child { grid-column: 1 / -1; }
+}
+
+/* One full card per swipe on phones; the surrounding section still scrolls vertically. */
+@media (max-width: 680px) {
+  .public-shell:has(.home-updates) .home-updates { padding-bottom: 48px; }
+  .public-shell:has(.home-updates) .home-manifesto {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .public-shell:has(.home-updates) .home-manifesto > .manifesto-intro {
+    grid-column: auto;
+    padding: 0 0 18px;
+  }
+  .public-shell:has(.home-updates) .manifesto-intro h2 {
+    margin: 14px 0 10px;
+    font-size: clamp(34px, 8vw, 42px);
+  }
+  .public-shell:has(.home-updates) .mobile-swipe-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 6px 10px;
+    border: 1px solid rgba(79, 117, 85, .22);
+    border-radius: 999px;
+    background: rgba(235, 241, 231, .74);
+    color: #3e6048;
+    font: 600 11px/1.3 var(--home-ui-font);
+    letter-spacing: .02em;
+  }
+  .public-shell:has(.home-updates) .manifesto-cards,
+  .public-shell:has(.home-updates) .flagship-section .track-grid {
+    display: flex;
+    min-width: 0;
+    gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+  }
+  .public-shell:has(.home-updates) .manifesto-cards::-webkit-scrollbar,
+  .public-shell:has(.home-updates) .flagship-section .track-grid::-webkit-scrollbar { display: none; }
+  .public-shell:has(.home-updates) .manifesto-cards {
+    grid-column: auto;
+    width: 100%;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+  }
+  .public-shell:has(.home-updates) .manifesto-cards > .manifesto-card {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    min-width: 0;
+    min-height: 188px;
+    padding: 18px 16px 15px;
+    border-radius: 16px;
+  }
+  .public-shell:has(.home-updates) .manifesto-card strong { font-size: clamp(19px, 5vw, 23px); }
+  .public-shell:has(.home-updates) .manifesto-card p {
+    min-height: 0;
+    margin: 7px 0 10px;
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+  .public-shell:has(.home-updates) .manifesto-card > span { font-size: 9px; }
+  .public-shell:has(.home-updates) .flagship-section .section-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 8px;
+    min-height: 0;
+  }
+  .public-shell:has(.home-updates) .flagship-section .section-header h2 { font-size: clamp(28px, 8vw, 36px); }
+  .public-shell:has(.home-updates) .flagship-section .section-header > a {
+    align-self: end;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  .public-shell:has(.home-updates) .flagship-section { margin-bottom: 64px; }
+  .public-shell:has(.home-updates) .flagship-section .track-grid { width: 100%; }
+  .public-shell:has(.home-updates) .flagship-section .track-card:is(.track-coral, .track-ink, .track-sage, .track-sand) {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    min-width: 0;
+    min-height: 238px;
+    padding: 16px;
+    border-radius: 16px;
+  }
+  .public-shell:has(.home-updates) .flagship-section .track-card > div:nth-child(2) { padding: 18px 0 10px; }
+  .public-shell:has(.home-updates) .flagship-section .track-card h3 {
+    margin: 6px 0;
+    font-size: clamp(17px, 4.5vw, 21px);
+    line-height: 1.16;
+    overflow-wrap: anywhere;
+  }
+  .public-shell:has(.home-updates) .flagship-section .track-card p {
+    font-size: 12px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+  .public-shell:has(.home-updates) .flagship-section .track-card footer {
+    margin-top: auto;
+    font-size: 11px;
+  }
+}
+
+/* Standalone About page keeps the former homepage copy and editorial palette. */
+.about-page {
+  min-height: min(560px, 65vh);
+  padding: clamp(32px, 5vw, 72px);
+  border-radius: 24px;
+  background: linear-gradient(135deg, #eef2e9 0%, #f7f4ed 58%, #eaf1ec 100%);
+  color: #26382c;
+}
+.about-page-mark {
+  display: block;
+  color: #63816a;
+  font: 700 11px/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .15em;
+}
+.about-page .about-layout { align-items: start; padding-top: clamp(34px, 5vw, 68px); }
+.about-page .about-statement {
+  max-width: 650px;
+  font-family: "Bodoni MT", Didot, "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", SimSun, Georgia, serif;
+  font-size: clamp(34px, 3.5vw, 54px);
+  font-weight: 600;
+  line-height: 1.18;
+}
+.about-page .about-copy p {
+  color: #56675a;
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: clamp(16px, 1.35vw, 19px);
+  line-height: 1.75;
+}
+.about-page .about-links { gap: 16px 26px; border-top: 1px solid rgba(61, 86, 67, .2); }
+.about-page .about-links a {
+  color: #2f5940;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 5px;
+}
+.about-page .about-links a:is(:hover, :focus-visible) {
+  color: #193d2a;
+  text-decoration-color: currentColor;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .about-page .about-links a { transition: color 180ms ease, text-decoration-color 180ms ease; }
+}
+@media (max-width: 680px) {
+  .public-shell:has(.about-page) .page-title-band { min-height: 150px; padding-top: 24px; padding-bottom: 20px; }
+  .public-shell:has(.about-page) .app-content { padding-top: 22px; }
+  .about-page { min-height: 0; padding: 30px 22px 36px; border-radius: 18px; }
+  .about-page .about-layout { gap: 30px; padding-top: 28px; }
+  .about-page .about-statement { font-size: clamp(30px, 8vw, 38px); }
+  .about-page .about-copy p { font-size: 15px; line-height: 1.7; }
+}

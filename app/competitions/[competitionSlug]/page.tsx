@@ -18,7 +18,7 @@ export default function CompetitionPage() {
   const slug = params.competitionSlug;
   const { data, loading, error, reload } = useApiResource<Competition>(slug ? `/competitions/${slug}` : null);
   return (
-    <AppShell title={data?.name ?? "赛事详情"} eyebrow="COMPETITION" actions={<Link className="primary-button compact-button" href="/dashboard"><Users size={15} />组队与报名</Link>}>
+    <AppShell variant="detail" title={data?.name ?? "赛事详情"} eyebrow="COMPETITION" actions={<Link className="primary-button compact-button" href="/dashboard"><Users size={15} />组队与报名</Link>}>
       {loading ? <PageLoading /> : error || !data ? <PageError message={error || "赛事不存在。"} retry={reload} /> : (
         <>
           <section className="competition-overview">

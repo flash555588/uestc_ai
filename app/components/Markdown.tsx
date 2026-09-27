@@ -7,7 +7,7 @@ import { resolveMarkdownUrl } from "@/app/lib/api";
 function MarkdownImage({ src, alt, ...props }: React.ComponentPropsWithoutRef<"img">) {
   // Uploaded Markdown images do not have known dimensions, so next/image cannot size them safely.
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={resolveMarkdownUrl(src)} alt={alt ?? ""} loading="lazy" {...props} />;
+  return <img src={typeof src === "string" ? resolveMarkdownUrl(src) : src} alt={alt ?? ""} loading="lazy" {...props} />;
 }
 
 export const markdownComponents: Components = {
