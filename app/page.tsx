@@ -154,7 +154,7 @@ export default function Home() {
       </RevealSection>
 
       <RevealSection className="home-manifesto" aria-label="产品矩阵">
-        <div className="manifesto-intro"><span>01 / PLATFORM</span><h2>从想法，到<br />被看见。</h2><p>选择一个入口，开始下一次探索。</p><span className="mobile-swipe-hint" aria-hidden="true">左右滑动查看 3 个入口 <ArrowRight size={14} /></span></div>
+        <div className="manifesto-intro"><span>01 / PLATFORM</span><h2>从想法，到<br />被看见。</h2><p>选择一个入口，开始下一次探索。</p></div>
         <div className="manifesto-cards" role="group" aria-label="产品入口">
           <Link data-reveal-item className="manifesto-card" href="/competitions"><span>01 / COMPETE</span><strong>真实挑战</strong><p>进入赛题，在约束中验证想法。</p><ArrowRight size={19} /></Link>
           <Link data-reveal-item className="manifesto-card" href="/news"><span>02 / PUBLISH</span><strong>公开方法</strong><p>记录过程，让知识持续流动。</p><ArrowRight size={19} /></Link>
@@ -204,13 +204,11 @@ export default function Home() {
             </div> : <EmptyState title="题库正在整理" description="公开题目会按赛道显示。" />}
           </div>
           {competition && <aside className="deadline-block">
-            <CalendarDays size={20} />
-            <span>关键日期</span>
-            <strong>{shortDate(competition?.registration_closes_at)}</strong>
-            <p>报名与组队截止</p>
-            <hr />
-            <strong>{shortDate(competition?.ends_at)}</strong>
-            <p>赛事结束</p>
+            <div className="deadline-heading"><CalendarDays size={20} /><span>关键日期</span></div>
+            <div className="deadline-dates">
+              <div className="deadline-date"><strong>{shortDate(competition.registration_closes_at)}</strong><p>报名与组队截止</p></div>
+              <div className="deadline-date"><strong>{shortDate(competition.ends_at)}</strong><p>赛事结束</p></div>
+            </div>
           </aside>}
         </RevealSection>
 
