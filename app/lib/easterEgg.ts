@@ -7,7 +7,7 @@ export const VIRTUAL_FILES: Record<string, string> = {
   "/workspace/examples/hello.ts": "export function greet(name: string): string {\n  return `Hello, ${name}!`;\n}\n\nconsole.log(greet('UESTC AI'));\n",
   "/workspace/notes/ideas.md": "# 灵感清单\n\n1. 校园知识问答助手\n2. 竞赛资料整理工具\n3. 可复现的模型实验记录\n",
 };
-export type TerminalResult = { kind: "agent" } | { kind: "message"; lines: string[]; cwd?: string } | { kind: "clear" | "exit" };
+export type TerminalResult = { kind: "agent" } | { kind: "game" } | { kind: "message"; lines: string[]; cwd?: string } | { kind: "clear" | "exit" };
 
 export function advanceSequence(progress: number, code: string): { progress: number; completed: boolean } {
   const observed = [...ENTRY_SEQUENCE.slice(0, progress), code];
@@ -61,12 +61,13 @@ export function resolveTerminalCommand(raw: string, cwd = VIRTUAL_ROOT): Termina
   const [name = "", ...args] = tokens;
   const command = name.toLowerCase();
   if (!command) return message();
-  if (["agent", "help", "clear", "cls", "exit", "pwd"].includes(command) && args.length) return message(`用法：${command}`);
+  if (["agent", "claudes-day", "claudesday", "play", "game", "help", "clear", "cls", "exit", "pwd"].includes(command) && args.length) return message(`用法：${command}`);
   if (command === "agent") return { kind: "agent" };
+  if (["claudes-day", "claudesday", "play", "game"].includes(command)) return { kind: "game" };
   if (command === "clear" || command === "cls") return { kind: "clear" };
   if (command === "exit") return { kind: "exit" };
   if (command === "pwd") return message(displayPath(cwd));
-  if (command === "help") return message("UESTC AI · 虚拟终端", "", "agent          进入虚拟 Agent 对话", "ls / dir [路径] 列出虚拟文件", "pwd            显示当前虚拟目录", "cd [路径]       切换虚拟目录；cd .. 返回上级", "cat <文件>      查看预设文件内容", "clear / cls    清屏", "exit           关闭当前终端标签页", "", "仅在内存中运行，不执行系统命令，不访问真实文件。 ");
+  if (command === "help") return message("UESTC AI · 虚拟终端", "", "agent          进入虚拟 Agent 对话", "claudes-day     打开 Claude's Day 彩蛋游戏", "ls / dir [路径] 列出虚拟文件", "pwd            显示当前虚拟目录", "cd [路径]       切换虚拟目录；cd .. 返回上级", "cat <文件>      查看预设文件内容", "clear / cls    清屏", "exit           关闭当前终端标签页", "", "仅在内存中运行，不执行系统命令，不访问真实文件。 ");
   if (["ls", "dir", "cd", "cat"].includes(command)) {
     if (args.length > 1 || (command === "cat" && args.length !== 1)) return message(`用法：${command} ${command === "cat" ? "<文件>" : "[路径]"}`);
     const path = resolveVirtualPath(args[0] ?? (command === "cd" ? VIRTUAL_ROOT : cwd), cwd);

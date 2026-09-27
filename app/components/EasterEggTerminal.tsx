@@ -16,6 +16,7 @@ type Props = { maximized: boolean; onMaximize: () => void; onMinimize: () => voi
 export function EasterEggTerminal({ maximized, onMaximize, onMinimize, onClose }: Props) {
   const [state, dispatch] = useReducer(terminalReducer, undefined, createTerminalState);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [gameOpen, setGameOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const tabNavigationRef = useRef(false);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -55,6 +56,11 @@ export function EasterEggTerminal({ maximized, onMaximize, onMinimize, onClose }
     const command = active.input.trim();
     if (!command) return;
     const result = resolveTerminalCommand(command, active.cwd);
+    if (result.kind === "game") {
+      dispatch({ type: "execute", command, result: { kind: "message", lines: ["正在打开 Claude's Day...", "游戏在终端窗口内运行。"] } });
+      setGameOpen(true);
+      return;
+    }
     if (result.kind === "agent") {
       const art = buildColoredConsoleArt(TERMINAL_WELCOME_ART);
       console.log(art.format, ...art.styles);
@@ -115,6 +121,13 @@ export function EasterEggTerminal({ maximized, onMaximize, onMinimize, onClose }
         <button type="button" className="wt-window-close" title="关闭" aria-label="关闭终端窗口" onClick={() => { setMenuOpen(false); onClose(); }}><svg viewBox="0 0 12 12" aria-hidden="true"><path d="m1.5 1.5 9 9m0-9-9 9" /></svg></button>
       </div>
     </header>
+    {gameOpen && <section className="egg-game-overlay" aria-label="Claude's Day 小游戏">
+      <header className="egg-game-toolbar">
+        <strong>CLAUDE&apos;S DAY</strong>
+        <button type="button" onClick={() => setGameOpen(false)}>返回终端</button>
+      </header>
+      <iframe className="egg-game-frame" src="/claudes-day/index.html" title="Claude's Day 像素小游戏" sandbox="allow-scripts allow-same-origin" />
+    </section>}
     {state.tabs.filter((tab) => tab.app === "agent").map((tab) => <div className="va-tab-panel" hidden={tab.id !== state.activeId} key={tab.id}><VirtualAgentChat active={tab.id === state.activeId} cwd={tab.cwd} onExit={() => dispatch({ type: "leave-agent", id: tab.id })} /></div>)}
     {active.app === "shell" && <div className="wt-viewport" id="wt-panel" role="tabpanel" aria-labelledby={`wt-tab-${active.id}`} ref={viewportRef}>
       <div role="log" aria-label="终端输出" aria-live="polite" aria-relevant="additions text">

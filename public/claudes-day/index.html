@@ -1,0 +1,2755 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>Claude's Day</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#1b1b1b;font-family:"Press Start 2P","Courier New",monospace;color:#e8e8e8}
+  canvas{display:block;image-rendering:pixelated}
+  #hud[hidden],#dialog[hidden],#title[hidden],#panel[hidden]{display:none}
+  #lines div{background:rgba(20,20,20,.72)}
+  #panel{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(780px,92vw);max-height:84vh;overflow:auto;background:#141414;border:4px solid #d97757;box-shadow:8px 8px 0 #000;font-family:VT323,"Courier New",monospace;font-size:22px;color:#e8e8e8;z-index:5}
+  #panel .ph{display:flex;justify-content:space-between;background:#d97757;color:#141414;padding:4px 12px}
+  #pBody{padding:14px 18px}
+  #pBody .code div{cursor:pointer;padding:1px 8px;white-space:pre;border-left:3px solid transparent}
+  #pBody .code div:hover{background:#2a2a2a;border-left-color:#d97757}
+  #pBody .code div.hit{background:#1f4d2c;color:#9ff0a8;cursor:default}
+  #pBody .code div.miss{background:#5a2323}
+  #pBody .bar{height:8px;background:#333;margin:8px 0}#pBody .bar i{display:block;height:100%;background:#7ee787}
+  #pBody input{width:80%;background:#000;border:2px solid #5a5a5a;color:#e8e8e8;font:inherit;padding:2px 6px;outline:0}
+  #pBody input:focus{border-color:#d97757}
+  #pBody .log div{white-space:pre-wrap}
+  #pBody .grid{display:grid;gap:4px;justify-content:center;margin:10px 0}
+  #pBody .grid b{width:58px;height:58px;display:flex;align-items:center;justify-content:center;background:#222;font-size:52px;line-height:1;cursor:pointer;color:#6a6a6a;font-weight:normal;user-select:none}
+  #pBody .grid b.on{color:#d97757}
+  #pBody .grid b.end{background:#1d3a80;color:#fff;font-size:15px;cursor:default}
+  #pBody .lanes{position:relative;height:380px;display:flex;gap:6px;justify-content:center;overflow:hidden;background:#0c0c0c}
+  #pBody .lane{position:relative;width:120px;background:#181818}
+  #pBody .lane span{position:absolute;bottom:4px;left:0;right:0;text-align:center;color:#6a6a6a}
+  #pBody .lane.flash{background:#2a3a2a}
+  #pBody .note{position:absolute;left:8px;right:8px;height:26px;background:#d97757;color:#141414;text-align:center;font-size:18px}
+  #pBody .hitline{position:absolute;left:0;right:0;top:320px;height:3px;background:#7ee787;opacity:.6}
+  #pBody button{font:inherit;background:#d97757;color:#141414;border:0;padding:2px 14px;cursor:pointer;margin-top:8px}
+  #term{position:fixed;top:14px;left:14px;max-width:min(560px,60vw);font-family:VT323,"Courier New",monospace;font-size:22px;line-height:1.05;pointer-events:none;text-transform:uppercase}
+  #term .hdr{display:inline-block;border:3px solid #d97757;padding:4px 10px 2px;margin-bottom:6px;background:#1b1b1b}
+  #term .hdr b{font-weight:normal;color:#fff}
+  #term .cwd{color:#8a8a8a}
+  #lines div{padding:0 6px;white-space:pre}
+  .del{background:#5a2323;color:#f19a9a}.add{background:#1f4d2c;color:#9ff0a8}
+  .fail{color:#ff5b5b}.ok{color:#7ee787}.dim{color:#8a8a8a}.me{color:#fff}.op{color:#fff}.op::first-letter{color:#d97757}.egg{color:#f2c34c}
+  #ctx{position:fixed;right:18px;bottom:14px;color:#d97757;font-size:12px}
+  #ctx.low{animation:blink .6s steps(1) infinite}
+  #skills{position:fixed;right:18px;bottom:34px;color:#f2c34c;font-size:9px}
+  @keyframes blink{50%{opacity:.2}}
+  #tests{position:fixed;top:16px;right:18px;display:flex;gap:5px}
+  #boss{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(420px,46vw);text-align:center;font-size:10px;color:#ff5b5b;pointer-events:none;text-shadow:2px 2px 0 #000}
+  #boss[hidden]{display:none}
+  #bBar{height:12px;border:2px solid #ff5b5b;margin:6px 0;background:#2a1010}
+  #bHp{display:block;height:100%;width:100%;background:#ff5b5b;transition:width .25s}
+  #bInfo{color:#e8e8e8;font-size:9px}
+  @media (max-width:1100px){#boss{left:auto;right:18px;transform:none;width:min(380px,44vw)}}
+  #tests i{width:14px;height:14px;background:#7ee787;display:block}
+  #tests i.r{background:#ff5b5b}
+  #hint{position:fixed;left:50%;bottom:46px;transform:translateX(-50%);font-size:10px;color:#9a9a9a;white-space:nowrap;transition:opacity .5s;pointer-events:none}
+  #cmdWrap{position:fixed;left:14px;bottom:10px;width:min(520px,calc(100vw - 260px));min-width:200px;display:flex;align-items:center;gap:8px;border:2px solid #5a5a5a;background:#141414;padding:4px 8px;font-family:VT323,"Courier New",monospace;font-size:22px;color:#9a9a9a}
+  #cmdWrap:focus-within{border-color:#d97757;color:#d97757}
+  #cmd{flex:1;background:transparent;border:0;outline:0;color:#e8e8e8;font:inherit;text-transform:uppercase;caret-color:#d97757}
+  #cmd::placeholder{color:#5a5a5a;text-transform:none;font-size:15px}
+  #hint.off{opacity:0}
+  #stage{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);font-size:22px;color:#d97757;text-align:center;pointer-events:none;opacity:0;transition:opacity .4s;text-shadow:3px 3px 0 #000;line-height:1.8}
+  #stage small{display:block;font-size:11px;color:#ddd}
+  #dialog{position:fixed;left:50%;top:24%;transform:translateX(-50%);width:min(620px,86vw);background:#fbf3e0;color:#2a2a2a;border:4px solid #2a2a2a;box-shadow:6px 6px 0 #000;padding:16px 20px;font-size:13px;line-height:1.9}
+  #dTitle{color:#b8603f;margin-bottom:6px}
+  #dBody{white-space:pre-wrap;min-height:2em}
+  #dInput{width:100%;box-sizing:border-box;font:inherit;background:#fff;border:3px solid #2a2a2a;padding:6px;text-transform:uppercase}
+  #dMore{text-align:right;font-size:9px;color:#888;margin-top:6px}
+  #title{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:6vh;text-align:center;cursor:pointer}
+  #title .box{background:rgba(27,27,27,.88);border:4px solid #d97757;padding:18px 26px;box-shadow:6px 6px 0 #000}
+  #title h1{margin:0 0 14px;color:#d97757;font-size:30px;letter-spacing:3px;font-weight:normal}
+  #title p{margin:8px 0;font-size:10px;line-height:1.8;color:#ddd}
+  #title .go{color:#fff;animation:blink 1s steps(1) infinite}
+  #title .fan{color:#777;font-size:8px}
+  #title .box{box-sizing:border-box;max-width:96vw;max-height:90vh;overflow:auto}
+  #difficultyChoices{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:14px 0 8px}
+  #title button{font:inherit;font-size:11px;border:2px solid #666;background:#222;color:#ddd;padding:10px 14px;cursor:pointer}
+  #title button small{display:block;font-size:12px;line-height:1.4;margin-top:6px}
+  @media(max-width:600px){#title h1{font-size:20px;letter-spacing:1px}#title .box{padding:14px 16px}#title button{padding:9px 12px}}
+  #title button[aria-pressed="true"]{border-color:#d97757;background:#4a2e24;color:#fff}
+  #title button:focus-visible{outline:3px solid #f2c34c;outline-offset:3px}
+  #title #difficultyDesc{color:#f2c34c;min-height:3.6em;max-width:680px;margin:8px auto}
+  #title .start{margin:6px 0;border-color:#d97757}
+  #difficultyHud{position:fixed;right:18px;bottom:54px;color:#8ccff0;font-size:9px;pointer-events:none}
+  #fade{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .4s}
+</style>
+</head>
+<body>
+<div id="hud" hidden>
+  <div id="term">
+    <div class="hdr"><b>✻ WELCOME TO CLAUDE CODE!</b><div class="cwd">CWD: ~/MY-APP</div></div>
+    <div id="lines"></div>
+  </div>
+  <div id="tests" hidden></div>
+  <div id="boss" hidden><div id="bName"></div><div id="bBar"><i id="bHp"></i></div><div id="bInfo"></div></div>
+  <div id="ctx">CONTEXT LEFT: 100%</div>
+  <div id="skills"></div>
+  <div id="difficultyHud"></div>
+  <div id="hint"></div>
+  <div id="cmdWrap"><span>&gt;</span><input id="cmd" maxlength="60" spellcheck="false" autocomplete="off" placeholder="按 / 输入命令，/help 查看全部"></div>
+</div>
+<div id="stage"></div>
+<div id="panel" hidden><div class="ph"><span id="pTitle"></span><span class="px">[ESC 退出]</span></div><div id="pBody"></div></div>
+<div id="dialog" hidden>
+  <div id="dTitle"></div>
+  <div id="dBody"></div>
+  <input id="dInput" maxlength="48" hidden>
+  <div id="dMore">[E / ENTER]</div>
+</div>
+<div id="title">
+  <div class="box">
+    <h1>CLAUDE'S DAY</h1>
+    <p>一只橙色小怪物在终端里度过打工的一天<br>10 关 · 含三阶段 BOSS：便条 / 读代码 / 技能 / 联网搜索 / 改 BUG / 测试 / 合并冲突 / 子代理 / 暗黑模式 / 交接</p>
+    <p>← → 移动 &nbsp; 空格/↑ 跳跃 &nbsp; E 互动 &nbsp; R 重置本关</p>
+    <div id="difficultyChoices" role="group" aria-label="选择游戏难度">
+      <button type="button" data-difficulty="sonnet" aria-pressed="false">SONNET<small>轻松</small></button>
+      <button type="button" data-difficulty="opus" aria-pressed="true">OPUS<small>标准</small></button>
+      <button type="button" data-difficulty="fable" aria-pressed="false">FABLE<small>挑战</small></button>
+    </div>
+    <p id="difficultyDesc" aria-live="polite"></p>
+    <p>← → 或 1 / 2 / 3 选难度 · 开局后锁定</p>
+    <button type="button" class="start" id="startButton">开始新的一天 [ENTER]</button>
+    <p class="fan">NON-OFFICIAL FAN GAME — CLAWD © ANTHROPIC PBC — NOT AFFILIATED WITH ANTHROPIC</p>
+  </div>
+</div>
+<div id="fade"></div>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+const $ = id => document.getElementById(id);
+const WORLD_W = 26, G = 42, JUMP = 15.5, SPEED = 6.5;
+const NOTE_KEY = 'claudes-day-note';
+// 游戏内难度代号，不代表模型能力；标准档保持原有数值。
+const DIFFICULTY_KEY = 'claudes-day-difficulty';
+const DIFFICULTIES = Object.freeze({
+  sonnet: Object.freeze({ name: 'SONNET', label: '轻松', hearts: 7, enemySpeed: 0.75, bossTempo: 0.8, protection: 1.4,
+    reviewTime: 1.4, reviewPenalty: 3, hitWindow: 0.22, perfectWindow: 0.09, holdGrace: 0.16, rhythmPass: 0.6,
+    description: '7 颗 Boss 爱心 · 敌人与攻击更慢 · 审查时间更长 · 节奏准确率 60% 即可通过' }),
+  opus: Object.freeze({ name: 'OPUS', label: '标准', hearts: 5, enemySpeed: 1, bossTempo: 1, protection: 1,
+    reviewTime: 1, reviewPenalty: 5, hitWindow: 0.16, perfectWindow: 0.06, holdGrace: 0.12, rhythmPass: 0.7,
+    description: '5 颗 Boss 爱心 · 原版速度与时限 · 节奏准确率 70% 通过，推荐首次体验' }),
+  fable: Object.freeze({ name: 'FABLE', label: '挑战', hearts: 3, enemySpeed: 1.25, bossTempo: 1.2, protection: 0.8,
+    reviewTime: 0.85, reviewPenalty: 7, hitWindow: 0.12, perfectWindow: 0.045, holdGrace: 0.09, rhythmPass: 0.85,
+    description: '3 颗 Boss 爱心 · 更快的敌人与攻击 · 更短的审查时间 · 节奏准确率 85% 才能通过' }),
+});
+let difficultyId = 'opus';
+try { const saved = localStorage.getItem(DIFFICULTY_KEY); if (Object.hasOwn(DIFFICULTIES, saved)) difficultyId = saved; } catch {}
+let difficulty = DIFFICULTIES[difficultyId];
+const titleMarkup = $('title').innerHTML;
+function renderDifficulty() {
+  document.querySelectorAll('[data-difficulty]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.difficulty === difficultyId)));
+  if ($('difficultyDesc')) $('difficultyDesc').textContent = difficulty.description;
+  $('difficultyHud').textContent = difficulty.name + ' · ' + difficulty.label;
+}
+function selectDifficulty(id) {
+  if (mode !== 'title' || !Object.hasOwn(DIFFICULTIES, id)) return false;
+  difficultyId = id; difficulty = DIFFICULTIES[id];
+  try { localStorage.setItem(DIFFICULTY_KEY, id); } catch {}
+  renderDifficulty();
+  return true;
+}
+renderDifficulty();
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+try {
+  await Promise.race([
+    Promise.all([document.fonts.load('16px "Press Start 2P"'), document.fonts.load('20px VT323')]),
+    wait(2500)
+  ]);
+} catch {}
+
+// ================= 渲染基础 =================
+const renderer = new THREE.WebGLRenderer({ antialias: false });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+document.body.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+const BG_DARK = new THREE.Color('#1b1b1b'), BG_LIGHT = new THREE.Color('#ece4d2');
+scene.background = BG_DARK.clone();
+const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 100);
+let viewW = WORLD_W, viewH = 14, cx = WORLD_W / 2, cy = 4;
+
+function tex(w, h, draw) {
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const g = c.getContext('2d');
+  g.imageSmoothingEnabled = false;
+  draw(g, w, h);
+  const t = new THREE.CanvasTexture(c);
+  t.magFilter = t.minFilter = THREE.NearestFilter;
+  t.generateMipmaps = false;
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+const PX = (g, c, x, y, w = 1, h = 1) => { g.fillStyle = c; g.fillRect(x, y, w, h); };
+function sprite(t, w, h, z = 0) {
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: t, transparent: true }));
+  m.position.z = z;
+  return m;
+}
+function quad(w, h, color, z = 0) {
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color, transparent: true }));
+  m.position.z = z;
+  return m;
+}
+function label(str, { size = 16, color = '#e8e8e8', bg = null, pad = 4, ppu = 48 } = {}) {
+  const font = `${size}px "Press Start 2P", monospace`;
+  const mc = document.createElement('canvas').getContext('2d');
+  mc.font = font;
+  const w = Math.ceil(mc.measureText(str).width) + pad * 2, h = size + pad * 2;
+  const t = tex(w, h, g => {
+    if (bg) PX(g, bg, 0, 0, w, h);
+    g.font = font; g.fillStyle = color; g.textBaseline = 'top';
+    g.fillText(str, pad, pad + 1);
+  });
+  return sprite(t, w / ppu, h / ppu, 2);
+}
+
+// ================= 像素美术 =================
+function claudeTex(mood, frame) {
+  return tex(18, 12, g => {
+    const C = '#d97757', D = '#b8603f', E = '#161616';
+    PX(g, C, 2, 0, 14, 9); PX(g, C, 0, 3, 2, 3); PX(g, C, 16, 3, 2, 3); PX(g, D, 2, 8, 14, 1);
+    [3, 6, 11, 14].forEach((x, i) => PX(g, D, x, 9, 1, frame && i % 2 ? 2 : 3));
+    const dots = {
+      angry: [[4, 2], [5, 3], [4, 4], [13, 2], [12, 3], [13, 4]],
+      happy: [[4, 4], [5, 3], [6, 4], [11, 4], [12, 3], [13, 4]],
+    }[mood];
+    if (mood === 'idle') { PX(g, E, 5, 3, 1, 2); PX(g, E, 12, 3, 1, 2); }
+    else if (dots) dots.forEach(([x, y]) => PX(g, E, x, y));
+    else { PX(g, E, 4, 4, 3, 1); PX(g, E, 11, 4, 3, 1); }
+  });
+}
+const CT = {};
+for (const m of ['idle', 'angry', 'happy', 'sleep']) for (const f of [0, 1]) CT[m + f] = claudeTex(m, f);
+
+const bugTex = [0, 1].map(f => tex(12, 8, g => {
+  PX(g, '#8c1c1c', 1, 1, 10, 5); PX(g, '#d93a3a', 1, 1, 10, 4);
+  PX(g, '#fff', 3, 2, 2, 2); PX(g, '#fff', 7, 2, 2, 2); PX(g, '#111', 4, 3); PX(g, '#111', 7, 3);
+  for (let i = 0; i < 3; i++) PX(g, '#8c1c1c', 2 + i * 3 + f, 6, 1, 2);
+  PX(g, '#8c1c1c', 1, 0); PX(g, '#8c1c1c', 10, 0);
+}));
+const envTex = tex(14, 10, g => {
+  PX(g, '#555', 0, 0, 14, 10); PX(g, '#fbfbf5', 1, 1, 12, 8);
+  for (let i = 0; i < 6; i++) { PX(g, '#9a9a9a', 1 + i, 1 + Math.floor(i * 0.7)); PX(g, '#9a9a9a', 12 - i, 1 + Math.floor(i * 0.7)); }
+  PX(g, '#e0a020', 6, 4, 2, 2);
+});
+const folderTex = tex(16, 12, g => {
+  PX(g, '#c9971c', 0, 0, 6, 2); PX(g, '#e3b23a', 0, 2, 16, 10); PX(g, '#f2c34c', 0, 4, 16, 8); PX(g, '#c9971c', 0, 11, 16, 1);
+});
+const docTex = tex(10, 12, g => {
+  PX(g, '#555', 0, 0, 10, 12); PX(g, '#f4f4f4', 1, 1, 8, 10); PX(g, '#bdbdbd', 6, 1, 3, 3);
+  [4, 6, 8].forEach(y => PX(g, '#9a9a9a', 2, y, 5, 1));
+});
+const lampTex = [0, 1].map(on => tex(10, 10, g => {
+  PX(g, '#4a4a4a', 1, 0, 8, 3); PX(g, '#6a6a6a', 0, 3, 10, 2);
+  PX(g, on ? '#ffe27a' : '#5c5c5c', 2, 5, 6, 4); PX(g, on ? '#fff6c8' : '#707070', 3, 5, 2, 2);
+}));
+const glowTex = (() => {
+  const t = tex(64, 64, g => {
+    const r = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    r.addColorStop(0, 'rgba(255,226,122,.55)'); r.addColorStop(1, 'rgba(255,226,122,0)');
+    g.fillStyle = r; g.fillRect(0, 0, 64, 64);
+  });
+  t.magFilter = t.minFilter = THREE.LinearFilter;
+  return t;
+})();
+const switchTex = [0, 1].map(on => tex(10, 10, g => {
+  PX(g, '#6a6a6a', 0, 6, 10, 4); PX(g, '#9a9a9a', 0, 6, 10, 1);
+  const x = on ? 6 : 3;
+  PX(g, '#bdbdbd', x, 2, 1, 4); PX(g, on ? '#ffd84a' : '#d94a3a', x - 1, 0, 3, 3);
+}));
+const heartTex = tex(9, 8, g => {
+  ['.##...##.', '####.####', '#########', '#########', '.#######.', '..#####..', '...###...', '....#....']
+    .forEach((r, y) => [...r].forEach((c, x) => c === '#' && PX(g, '#ff5b8a', x, y)));
+});
+const turtleTex = [0, 1].map(f => tex(12, 7, g => {
+  PX(g, '#2f7a34', 2, 0, 7, 4); PX(g, '#3fa246', 3, 1, 5, 2); PX(g, '#1f5a24', 2, 4, 7, 1);
+  PX(g, '#6cc36c', 9, 2, 3, 2); PX(g, '#111', 11, 2);
+  PX(g, '#6cc36c', 2 + f, 5, 1, 2); PX(g, '#6cc36c', 7 - f, 5, 1, 2); PX(g, '#6cc36c', 1, 3);
+}));
+const mugTex = tex(10, 11, g => {
+  PX(g, '#555', 0, 1, 8, 10); PX(g, '#fff', 1, 2, 6, 8); PX(g, '#d9443a', 1, 5, 6, 2);
+  PX(g, '#5a3418', 1, 2, 6, 1); PX(g, '#555', 8, 3, 2, 5); PX(g, '#fff', 8, 4, 1, 3);
+  PX(g, '#ddd', 2, 0); PX(g, '#ddd', 5, 0);
+});
+const kioskTex = tex(12, 14, g => {
+  PX(g, '#9a9a9a', 0, 0, 12, 9); PX(g, '#0d1a0d', 1, 1, 10, 7);
+  PX(g, '#7ee787', 2, 2, 5, 1); PX(g, '#7ee787', 2, 4, 7, 1); PX(g, '#d97757', 2, 6, 2, 1);
+  PX(g, '#6a6a6a', 5, 9, 2, 3); PX(g, '#4a4a4a', 2, 12, 8, 2);
+});
+const scrollTex = tex(12, 10, g => {
+  PX(g, '#8a6a3a', 0, 0, 2, 10); PX(g, '#8a6a3a', 10, 0, 2, 10);
+  PX(g, '#fbf3e0', 2, 1, 8, 8); PX(g, '#d97757', 3, 3, 6, 1); PX(g, '#b0a080', 3, 5, 5, 1); PX(g, '#b0a080', 3, 7, 4, 1);
+});
+const antennaTex = tex(12, 16, g => {
+  PX(g, '#9a9a9a', 5, 4, 2, 10); PX(g, '#6a6a6a', 2, 14, 8, 2);
+  PX(g, '#3b6fd9', 3, 0, 6, 5); PX(g, '#8ccff0', 4, 1, 2, 2); PX(g, '#3fae5a', 6, 2, 2, 2);
+});
+const pencilTex = tex(18, 4, g => {
+  PX(g, '#ff9ab0', 0, 0, 3, 4); PX(g, '#c0c0c0', 3, 0, 2, 4); PX(g, '#f2c12e', 5, 0, 9, 4); PX(g, '#d9a520', 5, 3, 9, 1);
+  PX(g, '#f2d8a8', 14, 0, 2, 4); PX(g, '#f2d8a8', 16, 1, 1, 2); PX(g, '#333', 17, 1, 1, 2);
+});
+const paperTex = tex(24, 18, g => {
+  PX(g, '#2a2a2a', 0, 0, 24, 18); PX(g, '#fbf3e0', 1, 1, 22, 16);
+  [5, 9, 13].forEach(y => PX(g, '#d8c9a8', 3, y, 18, 1)); PX(g, '#d97757', 3, 3, 9, 1);
+});
+function blockTex(text, w, border) {
+  const W = w * 64;
+  return tex(W, 64, g => {
+    PX(g, border, 0, 0, W, 64); PX(g, '#161616', 5, 5, W - 10, 54);
+    const size = Math.min(26, Math.floor((W - 16) / text.length));
+    g.font = `${size}px "Press Start 2P", monospace`;
+    g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(text, W / 2, 34);
+  });
+}
+
+function deskTex(night) {
+  return tex(320, 180, g => {
+    PX(g, '#f1dfc2', 0, 0, 320, 120); PX(g, '#e6cfa8', 0, 112, 320, 8);
+    // 窗户
+    PX(g, '#fbf6ec', 228, 14, 76, 66);
+    const sky = night ? '#1d2352' : '#8ccff0';
+    [[232, 18], [268, 18], [232, 50], [268, 50]].forEach(([x, y]) => PX(g, sky, x, y, 32, 28));
+    if (!night) { PX(g, '#fff', 238, 26, 16, 4); PX(g, '#fff', 242, 23, 8, 3); PX(g, '#fff', 276, 58, 16, 4); PX(g, '#fff', 280, 55, 6, 3); }
+    // 书架
+    PX(g, '#8a5a34', 6, 36, 76, 4);
+    ['#3b6fd9', '#f2c12e', '#8a4fd1', '#3fae5a', '#e8763a', '#d94444', '#3b6fd9', '#f2c12e', '#3fae5a']
+      .forEach((c, i) => { const h = 14 + (i * 7) % 7; PX(g, c, 10 + i * 8, 36 - h, 6, h); });
+    // 显示器
+    PX(g, '#d0d0d0', 150, 104, 20, 12); PX(g, '#bcbcbc', 132, 114, 56, 5);
+    PX(g, '#ececec', 94, 16, 132, 90); PX(g, '#1b1b1b', 99, 21, 122, 78);
+    PX(g, '#f7a8c8', 90, 12, 10, 10); PX(g, '#f7e070', 220, 12, 10, 10);
+    PX(g, '#d97757', 103, 25, 54, 10); PX(g, '#1b1b1b', 104, 26, 52, 8);
+    PX(g, '#e8e8e8', 106, 28, 42, 1); PX(g, '#8a8a8a', 106, 31, 26, 1);
+    if (night) { PX(g, '#8a8a8a', 104, 40, 70, 1); PX(g, '#8a8a8a', 104, 44, 50, 1); }
+    PX(g, '#6a6a6a', 101, 92, 118, 1); PX(g, '#e8e8e8', 104, 94, 2, 3);
+    PX(g, '#d97757', 150, 83, 10, 6); PX(g, '#b8603f', 151, 89, 1, 2); PX(g, '#b8603f', 158, 89, 1, 2);
+    PX(g, '#161616', 152, 86, 2, 1); PX(g, '#161616', 156, 86, 2, 1);
+    PX(g, '#e8e8e8', 162, 76, 3, 1); PX(g, '#e8e8e8', 164, 77, 1, 1); PX(g, '#e8e8e8', 162, 78, 3, 1);
+    PX(g, '#e3b23a', 204, 84, 10, 7);
+    // 桌面
+    PX(g, '#d9a66a', 0, 120, 320, 60); PX(g, '#e8bb82', 0, 120, 320, 3);
+    for (let i = 0; i < 5; i++) PX(g, '#c99558', (i * 67) % 300, 132 + i * 9, 60, 1);
+    PX(g, '#f0f0f0', 112, 128, 96, 16);
+    for (let i = 0; i < 15; i++) for (let j = 0; j < 3; j++) PX(g, '#cfcfcf', 115 + i * 6, 131 + j * 4, 4, 2);
+    PX(g, '#c9643c', 18, 104, 22, 18); PX(g, '#a84f2d', 18, 104, 22, 3);
+    [[20, 92, 4, 12], [26, 84, 4, 20], [32, 90, 4, 14], [16, 96, 4, 6], [36, 96, 4, 6]].forEach(r => PX(g, '#4f9a4f', ...r));
+    PX(g, '#fff', 46, 128, 40, 30); PX(g, '#d94a3a', 46, 128, 40, 6);
+    for (let i = 0; i < 6; i++) for (let j = 0; j < 3; j++) PX(g, '#9a9a9a', 50 + i * 6, 140 + j * 5, 2, 2);
+    PX(g, '#d94a3a', 60, 144, 6, 1); PX(g, '#d94a3a', 60, 148, 6, 1); PX(g, '#d94a3a', 59, 145, 1, 3); PX(g, '#d94a3a', 66, 145, 1, 3);
+    PX(g, '#fff', 252, 116, 18, 22); PX(g, '#d9443a', 252, 124, 18, 4); PX(g, '#fff', 270, 120, 4, 10); PX(g, '#5a3418', 254, 116, 14, 2);
+    PX(g, '#fff', 292, 100, 14, 12); for (let i = 0; i < 5; i++) PX(g, '#d9443a', 290 + i, 99 - i, 18 - i * 2, 1); PX(g, '#8a5a34', 297, 105, 4, 7);
+    PX(g, '#555', 149, 150, 20, 14); PX(g, '#fbfbf5', 150, 151, 18, 12); PX(g, '#e0a020', 158, 156, 3, 3);
+    PX(g, '#3a8a3a', 216, 142, 12, 6); PX(g, '#6cc36c', 228, 143, 4, 4);
+    if (night) {
+      g.fillStyle = 'rgba(20,22,70,.55)'; g.fillRect(0, 0, 320, 180);
+      PX(g, '#fff4b0', 276, 24, 16, 16); PX(g, '#e8dc90', 280, 28, 4, 4); PX(g, '#e8dc90', 286, 34, 3, 3);
+      [[238, 24], [252, 36], [244, 60], [290, 60], [260, 70], [236, 44]].forEach(([x, y]) => PX(g, '#fff', x, y));
+      g.fillStyle = 'rgba(255,220,140,.12)'; g.fillRect(99, 21, 122, 78);
+    }
+  });
+}
+const deskDay = deskTex(false), deskNight = deskTex(true);
+const desk = sprite(deskDay, 16, 9, -5);
+scene.add(desk);
+
+// ================= 视口 =================
+function resize() {
+  const aspect = innerWidth / innerHeight;
+  viewH = Math.max(13.5, WORLD_W / aspect);
+  viewW = viewH * aspect;
+  if (viewW < WORLD_W) { viewW = WORLD_W; viewH = viewW / aspect; }
+  cy = -2.6 + viewH / 2;
+  camera.left = -viewW / 2; camera.right = viewW / 2;
+  camera.top = viewH / 2; camera.bottom = -viewH / 2;
+  camera.updateProjectionMatrix();
+  const s = Math.max(viewW / 16, viewH / 9);
+  desk.scale.set(s, s, 1);
+  desk.position.set(cx, cy, -5);
+  renderer.setSize(innerWidth, innerHeight);
+  if (mode !== 'zoom') camera.position.set(cx, cy, 10);
+}
+function screenCenter() {
+  const s = desk.scale.x;
+  return { x: cx - 8 * s + (160 / 320) * 16 * s, y: cy + 4.5 * s - (60 / 180) * 9 * s, zoom: viewW / ((122 / 320) * 16 * s) };
+}
+
+// ================= HUD =================
+function log(text, cls = 'op') {
+  const d = document.createElement('div');
+  d.className = cls; d.textContent = text;
+  $('lines').appendChild(d);
+  while ($('lines').children.length > 9) $('lines').firstChild.remove();
+}
+let ctxVal = 100;
+function setCtx(v) {
+  ctxVal = Math.max(0, Math.round(v));
+  $('ctx').textContent = ctxVal <= 0 ? 'COMPACTED' : `CONTEXT LEFT: ${ctxVal}%`;
+  $('ctx').classList.toggle('low', ctxVal <= 10);
+}
+const SKILL_NAMES = { djump: 'DOUBLE-JUMP', dash: 'DASH[SHIFT]', grep: 'GREP[G]', agent: 'AGENT[Q]' };
+function updateSkillsHud() {
+  const k = Object.keys(SKILL_NAMES).filter(s => p.skills[s]);
+  $('skills').textContent = k.length ? 'SKILLS: ' + k.map(s => SKILL_NAMES[s]).join(' · ') : '';
+}
+function setTests(pass) {
+  const el = $('tests');
+  el.hidden = pass == null;
+  if (pass == null) return;
+  el.innerHTML = '';
+  for (let i = 0; i < 12; i++) { const s = document.createElement('i'); if (i >= pass) s.className = 'r'; el.appendChild(s); }
+}
+async function showStage(html, ms = 1600) {
+  const s = $('stage');
+  s.innerHTML = html; s.style.opacity = 1;
+  await wait(ms);
+  s.style.opacity = 0;
+}
+function fade(v) { $('fade').style.opacity = v; return wait(420); }
+
+// ================= 彩蛋 =================
+const EGG_TOTAL = 9;
+const eggs = new Set();
+function egg(id, name) {
+  if (eggs.has(id)) return;
+  eggs.add(id);
+  log(`✦ EASTER EGG ${eggs.size}/${EGG_TOTAL}: ${name}`, 'egg');
+}
+const TURTLE_JOKES = [
+  'IT WORKS ON MY MACHINE.',
+  'THERE ARE 10 KINDS OF TURTLES.',
+  'SLOW AND STEADY PASSES THE TESTS.',
+  "I'M NOT SLOW, I'M ASYNC.",
+  'HAVE YOU TRIED TURNING IT OFF AND ON?',
+  '99 LITTLE BUGS IN THE CODE...',
+];
+const TURTLE_POS = [[17, 21], [19, 23], [1, 2.8], [5.5, 9], [0.3, 1.8], [11, 13], [0.5, 3], [0.5, 3], [0.5, 2.5], [19, 22]];
+let rainbow = false, lastInput = 0, typed = '';
+const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
+let konamiIdx = 0;
+function checkSecrets(code) {
+  konamiIdx = code === KONAMI[konamiIdx] ? konamiIdx + 1 : (code === KONAMI[0] ? 1 : 0);
+  if (konamiIdx === KONAMI.length) {
+    konamiIdx = 0; rainbow = !rainbow;
+    egg('konami', 'KONAMI CODE — RAINBOW MODE');
+    burst(p.x + 0.7, p.y + 1, '#ff5b8a', 20, 8);
+  }
+  if (!/^Key[A-Z]$/.test(code)) return;
+  typed = (typed + code[3]).slice(-8);
+  if (typed.endsWith('SUDO')) sudoEgg();
+  if (typed.endsWith('CLAUDE')) nameEgg();
+}
+function sudoEgg() {
+  log('$ sudo make me a sandwich', 'me');
+  log('  └ CLAUDE IS NOT IN THE SUDOERS FILE. THIS INCIDENT WILL BE REPORTED.', 'fail');
+  mood('angry', 1); egg('sudo', 'SUDO');
+}
+function nameEgg() {
+  for (let i = 0; i < 8; i++) setTimeout(() => floatUp(sprite(heartTex, 0.6, 0.53), p.x + 0.7 + (Math.random() - 0.5) * 1.5, p.y + 1.3), i * 120);
+  log('♥ YOU CALLED?', 'egg'); mood('happy', 1.5); egg('name', 'SAY MY NAME');
+}
+
+// ================= 小游戏面板 =================
+let panel = null;
+function openPanel(title, build, onWin) {
+  for (const k in keys) keys[k] = false;
+  mode = 'panel';
+  $('panel').hidden = false;
+  $('pTitle').textContent = title;
+  const body = $('pBody');
+  body.innerHTML = '';
+  const api = {
+    body, onKey: null, stops: [],
+    every(ms, f) { const id = setInterval(f, ms); api.stops.push(() => clearInterval(id)); },
+    close() {
+      api.stops.forEach(f => f());
+      $('panel').hidden = true;
+      if (panel === api) { panel = null; mode = 'play'; }
+    },
+    win() { api.close(); onWin && onWin(); },
+  };
+  panel = api;
+  build(api);
+}
+function addKiosk(x, y, name, use) {
+  return addItem({ x, y, w: 1, h: 1.15, text: name, bob: false, mesh: sprite(kioskTex, 1, 1.15, 0.5), use });
+}
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+// ---------- 模块 1：代码找茬 ----------
+const SPOT_ROUNDS = [
+  { file: 'LOGIN.TSX', time: 45, lines: [
+    'export async function login(email, password) {',
+    '  const user = await db.findUser(email);',
+    '  if (user == null) return;',
+    '  if (password = user.password) {',
+    '    const token = createToken(user.id);',
+    "    session.set('token', token);",
+    "    return redirect('/dashboard');",
+    '  }',
+    "  console.log('login failed:', email, password);",
+    "  return redirect('/login');",
+    '}'],
+    bugs: {
+      2: '== 会把 undefined 也当成 null，用 === 才严格',
+      3: '= 是赋值不是比较，这里永远为真，任何密码都能登录',
+      8: '把明文密码打进了日志，泄露风险',
+    } },
+  { file: 'SESSION.TS', time: 40, lines: [
+    'export function getSession(req) {',
+    '  const raw = req.cookies.session;',
+    '  const data = JSON.parse(raw);',
+    '  if (data.expires < Date.now) {',
+    '    return null;',
+    '  }',
+    '  return data.user;',
+    '}',
+    '',
+    'export function setSession(res, user) {',
+    "  res.cookie('session', user);",
+    '}'],
+    bugs: {
+      2: '没有 cookie 时 raw 是 undefined，JSON.parse 直接抛错',
+      3: 'Date.now 少了括号，比较的是函数本身，会话永不过期',
+      10: '对象没序列化，也没设 httpOnly，前端脚本能读到会话',
+    } },
+  { file: 'API/USERS.TS', time: 40, lines: [
+    "app.get('/users/:id', async (req, res) => {",
+    '  const id = req.params.id;',
+    '  const sql = `SELECT * FROM users WHERE id = ${id}`;',
+    '  const rows = db.query(sql);',
+    '  if (rows.length = 0) {',
+    "    res.status(200).send('not found');",
+    '  }',
+    '  res.json(rows[0]);',
+    '});'],
+    bugs: {
+      2: '字符串拼 SQL = SQL 注入，应该用参数化查询',
+      3: 'db.query 是异步的，少了 await，rows 是个 Promise',
+      4: '又是 = 赋值，length 被改成 0，条件永远为假',
+      5: '找不到应该返回 404，而且没有 return，下面还会继续执行',
+    } },
+];
+function spotGame(rounds) {
+  return api => {
+    let r = 0, t = 0, misses = 0, hints = 0, used = 0, found = new Set(), sel = 0, over = false;
+    const head = el('div'), bar = el('div', 'bar'), fill = el('i'), code = el('div', 'code'), info = el('div', 'log'), ctl = el('div');
+    bar.appendChild(fill);
+    const hintBtn = el('button', null, '提示 (-3% CONTEXT)');
+    ctl.appendChild(hintBtn);
+    api.body.append(head, bar, code, info, ctl);
+    const rows = [];
+    const cur = () => rounds[r];
+    const roundTime = () => cur().time * difficulty.reviewTime;
+    const bugIds = () => Object.keys(cur().bugs).map(Number);
+    function note(text, cls = 'dim') { const d = el('div', cls, text); info.appendChild(d); info.scrollTop = 1e9; }
+    function render() {
+      head.textContent = `ROUND ${r + 1}/${rounds.length} · ${cur().file} · 找出 ${bugIds().length} 个 BUG（已找到 ${found.size}）`;
+      rows.forEach((d, i) => d.style.outline = i === sel ? '1px dashed #d97757' : '');
+    }
+    function startRound() {
+      t = roundTime(); found = new Set(); over = false; sel = 0;
+      code.innerHTML = ''; info.innerHTML = ''; rows.length = 0;
+      cur().lines.forEach((ln, i) => {
+        const d = el('div', null, `${String(i + 1).padStart(2, ' ')}  ${ln}`);
+        d.onclick = () => pick(i);
+        code.appendChild(d); rows.push(d);
+      });
+      note(`$ claude review ${cur().file.toLowerCase()}   · 点击有问题的行，或 ↑↓ + 回车`, 'dim');
+      render();
+    }
+    function pick(i) {
+      if (over || found.has(i)) return;
+      sel = i;
+      const why = cur().bugs[i];
+      if (why) {
+        found.add(i);
+        rows[i].className = 'hit';
+        note(`✓ L${i + 1}: ${why}`, 'ok');
+        if (found.size === bugIds().length) {
+          over = true;
+          used += roundTime() - t;
+          note(`ROUND CLEAR · 剩余 ${t.toFixed(1)}s`, 'ok');
+          setTimeout(() => {
+            if (panel !== api) return;
+            if (++r < rounds.length) startRound(); else finish();
+          }, 1400);
+        }
+      } else {
+        misses++; t = Math.max(0, t - difficulty.reviewPenalty);
+        rows[i].className = 'miss';
+        setTimeout(() => { if (!found.has(i)) rows[i].className = ''; }, 400);
+        note(`× L${i + 1} 没问题 · -${difficulty.reviewPenalty}s`, 'fail');
+      }
+      render();
+    }
+    function finish() {
+      const rank = misses <= 1 && hints === 0 ? 'S' : misses <= 4 && hints <= 1 ? 'A' : 'B';
+      code.innerHTML = ''; info.innerHTML = '';
+      head.textContent = 'CODE REVIEW COMPLETE';
+      note(`用时 ${used.toFixed(1)}s · 误点 ${misses} · 提示 ${hints}`, 'me');
+      note(`评级：${rank}`, rank === 'S' ? 'egg' : 'ok');
+      hintBtn.textContent = '提交修复';
+      hintBtn.onclick = () => api.win();
+      api.result = { rank, misses, hints, used };
+    }
+    hintBtn.onclick = () => {
+      if (over) return;
+      const left = bugIds().filter(i => !found.has(i));
+      if (!left.length) return;
+      hints++; setCtx(Math.max(1, ctxVal - 3));
+      const i = left[Math.floor(Math.random() * left.length)];
+      rows[i].style.outline = '2px solid #f2c34c';
+      note(`提示：看看第 ${i + 1} 行附近`, 'egg');
+      setTimeout(() => render(), 1500);
+    };
+    api.every(100, () => {
+      if (over) return;
+      t -= 0.1;
+      fill.style.width = `${Math.max(0, t / roundTime() * 100)}%`;
+      fill.style.background = t < 10 ? '#ff5b5b' : '#7ee787';
+      if (t <= 0) {
+        over = true;
+        note('TIME OUT · 本轮重来', 'fail');
+        setTimeout(() => { if (panel === api) startRound(); }, 1500);
+      }
+    });
+    api.onKey = e => {
+      if (e.code === 'ArrowUp' || e.code === 'KeyW') { sel = Math.max(0, sel - 1); render(); }
+      if (e.code === 'ArrowDown' || e.code === 'KeyS') { sel = Math.min(rows.length - 1, sel + 1); render(); }
+      if (e.code === 'Enter' || e.code === 'Space') { if (over && r >= rounds.length) api.win(); else pick(sel); }
+      e.preventDefault();
+    };
+    api.test = { get remaining() { return t; }, get timeLimit() { return roundTime(); } };
+    startRound();
+  };
+}
+
+// ---------- 模块 2：终端解谜 ----------
+const TERM_TREE = `~/my-app
+├─ package.json
+├─ CLAUDE.md
+├─ src/
+│  ├─ login.tsx
+│  ├─ session.ts
+│  ├─ app.tsx
+│  ├─ auth/
+│  │  ├─ index.ts
+│  │  └─ token.ts
+│  └─ utils/compare.ts
+└─ tests/
+   ├─ login.spec.ts
+   └─ auth.spec.ts`;
+const TEST_CMD = /^(npm\s+(run\s+)?test|npx\s+(jest|vitest)|pnpm\s+(run\s+)?test|yarn\s+(run\s+)?test|jest|vitest)\b/;
+const TERM_STAGES = [
+  { name: 'SEARCH', qs: [
+    { q: '在 src/ 下递归搜索所有包含 "==" 的行', hint: 'grep -rn "==" src/',
+      ok: v => /^(grep\s+(-\w*[rR]\w*|--recursive)\b.*==|rg\s+.*==)/.test(v),
+      out: ['src/login.tsx:3:  if (user == null) return;', 'src/utils/compare.ts:7:  return a == b;'] },
+    { q: '找出文件名里带 auth 的所有文件', hint: 'find . -name "*auth*"',
+      ok: v => /^(find\s+.*-i?name\s+.*auth|fd\s+.*auth|git\s+ls-files.*auth|ls\s+.*auth)/.test(v),
+      out: ['./src/auth/index.ts', './src/auth/token.ts', './tests/auth.spec.ts'] },
+    { q: '统计 src/login.tsx 一共有多少行', hint: 'wc -l src/login.tsx',
+      ok: v => /\bwc\s+-l\b/.test(v) && /login/.test(v),
+      out: ['40 src/login.tsx'] },
+    { q: '只看 src/login.tsx 的前 10 行', hint: 'head -n 10 src/login.tsx',
+      ok: v => (/^head\s+(-n\s*10|-10)\b/.test(v) || /^sed\s+-n\s+['"]?1,10p/.test(v)) && /login/.test(v),
+      out: ['export async function login(email, password) {', '  const user = await db.findUser(email);', '  if (user == null) return;', '  ...'] },
+  ] },
+  { name: 'GIT', qs: [
+    { q: '看看当前有哪些文件被改动了', hint: 'git status',
+      ok: v => /^git\s+status\b/.test(v),
+      out: ['On branch main', 'Changes not staged for commit:', '  modified:   src/login.tsx', '  modified:   src/session.ts'] },
+    { q: '查看 src/login.tsx 具体改了什么', hint: 'git diff src/login.tsx',
+      ok: v => /^git\s+diff\b/.test(v),
+      out: ['@@ -3,1 +3,2 @@', '-  if (user == null) return;', '+  if (user === null) return;', "+  redirect('/login');"] },
+    { q: '只看最近 3 条提交记录', hint: 'git log -3 --oneline',
+      ok: v => /^git\s+log\b.*(-3\b|-n\s*3\b|--max-count=3\b)/.test(v),
+      out: ['a1b2c3d I LOVE YOU CLAUDE', 'e4f5a6b fix: session expiry', '9c8d7e6 chore: bump deps'] },
+    { q: '新建并切换到 fix/login 分支', hint: 'git switch -c fix/login',
+      ok: v => /^git\s+(checkout\s+-b|switch\s+-c)\s+fix\/login\b/.test(v),
+      out: ["Switched to a new branch 'fix/login'"] },
+    { q: '把 src/login.tsx 加入暂存区', hint: 'git add src/login.tsx',
+      ok: v => /^git\s+add\s+(.*login|\.|-A|--all)/.test(v),
+      out: [] },
+  ] },
+  { name: 'RUN', qs: [
+    { q: '安装项目依赖', hint: 'npm install',
+      ok: v => /^(npm\s+(i|install|ci)|pnpm\s+(i|install)|yarn(\s+install)?)$/.test(v),
+      out: ['added 312 packages, audited 313 packages in 4s', 'found 0 vulnerabilities'] },
+    { q: '运行全部测试', hint: 'npm test',
+      ok: v => TEST_CMD.test(v),
+      out: ['PASS tests/login.spec.ts', 'PASS tests/auth.spec.ts', 'Tests: 12 passed, 12 total'] },
+    { q: '只运行和 login 有关的测试', hint: 'npm test -- login',
+      ok: v => TEST_CMD.test(v) && /login/.test(v),
+      out: ['PASS tests/login.spec.ts', 'Tests: 5 passed, 5 total'] },
+    { q: '启动开发服务器', hint: 'npm run dev',
+      ok: v => /^(npm\s+run\s+dev|npm\s+start|pnpm\s+(run\s+)?dev|yarn\s+(run\s+)?dev)\b/.test(v),
+      out: ['> my-app@1.0.0 dev', '  ready - started server on http://localhost:3000'] },
+  ] },
+];
+const TERM_WORDS = ['grep', 'git', 'find', 'head', 'wc', 'npm', 'npx', 'pnpm', 'yarn', 'sed', 'status', 'diff', 'log', 'switch', 'checkout', 'add', 'install', 'test', 'run', 'dev', 'src/login.tsx'];
+function termGame(stages) {
+  return api => {
+    let s = 0, i = 0, wrong = 0, skipped = 0, qWrong = 0, busy = false, done = false;
+    const hist = []; let hi = 0;
+    const wrap = el('div'); wrap.style.cssText = 'display:grid;grid-template-columns:1fr 240px;gap:14px';
+    const left = el('div'), tree = el('pre', 'dim', TERM_TREE);
+    tree.style.cssText = 'margin:0;font:inherit;font-size:18px;color:#8a8a8a;border-left:2px solid #333;padding-left:10px';
+    const head = el('div', 'egg'), out = el('div', 'log');
+    out.style.cssText = 'height:300px;overflow:auto;margin:8px 0';
+    const row = el('div'); row.append(el('span', 'ok', '$ '));
+    const inp = el('input'); row.appendChild(inp);
+    left.append(head, out, row); wrap.append(left, tree); api.body.appendChild(wrap);
+    const print = (t, cls = 'dim') => { out.appendChild(el('div', cls, t)); out.scrollTop = 1e9; };
+    const q = () => stages[s].qs[i];
+    function ask() {
+      qWrong = 0;
+      head.textContent = `STAGE ${s + 1}/${stages.length} · ${stages[s].name} · ${i + 1}/${stages[s].qs.length}`;
+      print(`# ${q().q}`, 'me');
+    }
+    function next() {
+      if (++i >= stages[s].qs.length) {
+        i = 0;
+        print(`── ${stages[s].name} COMPLETE ──`, 'ok');
+        if (++s >= stages.length) return finish();
+      }
+      ask();
+    }
+    function finish() {
+      done = true;
+      const rank = wrong <= 1 && !skipped ? 'S' : wrong <= 5 && !skipped ? 'A' : 'B';
+      head.textContent = 'ALL COMMANDS OK';
+      print(`答错 ${wrong} 次 · 跳过 ${skipped} 题 · 评级 ${rank}`, rank === 'S' ? 'egg' : 'ok');
+      print('按回车退出终端', 'dim');
+      api.result = { rank, wrong, skipped };
+    }
+    function submit(raw) {
+      const v = raw.trim().replace(/\s+/g, ' ');
+      if (done) return api.win();
+      if (!v || busy) return;
+      hist.push(v); hi = hist.length;
+      print(`$ ${v}`, 'op');
+      const lv = v.toLowerCase();
+      if (lv === 'clear') { out.innerHTML = ''; return ask(); }
+      if (lv === 'help') return print(`# ${q().q}`, 'me');
+      if (lv === 'skip') {
+        if (qWrong < 4) return print('错满 4 次才能 skip', 'fail');
+        skipped++; print(`跳过 · 参考答案：${q().hint}`, 'dim'); return next();
+      }
+      if (q().ok(v)) {
+        busy = true;
+        const lines = q().out;
+        lines.forEach((l, k) => setTimeout(() => { if (panel === api) print(l, l.startsWith('-') ? 'fail' : l.startsWith('+') ? 'ok' : 'dim'); }, 90 * (k + 1)));
+        setTimeout(() => { busy = false; if (panel === api) next(); }, 90 * (lines.length + 2));
+      } else {
+        wrong++; qWrong++;
+        setCtx(Math.max(1, ctxVal - 1));
+        print(/^(sudo|rm)\b/.test(lv) ? 'PERMISSION DENIED · 这里不需要这么危险的命令' : `bash: 这不是想要的结果 (${qWrong})`, 'fail');
+        if (qWrong === 2) print(`提示：${q().hint.replace(/[^\s\-/."*]/g, (c, k) => k < 3 ? c : '_')}`, 'egg');
+        if (qWrong === 4) print(`还不行？输入 skip 跳过 · 答案：${q().hint}`, 'egg');
+      }
+    }
+    inp.onkeydown = e => {
+      e.stopPropagation();
+      if (e.key === 'Escape') { api.close(); log('  └ CANCELLED', 'dim'); return; }
+      if (e.key === 'Enter') { submit(inp.value); inp.value = ''; }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); if (hi > 0) inp.value = hist[--hi]; }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); hi = Math.min(hist.length, hi + 1); inp.value = hist[hi] || ''; }
+      else if (e.key === 'Tab') {
+        e.preventDefault();
+        const parts = inp.value.split(' '), last = parts.pop();
+        const m = last && TERM_WORDS.filter(w => w.startsWith(last.toLowerCase()));
+        if (m && m.length === 1) inp.value = [...parts, m[0]].join(' ') + ' ';
+        else if (m && m.length > 1) print(m.join('  '), 'dim');
+      }
+    };
+    print('Claude Code 模拟终端 · 根据 # 后面的任务输入命令 · ↑ 历史 · Tab 补全 · help 重看题目', 'dim');
+    ask();
+    setTimeout(() => inp.focus(), 30);
+    api.onKey = () => inp.focus();
+  };
+}
+
+// ---------- 模块 3：测试节奏 ----------
+const LANE_KEYS = { ArrowLeft: 0, KeyA: 0, ArrowDown: 1, KeyS: 1, ArrowRight: 2, KeyD: 2 };
+const LANE_NAMES = ['LOGIN ←', 'SESSION ↓', 'AUTH →'];
+function rhythmChart() {
+  const secs = [
+    { name: 'UNIT TESTS', n: 16, gap: 0.62, dbl: 0, hold: 0, travel: 2.0 },
+    { name: 'INTEGRATION', n: 22, gap: 0.46, dbl: 0.25, hold: 0, travel: 1.7 },
+    { name: 'E2E', n: 18, gap: 0.5, dbl: 0.12, hold: 0.35, travel: 1.5 },
+  ];
+  const notes = [];
+  let t = 3.2, prev = 1;
+  secs.forEach(s => {
+    s.start = t;
+    for (let k = 0; k < s.n; k++) {
+      const lane = (prev + 1 + Math.floor(Math.random() * 2)) % 3;
+      prev = lane;
+      const len = Math.random() < s.hold ? 0.6 + Math.random() * 0.5 : 0;
+      notes.push({ lane, h: t, len, travel: s.travel });
+      if (!len && Math.random() < s.dbl) notes.push({ lane: (lane + 1 + Math.floor(Math.random() * 2)) % 3, h: t, len: 0, travel: s.travel });
+      t += s.gap + len;
+    }
+    t += 1.8;
+  });
+  return { notes, secs, end: t };
+}
+function rhythmGame() {
+  return api => {
+    const HIT = 320;
+    let chart, t0, t = 0, raf, stats, combo, maxCombo, held, secShown, finished;
+    const hud = el('div', 'egg'), pop = el('div', 'me');
+    pop.style.cssText = 'position:absolute;left:0;right:0;top:130px;text-align:center;font-size:40px;pointer-events:none;text-shadow:3px 3px 0 #000;transition:opacity .2s';
+    const banner = el('div', 'op');
+    banner.style.cssText = 'position:absolute;left:0;right:0;top:40px;text-align:center;font-size:30px;color:#d97757;pointer-events:none';
+    const box = el('div', 'lanes'), line = el('div', 'hitline');
+    const lanes = LANE_NAMES.map(n => { const l = el('div', 'lane'); l.appendChild(el('span', null, n)); box.appendChild(l); return l; });
+    box.append(line, pop, banner);
+    const foot = el('div', 'log');
+    api.body.append(hud, box, foot);
+    function start() {
+      chart = rhythmChart();
+      stats = { perfect: 0, good: 0, miss: 0 };
+      combo = maxCombo = 0; held = [null, null, null]; secShown = -1; finished = false;
+      lanes.forEach(l => l.querySelectorAll('.note').forEach(n => n.remove()));
+      foot.innerHTML = '';
+      foot.appendChild(el('div', 'dim', '← ↓ →（或 A S D）在音符压线时按下 · 长条要按住到结束'));
+      api.onKey = e => { if (e.code in LANE_KEYS) { e.preventDefault(); press(LANE_KEYS[e.code]); } };
+      t0 = performance.now();
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(frame);
+    }
+    api.stops.push(() => cancelAnimationFrame(raf));
+    const acc = () => {
+      const judged = stats.perfect + stats.good + stats.miss;
+      return judged ? (stats.perfect + stats.good * 0.7) / judged : 1;
+    };
+    function showPop(text, color) {
+      pop.textContent = text; pop.style.color = color; pop.style.opacity = 1;
+      clearTimeout(pop.tm); pop.tm = setTimeout(() => pop.style.opacity = 0, 350);
+    }
+    function judge(n, grade, why) {
+      if (n.done) return;
+      n.done = true;
+      n.div && n.div.remove();
+      if (grade === 'MISS') { stats.miss++; combo = 0; showPop(why || 'MISS', '#ff5b5b'); }
+      else {
+        stats[grade.toLowerCase()]++; combo++; maxCombo = Math.max(maxCombo, combo);
+        showPop(combo > 4 ? `${grade} ×${combo}` : grade, grade === 'PERFECT' ? '#f2c34c' : '#7ee787');
+      }
+    }
+    function press(lane) {
+      lanes[lane].classList.add('flash');
+      setTimeout(() => lanes[lane].classList.remove('flash'), 90);
+      if (finished) return;
+      const cand = chart.notes.filter(n => n.lane === lane && !n.done && !n.holding && Math.abs(n.h - t) < difficulty.hitWindow)
+        .sort((a, b) => Math.abs(a.h - t) - Math.abs(b.h - t))[0];
+      if (!cand) return;
+      const grade = Math.abs(cand.h - t) < difficulty.perfectWindow ? 'PERFECT' : 'GOOD';
+      if (cand.len) { cand.holding = true; cand.grade = grade; held[lane] = cand; if (cand.div) cand.div.style.background = '#f2c34c'; }
+      else judge(cand, grade);
+    }
+    function release(lane) {
+      const n = held[lane];
+      if (!n) return;
+      held[lane] = null; n.holding = false;
+      if (t < n.h + n.len - difficulty.holdGrace) judge(n, 'MISS', 'RELEASED EARLY');
+      else judge(n, n.grade);
+    }
+    function frame(now) {
+      raf = requestAnimationFrame(frame);
+      t = (now - t0) / 1000;
+      if (t < chart.secs[0].start - 1.4) banner.textContent = String(3 - Math.floor(t / 0.6));
+      chart.secs.forEach((s, i) => {
+        if (i > secShown && t > s.start - 1.4) { secShown = i; banner.textContent = `SECTION ${i + 1} · ${s.name}`; }
+      });
+      if (secShown >= 0 && t > chart.secs[secShown].start + 0.6) banner.textContent = '';
+      for (const n of chart.notes) {
+        if (n.done || n.h - t > n.travel) continue;
+        if (!n.div) {
+          n.div = el('div', 'note', `${['login', 'session', 'auth'][n.lane]}.spec`);
+          if (n.len) n.div.style.background = n.holding ? '#f2c34c' : '#b8603f';
+          lanes[n.lane].appendChild(n.div);
+        }
+        const yHead = n.holding ? HIT : HIT * (1 - (n.h - t) / n.travel);
+        const yEnd = Math.min(yHead, HIT * (1 - (n.h + n.len - t) / n.travel));
+        n.div.style.top = `${yEnd - 13}px`;
+        n.div.style.height = `${yHead - yEnd + 26}px`;
+        if (n.holding && t >= n.h + n.len) { held[n.lane] = null; n.holding = false; judge(n, n.grade); }
+        else if (!n.holding && t - n.h > difficulty.hitWindow) judge(n, 'MISS');
+      }
+      hud.textContent = `${difficulty.name} · 目标 ${Math.round(difficulty.rhythmPass * 100)}% · PASSED ${stats.perfect + stats.good}/${chart.notes.length} · COMBO ${combo} · MAX ${maxCombo} · ACC ${(acc() * 100).toFixed(0)}%`;
+      if (t > chart.end && !finished) finish();
+    }
+    function finish() {
+      finished = true;
+      cancelAnimationFrame(raf);
+      const a = acc(), passed = a >= difficulty.rhythmPass;
+      const rank = a >= 0.95 ? 'S' : a >= 0.85 ? 'A' : passed ? 'B' : 'F';
+      banner.textContent = passed ? 'ALL TESTS PASSED' : 'TESTS FAILED';
+      foot.innerHTML = '';
+      foot.appendChild(el('div', 'me', `PERFECT ${stats.perfect} · GOOD ${stats.good} · MISS ${stats.miss} · MAX COMBO ${maxCombo}`));
+      foot.appendChild(el('div', passed ? 'ok' : 'fail', `准确率 ${(a * 100).toFixed(1)}% · 评级 ${rank}${passed ? '' : ' · 需要 ' + Math.round(difficulty.rhythmPass * 100) + '%'}`));
+      const btn = el('button', null, passed ? '提交测试结果 [ENTER]' : '重跑测试 [ENTER]');
+      btn.onclick = () => passed ? api.win() : start();
+      foot.appendChild(btn);
+      api.result = { rank, acc: a, maxCombo };
+      api.onKey = e => { if (e.code === 'Enter' || e.code === 'Space') btn.click(); };
+    }
+    api.onKeyUp = e => { if (e.code in LANE_KEYS) release(LANE_KEYS[e.code]); };
+    api.test = { get chart() { return chart; }, get t() { return t; }, press, release };
+    start();
+  };
+}
+
+// ================= 底部命令行 =================
+const LEVEL_FILES = [
+  'NOTE.MD  CLAUDE.MD', 'LOGIN.TSX  AUTH.CONFIG.TS  TESTS/', 'SKILLS/DOUBLE-JUMP  SKILLS/DASH  SKILLS/GREP',
+  'SEARCH_RESULTS.JSON', 'LOGIN.TSX  SESSION.TS', 'TESTS/LOGIN.SPEC.TS', 'LOGIN.TSX (BOTH MODIFIED)  .GIT/MERGE_HEAD',
+  'SRC/APP.TSX  AGENTS/', 'THEME.CSS  COMPONENTS.CSS', 'NOTE.MD  CLAUDE.MD'];
+function runCommand(raw) {
+  let c = raw.trim().toLowerCase();
+  if (!c) return;
+  if (['help', 'hint', 'reset', 'restart', 'clear', 'compact', 'skills', 'status', 'cost', 'quit'].includes(c)) c = '/' + c;
+  log(`> ${raw.trim()}`, 'me');
+  const say = (t, cls = 'dim') => log(`  └ ${t}`, cls);
+  if (c === '/help' || c === 'help') {
+    say('/HINT  /RESET  /CLEAR  /COMPACT  /SKILLS  /STATUS  /COST  /EXIT');
+    say('LS  CAT CLAUDE.MD  GIT STATUS  GIT PUSH  ... 还有隐藏命令');
+  } else if (c === '/hint') {
+    showHint(true); say(HINTS[cur]);
+  } else if (c === '/reset' || c === '/restart') {
+    resetLevel();
+  } else if (c === '/clear') {
+    $('lines').innerHTML = '';
+  } else if (c === '/compact') {
+    if (L.compacted) { say('ALREADY COMPACTED THIS LEVEL', 'fail'); return; }
+    L.compacted = true;
+    say('COMPACTING CONVERSATION...');
+    setTimeout(() => { setCtx(Math.min(100, ctxVal + 10)); say('CONTEXT +10%', 'ok'); }, 700);
+    egg('compact', '/COMPACT');
+  } else if (c === '/skills') {
+    const k = Object.keys(SKILL_NAMES).filter(s => p.skills[s]);
+    say(k.length ? k.map(s => SKILL_NAMES[s]).join(' · ') : 'NO SKILLS LOADED YET');
+  } else if (c === '/status') {
+    say(`LEVEL ${cur + 1}/${LEVELS.length} · ${STAGES[cur][0]} · CONTEXT ${ctxVal}% · EGGS ${eggs.size}/${EGG_TOTAL}`);
+  } else if (c === '/cost') {
+    say('TOTAL COST: $0.00 — PAID IN PIXELS');
+  } else if (c === '/exit' || c === '/quit' || c === 'exit') {
+    say("NICE TRY. THE WORKDAY ISN'T OVER YET.");
+  } else if (c === 'ls' || c === 'ls -la') {
+    say(LEVEL_FILES[cur]);
+  } else if (c === 'cat claude.md') {
+    say('# CLAUDE.MD'); say('- BE HELPFUL. RUN THE TESTS. WRITE A NOTE FOR TOMORROW.');
+  } else if (c === 'git status') {
+    if (L.boss && !L.boss.dead) say('YOU HAVE UNMERGED PATHS · BOTH MODIFIED: SRC/LOGIN.TSX', 'fail');
+    else say('ON BRANCH MAIN · 1 FILE CHANGED · YOUR MOOD: GOOD');
+  } else if (c === 'git merge --abort') {
+    say(L.boss && !L.boss.dead ? 'NO. WE FINISH WHAT WE MERGE.' : 'FATAL: THERE IS NO MERGE TO ABORT', 'fail');
+  } else if (/^git (checkout|restore) .*--(ours|theirs)/.test(c)) {
+    say('AND THROW AWAY HALF THE WORK? RESOLVE IT PROPERLY.', 'fail');
+  } else if (c === 'git push' || c === 'git push --force') {
+    say(c.includes('force') ? 'ARE YOU SURE? (THE TURTLE SAYS NO)' : 'EVERYTHING UP-TO-DATE', c.includes('force') ? 'fail' : 'dim');
+  } else if (c.startsWith('git commit')) {
+    say('"I LOVE YOU CLAUDE" — BEST COMMIT MESSAGE EVER', 'egg');
+  } else if (c.startsWith('sudo')) {
+    sudoEgg();
+  } else if (c === 'claude' || c === 'hi' || c === 'hello' || c === '你好') {
+    nameEgg();
+  } else if (c === 'rm -rf /' || c === 'rm -rf *') {
+    say('NOPE. 这个命令被拦下了。', 'fail'); mood('angry', 1.2);
+  } else if (c === 'coffee' || c === 'brew coffee') {
+    say('418 I\'M A TEAPOT', 'egg');
+  } else {
+    say(`COMMAND NOT FOUND: ${c.toUpperCase()} · 试试 /HELP`, 'fail');
+  }
+}
+const cmd = $('cmd');
+cmd.addEventListener('focus', () => { for (const k in keys) keys[k] = false; });
+cmd.addEventListener('keydown', e => {
+  e.stopPropagation();
+  lastInput = clock.elapsedTime;
+  if (e.key === 'Enter') { const v = cmd.value; cmd.value = ''; if (mode === 'play') runCommand(v); }
+  else if (e.key === 'Escape') cmd.blur();
+});
+function addTurtle() {
+  const [min, max] = TURTLE_POS[cur];
+  const t = addItem({ x: min, y: 0, w: 1.2, h: 0.7, bob: false, mesh: sprite(turtleTex[0], 1.2, 0.7, 0.4),
+    use() {
+      const j = TURTLE_JOKES[Math.floor(Math.random() * TURTLE_JOKES.length)];
+      log(`TURTLE: ${j}`, 'egg');
+      floatUp(label('!', { size: 14, color: '#6cc36c', ppu: 40 }), this.x + 0.6, 1.2, 1);
+      egg('turtle', 'THE TURTLE TALKS');
+    } });
+  t.dir = 1;
+  L.turtle = { t, min, max };
+}
+function updateTurtle(dt, time) {
+  const tu = L.turtle;
+  if (!tu) return;
+  const t = tu.t;
+  t.x += t.dir * 0.5 * dt;
+  if (t.x < tu.min || t.x + t.w > tu.max) t.dir *= -1;
+  t.mesh.material.map = turtleTex[Math.floor(time * 3) % 2];
+  t.mesh.scale.x = t.dir;
+  place(t.mesh, t.x, t.y, t.w, t.h);
+}
+
+// ================= 对话框 =================
+let mode = 'title', dialogCb = null, typing = null, fullText = '';
+function showDialog(title, text, cb) {
+  mode = 'dialog';
+  $('dialog').hidden = false; $('dInput').hidden = true; $('dMore').textContent = '[E / ENTER]';
+  $('dTitle').textContent = title; $('dBody').textContent = '';
+  fullText = text; dialogCb = cb;
+  let i = 0;
+  clearInterval(typing);
+  typing = setInterval(() => {
+    $('dBody').textContent = fullText.slice(0, ++i);
+    if (i >= fullText.length) { clearInterval(typing); typing = null; }
+  }, 28);
+}
+function advanceDialog() {
+  if (typing) { clearInterval(typing); typing = null; $('dBody').textContent = fullText; return; }
+  $('dialog').hidden = true;
+  mode = 'play';
+  const cb = dialogCb; dialogCb = null;
+  cb && cb();
+}
+function showInput(title, prefix, def, cb) {
+  mode = 'input';
+  $('dialog').hidden = false;
+  $('dTitle').textContent = title; $('dBody').textContent = prefix;
+  $('dMore').textContent = '[ENTER 写好了]';
+  const inp = $('dInput');
+  inp.hidden = false; inp.value = def;
+  setTimeout(() => { inp.focus(); inp.select(); }, 30);
+  inp.onkeydown = e => {
+    e.stopPropagation();
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      const v = inp.value.trim().toUpperCase() || def;
+      inp.blur(); inp.hidden = true; $('dialog').hidden = true; mode = 'play';
+      cb(v);
+    }
+  };
+}
+
+// ================= 关卡框架 =================
+const group = new THREE.Group();
+scene.add(group);
+let L = null, cur = 0;
+const particles = [];
+
+function place(mesh, x, y, w, h) { mesh.position.x = x + w / 2; mesh.position.y = y + h / 2; }
+function overlap(a, b) { return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y; }
+
+function addStatic(x, y, w, h, visual = true) {
+  const s = { x, y, w, h, meshes: [], off: false };
+  if (visual) {
+    const vh = Math.min(h, 0.45);
+    const body = quad(w, vh, '#3c3c3c', 0); place(body, x, y + h - vh, w, vh);
+    const top = quad(w, 0.1, '#a3a3a3', 0.1); place(top, x, y + h - 0.1, w, 0.1);
+    attach(s, body); attach(s, top);
+  }
+  L.statics.push(s);
+  return s;
+}
+function attach(s, m) {
+  m.userData.ox = m.position.x - s.x;
+  m.userData.oy = m.position.y - s.y;
+  s.meshes.push(m);
+  group.add(m);
+}
+function syncStatic(s, shake = 0) {
+  for (const m of s.meshes) {
+    m.position.x = s.x + m.userData.ox + (Math.random() - 0.5) * shake;
+    m.position.y = s.y + m.userData.oy;
+  }
+}
+function showStatic(s, v) { s.meshes.forEach(m => m.visible = v); }
+function cardTex(text, w, border, fg) {
+  const W = w * 64;
+  return tex(W, 32, g => {
+    PX(g, border, 0, 0, W, 32); PX(g, '#f4f4f4', 3, 3, W - 6, 26);
+    const size = Math.min(12, Math.floor((W - 12) / text.length));
+    g.font = `${size}px "Press Start 2P", monospace`;
+    g.fillStyle = fg; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(text, W / 2, 17);
+  });
+}
+function addPlate(x) {
+  const pl = { x, w: 1.2, pressed: false };
+  pl.mesh = quad(1.2, 0.18, '#d97757', 0.3);
+  place(pl.mesh, x, 0, 1.2, 0.18);
+  group.add(pl.mesh);
+  L.plates.push(pl);
+  return pl;
+}
+function addDoor(x, plates, hold = 0) {
+  const s = addStatic(x, 0, 0.7, 14, false);
+  const col = quad(0.7, 14, '#d97757', 0.2); col.material.opacity = 0.85; place(col, x, 0, 0.7, 14); attach(s, col);
+  for (let y = 0.6; y < 12; y += 1.2) { const st = quad(0.7, 0.3, '#8c3a24', 0.25); place(st, x, y, 0.7, 0.3); attach(s, st); }
+  const lb = label(hold ? `ALLOW ${hold}s?` : 'ALLOW?', { size: 10, color: '#fff', bg: '#8c3a24', ppu: 44 });
+  lb.position.set(x + 0.35, 2.4, 2); attach(s, lb);
+  s.door = plates; s.hold = hold;
+  if (hold) {
+    s.timer = label('HURRY!', { size: 10, color: '#ffd84a', ppu: 44 });
+    s.timer.position.set(x + 0.35, 3.2, 2.5); s.timer.visible = false;
+    group.add(s.timer);
+  }
+  return s;
+}
+function addBlock(x, y, w, text) {
+  const b = { x, y, w, h: 1, text, block: true, vy: 0, falling: false, fixed: false, dead: false, pit: null };
+  b.mesh = sprite(blockTex(text, w, '#d97757'), w, 1, 1);
+  group.add(b.mesh);
+  L.blocks.push(b);
+  return b;
+}
+function addPit(x, w, onFill) {
+  const p = { x, w, filled: false, onFill };
+  for (const [qx, qy, qw, qh] of [[x, -1, w, 0.06], [x, -1, 0.06, 1], [x + w - 0.06, -1, 0.06, 1]]) {
+    const q = quad(qw, qh, '#d97757', 0); q.material.opacity = 0.6; place(q, qx, qy, qw, qh); group.add(q);
+  }
+  L.pits.push(p);
+  return p;
+}
+function addItem(o) {
+  const it = Object.assign({ active: true, touch: false, bob: true }, o);
+  place(it.mesh, it.x, it.y, it.w, it.h);
+  it.baseY = it.mesh.position.y;
+  group.add(it.mesh);
+  if (it.text) {
+    it.label = label(it.text, { size: 10, color: '#bdbdbd' });
+    it.label.position.set(it.x + it.w / 2, it.y + it.h + 0.35, 2);
+    group.add(it.label);
+  }
+  L.items.push(it);
+  return it;
+}
+function setItemVisible(it, v) { it.mesh.visible = v; if (it.label) it.label.visible = v; }
+function addExit(x, onUse, y = 0) {
+  const it = addItem({ x, y, w: 1.6, h: 1.2, mesh: sprite(folderTex, 1.6, 1.2, 0.5), text: 'CLAUDE.MD', bob: false,
+    use: onUse || (() => nextLevel()) });
+  it.active = false; setItemVisible(it, false);
+  it.unlock = () => { it.active = true; setItemVisible(it, true); burst(x + 0.8, y + 0.8, '#f2c34c', 14); };
+  return it;
+}
+function burst(x, y, color, n = 10, spread = 5) {
+  for (let i = 0; i < n; i++) {
+    const q = quad(0.14, 0.14, color, 3);
+    q.position.set(x, y, 3);
+    q.userData = { vx: (Math.random() - 0.5) * spread, vy: Math.random() * 5 + 2, life: 0.7 + Math.random() * 0.3, g: G * 0.4 };
+    scene.add(q); particles.push(q);
+  }
+}
+function floatUp(mesh, x, y, life = 1.4) {
+  mesh.position.set(x, y, 3);
+  mesh.userData = { vx: 0.3, vy: 1.1, life, g: 0 };
+  scene.add(mesh); particles.push(mesh);
+}
+
+// ================= 玩家 =================
+const p = { x: 2, y: 0, w: 1.4, h: 1.1, vx: 0, vy: 0, kx: 0, onGround: false, face: 1, squash: 0,
+  sleep: false, tmpMood: null, moodT: 0, inv: 0, carry: null, zT: 0,
+  skills: {}, dj: false, dashT: 0, dashCD: 0, grepT: 0 };
+p.mesh = sprite(CT.idle0, 1.8, 1.2, 1.5);
+scene.add(p.mesh);
+p.carryMesh = sprite(pencilTex, 1.1, 0.25, 0.1);
+p.carryMesh.position.set(0.75, 0.05, 0.1);
+p.mesh.add(p.carryMesh);
+function setCarry(kind) {
+  p.carry = kind;
+  p.carryMesh.visible = !!kind;
+  if (kind === 'pencil') { p.carryMesh.material.map = pencilTex; p.carryMesh.scale.set(1, 1, 1); p.carryMesh.rotation.z = 0.35; }
+  if (kind === 'letter') { p.carryMesh.material.map = envTex; p.carryMesh.scale.set(0.6, 2.8, 1); p.carryMesh.rotation.z = 0; }
+}
+function mood(m, t = 0.8) { p.tmpMood = m; p.moodT = t; }
+
+const eBubble = label('E', { size: 12, color: '#1b1b1b', bg: '#d97757', ppu: 40 });
+eBubble.visible = false;
+scene.add(eBubble);
+
+// ================= 关卡定义 =================
+const STAGES = [
+  ['NOTE FROM YESTERDAY', '昨天的我留了一封信'],
+  ['READ(LOGIN.TSX)', '收集 3 个文件，读懂问题'],
+  ['SKILL.MD', '学会 3 个新技能'],
+  ['WEB_SEARCH', '"== VS ===" — 只信可靠的来源'],
+  ['UPDATE(LOGIN.TSX)', '把正确的代码块推进槽位'],
+  ['BASH(NPM TEST)', '3 FAILED — 踩扁所有 BUG'],
+  ['MERGE CONFLICT', 'BOSS — git push 被拒了'],
+  ['TASK(SUBAGENT)', '派个子代理帮你按住开关'],
+  ['ADD DARK MODE', '关掉所有的灯'],
+  ['NOTE FOR TOMORROW', '给明天的自己写交接'],
+];
+const HINTS = [
+  '← → 移动 · E 互动 · 每关 3 个房间，蓝色 LOCKED 门要解开当前房间才会打开',
+  '空格/↑ 跳跃 · 推 { } 当垫脚 · 房间 2：高台上的终端机做代码审查 · 房间 3：把箱子叠起来',
+  '二段跳 / SHIFT 冲刺 / G grep · 深坑要连招：跳 → 二段跳 → 冲刺',
+  '天线处按 E 搜索 · 红框会塌 · 绿框可靠 · 房间 2 尽头的终端机要敲命令 · 房间 3 卡片按节奏闪烁',
+  '推块进槽 · 只有 "=" 能让 == 变 === · 推错了按 R（从存档旗重来）',
+  '从上方踩 BUG · 房间 2 的 TEST RUNNER 是节奏游戏：← ↓ → 在音符压线时按下',
+  '阶段 1 躲开红框、跳过冲击波再踩头顶 · 阶段 2 SHIFT 迎头撞碎护盾再踩 · 阶段 3 你和子代理(Q)同时压住 OURS / THEIRS',
+  'Q 放置子代理 · 限时门松开开关后还会开几秒 · 箱子也能压开关',
+  '开关会切换相邻的灯 · 房间 2 首尾相连 · 房间 3 看编号，灯会自己重新亮',
+  '拿铅笔 → 收集今天的回忆 → 写便条 → 放进 CLAUDE.MD',
+];
+const LV = { UPDATE: 4, BOSS: 6, DARK: 8, NOTE: 9 };
+
+// ================= 关卡构件 =================
+let persist = { solved: new Set(), cp: null };
+function freshPersist() { persist = { solved: new Set(), cp: null }; }
+const solved = id => persist.solved.has(id);
+const floor = (a, b) => addStatic(a, -3, b - a, 3);
+const plat = (x, top, w) => addStatic(x, top - 0.5, w, 0.5);
+const wall = (x, top, w = 1) => addStatic(x, 0, w, top);
+function mover(s, amp, sp = 1.1, axis = 'x') { s.move = { amp, sp, axis, x0: s.x, y0: s.y }; return s; }
+function crumbly(s) { s.crumble = true; s.meshes.forEach(m => m.material.color.set('#8c5a3a')); return s; }
+function pitViz(a, b) {
+  for (let x = a + 0.3; x < b - 0.3; x += 0.9) {
+    const q = quad(0.45, 0.12, '#ff5b5b', -0.5); q.material.opacity = 0.45;
+    q.position.set(x + 0.22, -0.9, -0.5); group.add(q);
+  }
+}
+function addBug(min, max, y, sp, room) {
+  const b = { x: min + (max - min) / 3, y, w: 1.2, h: 0.8, min, max, dir: 1, sp, dead: false, room, mesh: sprite(bugTex[0], 1.2, 0.8, 1) };
+  group.add(b.mesh); L.bugs.push(b);
+  return b;
+}
+function addGate(x, id) {
+  if (solved(id)) return { open() {} };
+  const s = addStatic(x, 0, 0.6, 14, false);
+  const col = quad(0.6, 14, '#3b6fd9', 0.2); col.material.opacity = 0.8; place(col, x, 0, 0.6, 14); attach(s, col);
+  for (let y = 0.5; y < 12; y += 1.5) { const q = quad(0.6, 0.2, '#1d3a80', 0.25); place(q, x, y, 0.6, 0.2); attach(s, q); }
+  const lb = label('LOCKED', { size: 9, color: '#fff', bg: '#1d3a80', ppu: 44 }); lb.position.set(x + 0.3, 2, 2); attach(s, lb);
+  return {
+    open() {
+      if (solved(id)) return;
+      persist.solved.add(id);
+      s.off = true; showStatic(s, false);
+      burst(x + 0.3, 1.5, '#8ccff0', 16, 6);
+      log('  └ ✓ GATE UNLOCKED', 'ok'); mood('happy', 1);
+    }
+  };
+}
+function addCheckpoint(x) {
+  const pole = quad(0.08, 1.3, '#9a9a9a', -0.3); pole.position.set(x, 0.65, -0.3); group.add(pole);
+  const fl = quad(0.5, 0.32, (persist.cp ?? -1) >= x ? '#7ee787' : '#d97757', -0.3); fl.position.set(x + 0.29, 1.12, -0.3); group.add(fl);
+  L.flags.push({ x, fl });
+}
+function updateCheckpoints() {
+  for (const f of L.flags) {
+    if (p.x > f.x && (persist.cp ?? -1) < f.x && p.onGround) {
+      persist.cp = f.x; L.start = f.x;
+      f.fl.material.color.set('#7ee787');
+      burst(f.x + 0.3, 1.1, '#7ee787', 8, 3);
+      log('  └ CHECKPOINT SAVED', 'dim');
+    }
+  }
+}
+function addFile(x, y, name, cb) {
+  return addItem({ x, y, w: 0.8, h: 1, text: name, touch: true, mesh: sprite(docTex, 0.8, 1, 0.5),
+    use() { burst(x + 0.4, y + 0.5, '#e8e8e8', 8); mood('happy', 0.6); cb && cb(); } });
+}
+function addCard(x, top, w, real, text) {
+  const s = addStatic(x, top - 0.5, w, 0.5, false);
+  const m = sprite(cardTex(text, w, real ? '#3fbf5a' : '#d94a3a', real ? '#1f4d2c' : '#8c1c1c'), w, 0.5, 0.5);
+  place(m, x, top - 0.5, w, 0.5); attach(s, m);
+  if (!real) s.crumble = true;
+  s.off = true; s.spawned = false; showStatic(s, false);
+  return s;
+}
+function addAntenna(x, query, cards, done) {
+  const lv = L;
+  return addItem({ x, y: 0, w: 1, h: 1.35, text: 'WEB_SEARCH', bob: false, mesh: sprite(antennaTex, 1, 1.35, 0.5),
+    use() {
+      if (this.used) return;
+      this.used = true;
+      log(`+ WEB_SEARCH("${query}")`); log(`  └ ${cards.length} RESULTS`, 'dim');
+      cards.forEach((s, i) => setTimeout(() => {
+        if (L !== lv) return;
+        s.off = false; s.spawned = true; showStatic(s, true);
+        burst(s.x + s.w / 2, s.y + 0.3, '#8ccff0', 6, 3);
+        if (i === cards.length - 1 && done) done();
+      }, 200 + i * 200));
+    } });
+}
+function addFirewall(x) {
+  const fw = addStatic(x, 0, 0.8, 14, false);
+  fw.breakable = true;
+  const fq = quad(0.8, 14, '#b8402f', 0.2); place(fq, x, 0, 0.8, 14); attach(fw, fq);
+  for (let y = 0.25; y < 12; y += 0.7) { const q = quad(0.8, 0.08, '#6a1e14', 0.25); place(q, x, y, 0.8, 0.08); attach(fw, q); }
+  const fl = label('FIREWALL', { size: 8, color: '#fff', bg: '#6a1e14', ppu: 44 }); fl.position.set(x + 0.4, 1.6, 2); attach(fw, fl);
+  return fw;
+}
+function addScroll(x, y, key, name, desc) {
+  if (p.skills[key]) return;
+  addItem({ x, y, w: 1, h: 0.85, text: name, mesh: sprite(scrollTex, 1, 0.85, 0.5),
+    use() {
+      this.active = false; setItemVisible(this, false);
+      showDialog(`SKILL.MD: ${name.toLowerCase()}`, desc, () => {
+        p.skills[key] = true; updateSkillsHud();
+        log(`+ SKILL(${name}) LOADED`, 'ok');
+        mood('happy', 1); burst(p.x + 0.7, p.y + 0.8, '#f2c34c', 12);
+      });
+    } });
+}
+function diffLabel(text, x, y, add, dim) {
+  const m = label(text, { size: 14, color: add ? '#9ff0a8' : '#f19a9a', bg: add ? '#1f4d2c' : '#5a2323', pad: 6, ppu: 44 });
+  m.position.set(x, y, -1);
+  if (dim) m.material.opacity = 0.35;
+  group.add(m);
+  return m;
+}
+// 点灯房间：rule(i, N) 返回按第 i 个开关会切换的灯
+function lampRoom(id, o, xs, rule, opts, onSolve) {
+  const N = xs.length;
+  const room = { o, on: Array(N).fill(false), offT: Array(N).fill(0), solved: solved(id) };
+  const toggle = i => rule(i, N).forEach(j => {
+    room.on[j] = !room.on[j];
+    if (!room.on[j]) room.offT[j] = opts.relight || 0;
+  });
+  if (!room.solved) {
+    if (opts.allOn) room.on.fill(true);
+    else do { for (let i = 0; i < N; i++) if (Math.random() < 0.5) toggle(i); } while (!room.on.some(Boolean));
+  }
+  const lamps = xs.map((x, j) => {
+    const cord = quad(0.06, 6, '#555', -0.5); cord.position.set(o + x, 11.5, -0.5); group.add(cord);
+    const glow = sprite(glowTex, 4, 4, -0.6); glow.position.set(o + x, 7.6, -0.6); glow.material.blending = THREE.AdditiveBlending; group.add(glow);
+    const m = sprite(lampTex[0], 1, 1, 0); m.position.set(o + x, 8, 0); group.add(m);
+    if (opts.numbers) { const n = label(String(j + 1), { size: 10, color: '#f2c34c', ppu: 40 }); n.position.set(o + x, 8.9, 1); group.add(n); }
+    return { m, glow };
+  });
+  const sw = (opts.sw || xs.map(x => [x, 0])).map(([sx, sy], i) => {
+    if (sy > 0) plat(o + sx - 1.2, sy, 2.4);
+    return addItem({ x: o + sx - 0.5, y: sy, w: 1, h: 1, bob: false, text: opts.numbers ? String(rule(i, N)[0] + 1) : null,
+      mesh: sprite(switchTex[0], 1, 1, 0.5),
+      use() {
+        if (room.solved) return;
+        toggle(i); refresh();
+        if (!room.on.some(Boolean)) { room.solved = true; mood('happy', 1.5); onSolve(); }
+      } });
+  });
+  function refresh() {
+    lamps.forEach((l, j) => { l.m.material.map = lampTex[+room.on[j]]; l.glow.visible = room.on[j]; });
+    sw.forEach((s, i) => { const own = rule(i, N); s.mesh.material.map = switchTex[+room.on[own.includes(i) ? i : own[0]]]; });
+  }
+  room.tick = dt => {
+    if (room.solved || !opts.relight) return;
+    for (let j = 0; j < N; j++) {
+      if (room.on[j]) continue;
+      room.offT[j] -= dt;
+      if (room.offT[j] <= 0) { room.on[j] = true; refresh(); burst(o + xs[j], 7.6, '#ffe27a', 6, 3); }
+    }
+  };
+  refresh();
+  L.lampRooms.push(room);
+  return room;
+}
+
+// ================= Boss：MERGE CONFLICT =================
+const ARENA = { a: 26, b: 52, cx: 39 };
+const BOSS_HP = [0, 3, 4, 3];
+const PHASE_TIPS = ['', '地上出现红框就跑开 · 砸地时跳过冲击波 · 再踩头顶的 =======', 'SHIFT 迎头撞碎冲锋的护盾，再踩它', 'Q 放子代理 · 你和子代理同时压住 OURS 和 THEIRS'];
+const SHOT_T = {};
+function shotMesh(kind) {
+  if (!SHOT_T[kind]) {
+    const [text, bg] = { l: ['<<<', '#8c2323'], r: ['>>>', '#1f5a2c'], e: ['===', '#4a4a4a'], w: ['~~~~', '#b8603f'] }[kind];
+    SHOT_T[kind] = label(text, { size: 14, color: '#fff', bg, pad: 4, ppu: 30 });
+  }
+  const t = SHOT_T[kind];
+  return new THREE.Mesh(t.geometry, new THREE.MeshBasicMaterial({ map: t.material.map, transparent: true }));
+}
+function later(t, fn, line) { L.timers.push({ t, fn, line }); }
+function shoot(kind, cx, y, vx, vy) {
+  const m = shotMesh(kind);
+  const w = m.geometry.parameters.width * 0.8, h = m.geometry.parameters.height * 0.75;
+  const s = { x: cx - w / 2, y, w, h, vx, vy, mesh: m, life: 8 };
+  m.position.set(cx, y + h / 2, 2.5);
+  group.add(m); L.shots.push(s);
+  return s;
+}
+function dropShot(kind, x, delay = 0.6) {
+  x = THREE.MathUtils.clamp(x, 0.5, L.W - 0.5);
+  const line = quad(0.12, 14, '#ff5b5b', 0.4);
+  line.material.opacity = 0.3; line.position.set(x, 5, 0.4); group.add(line);
+  later(delay, () => { group.remove(line); shoot(kind, x, 12, 0, -12); }, line);
+}
+function clearShots() {
+  L.shots.forEach(s => group.remove(s.mesh)); L.shots.length = 0;
+  L.timers = L.timers.filter(tm => { if (tm.line) group.remove(tm.line); return !tm.line; });
+}
+function updateShots(dt) {
+  for (let i = L.shots.length - 1; i >= 0; i--) {
+    const s = L.shots[i];
+    s.x += s.vx * dt; s.y += s.vy * dt; s.life -= dt;
+    s.mesh.position.set(s.x + s.w / 2, s.y + s.h / 2, 2.5);
+    if (overlap(p, s)) hurt(s.x + s.w / 2);
+    if (s.life <= 0 || s.y < -2.5 || s.x < -3 || s.x > L.W + 3) { group.remove(s.mesh); L.shots.splice(i, 1); }
+  }
+}
+function pushOut(box) {
+  if (!overlap(p, box)) return;
+  p.x = p.x + p.w / 2 < box.x + box.w / 2 ? box.x - p.w : box.x + box.w;
+}
+function hurt(fromX) {
+  const B = L.boss;
+  if (p.inv > 0 || !B || B.dead) return;
+  p.inv = 1.3 * difficulty.protection; p.kx = (p.x + p.w / 2 < fromX ? -1 : 1) * 11; p.vy = 7; p.dashT = 0;
+  mood('angry', 1); burst(p.x + 0.7, p.y + 0.6, '#ff5b5b', 10);
+  setCtx(Math.max(1, ctxVal - 1));
+  if (B.active) loseHeart();
+}
+function loseHeart() {
+  const B = L.boss;
+  B.hearts--; persist.bossLost = (persist.bossLost || 0) + 1; bossHud();
+  if (B.hearts <= 0) bossFail();
+}
+function bossHud() {
+  const B = L.boss;
+  $('bName').textContent = ['', 'MERGE CONFLICT', 'HEAD  VS  ORIGIN/MAIN', 'CONFLICT — SRC/LOGIN.TSX'][B.phase];
+  $('bHp').style.width = `${Math.max(0, B.hp / B.max) * 100}%`;
+  const h = Math.max(0, B.hearts);
+  $('bInfo').textContent = `PHASE ${B.phase}/3 · ${'♥'.repeat(h)}${'♡'.repeat(Math.max(0, difficulty.hearts - h))}${B.extra ? ' · ' + B.extra : ''}`;
+}
+function bossFail() {
+  const B = L.boss;
+  B.active = false; clearShots();
+  persist.aborts = (persist.aborts || 0) + 1;
+  log('× CONTEXT OVERFLOW · git merge --abort', 'fail');
+  showStage('MERGE ABORTED<small>从当前阶段重来</small>', 1500);
+  mode = 'busy';
+  const lv = L;
+  setTimeout(async () => {
+    if (L !== lv) return;
+    await fade(1); buildLevel(cur, true); await fade(0); mode = 'play';
+  }, 1600);
+}
+function makeBoss(phase) {
+  const row = (text, bg) => { const m = label(text, { size: 16, color: '#fff', bg, pad: 4, ppu: 30 }); group.add(m); return m; };
+  const B = { phase, hp: 0, max: 1, hearts: difficulty.hearts, active: false, dead: false, st: 'hover', t: 0, fire: 1, alt: 0,
+    x: ARENA.cx - 3.3, y: 5.6, h: 2.4, topOff: 1.6, midOff: 0.8, extra: '', flash: 0, enter: 0 };
+  B.top = row('<<<<<<< HEAD', '#8c2323');
+  B.mid = row('=======', '#4a4a4a');
+  B.bot = row('>>>>>>> MAIN', '#1f5a2c');
+  B.w = B.top.geometry.parameters.width;
+  B.eyes = [0, 1].map(() => {
+    const e = quad(0.4, 0.4, '#ffffff', 2.6);
+    e.pupil = quad(0.2, 0.2, '#111111', 0.01); e.add(e.pupil);
+    group.add(e); return e;
+  });
+  return B;
+}
+function lookAt(e, x, y) {
+  e.visible = true; e.position.set(x, y, 2.6);
+  e.pupil.position.x = THREE.MathUtils.clamp((p.x + 0.7 - x) * 0.05, -0.09, 0.09);
+  e.pupil.position.y = p.y + 0.5 < y ? -0.08 : 0.06;
+}
+function patrolX(h) {
+  return THREE.MathUtils.clamp(ARENA.cx - h.w / 2 + Math.sin(h.ph * 0.8) * 8, ARENA.a + 0.3, ARENA.b - h.w - 0.3);
+}
+function setupPhase(n, activate) {
+  const B = L.boss;
+  B.phase = n; B.hp = B.max = BOSS_HP[n]; B.st = 'hover'; B.t = 0; B.fire = 1.2; B.extra = '';
+  B.top.visible = B.mid.visible = B.bot.visible = true;
+  (B.halves || []).forEach(h => group.remove(h.sh));
+  B.halves = null;
+  if (n === 2) {
+    B.halves = [[B.top, 5, B.topOff], [B.bot, 6.6, 0]].map(([mesh, py, off], i) => {
+      const h = { mesh, name: i ? 'MAIN' : 'HEAD', w: B.w, h: 0.8, py, hp: 2, shield: true, t: 0, ph: i * Math.PI, eye: B.eyes[i], flash: 0 };
+      if (activate) Object.assign(h, { x: B.x, y: B.y + off, st: 'rise' });
+      else Object.assign(h, { x: patrolX(h), y: py, st: 'patrol' });
+      h.sh = quad(B.w + 0.6, 1.4, '#d97757', 1.9); h.sh.material.opacity = 0.35; group.add(h.sh);
+      return h;
+    });
+    if (!activate) B.mid.position.set(ARENA.cx, 10, 2);
+    B.hp = 4; B.chargeT = 2.4;
+  }
+  if (n === 3) {
+    B.x = ARENA.cx - B.w / 2; B.wave = 4; B.round = 0; B.plates = null; B.charge = 0;
+    B.enter = activate ? 1.4 : 0; B.y = activate ? 15 : 8; B.fire = 2;
+    if (!p.skills.agent) {
+      addScroll(27.2, 0, 'agent', 'TASK(SUBAGENT)',
+        'Boss 太大了，一个人搞不定。\n按 Q 召唤一个子代理，它会停在原地帮你压住开关。\n你和子代理同时压住 OURS 和 THEIRS 两块开关 1.6 秒，就能解决一个冲突块。');
+      log('  └ 入口处掉下了一张 SKILL.MD', 'egg');
+    }
+  }
+  if (activate) activatePhase();
+}
+function activatePhase() {
+  const B = L.boss;
+  B.active = true; $('boss').hidden = false; bossHud();
+  showStage(`PHASE ${B.phase}/3<small>${PHASE_TIPS[B.phase]}</small>`, 1800);
+  if (B.phase === 3) later(1.6, startRound);
+}
+function nextPhase() {
+  const B = L.boss;
+  B.active = false; clearShots();
+  persist.solved.add('b' + B.phase);
+  L.shake = 0.8;
+  for (let i = 0; i < 4; i++) burst(B.x + Math.random() * B.w, B.y + 1, ['#ff5b5b', '#7ee787', '#e8e8e8', '#f2c34c'][i], 12, 8);
+  log(`  └ ✓ PHASE ${B.phase} CLEAR`, 'ok'); mood('happy', 1.5);
+  later(1.6, () => setupPhase(B.phase + 1, true));
+}
+
+function tick1(dt, pc) {
+  const B = L.boss;
+  const clampX = x => THREE.MathUtils.clamp(x, ARENA.a + 0.3, ARENA.b - B.w - 0.3);
+  if (B.st === 'hover') {
+    B.x += (clampX(pc - B.w / 2 + Math.sin(B.t * 1.3) * 4) - B.x) * Math.min(1, dt * 1.2);
+    B.y = 5.6 + Math.sin(B.t * 2) * 0.4;
+    if ((B.fire -= dt) <= 0) {
+      B.fire = 1.2;
+      if (B.alt++ % 2) shoot('l', B.x + B.w / 2, 0.08, pc < B.x + B.w / 2 ? -8 : 8, 0);
+      else dropShot('r', pc);
+    }
+    if (B.t > 4.2) {
+      B.st = 'aim'; B.t = 0;
+      floatUp(label('git stash --force', { size: 10, color: '#ff5b5b', ppu: 40 }), B.x + B.w / 2, B.y + 2.8, 1);
+    }
+  } else if (B.st === 'aim') {
+    if (B.t < 0.45) B.x += (clampX(pc - B.w / 2) - B.x) * Math.min(1, dt * 5);
+    else if (!B.mark) { B.mark = quad(B.w, 0.16, '#ff5b5b', 0.4); place(B.mark, B.x, 0, B.w, 0.16); group.add(B.mark); }
+    if (B.t > 1) { B.st = 'slam'; B.t = 0; B.vy = 0; }
+  } else if (B.st === 'slam') {
+    B.vy -= 70 * dt; B.y += B.vy * dt;
+    if (B.y <= 0) {
+      B.y = 0; B.st = 'stun'; B.t = 0; L.shake = 0.6;
+      group.remove(B.mark); B.mark = null;
+      burst(B.x + B.w / 2, 0.2, '#e8e8e8', 16, 10);
+      shoot('w', B.x - 1, 0.05, -8, 0); shoot('w', B.x + B.w + 1, 0.05, 8, 0);
+    }
+  } else if (B.st === 'stun') {
+    if (B.t > 3.2) { B.st = 'rise'; B.t = 0; }
+  } else if (B.st === 'rise') {
+    B.y += (5.6 - B.y) * Math.min(1, dt * 4);
+    if (B.t > 0.9) { B.st = 'hover'; B.t = 0; B.fire = 0.9; }
+  }
+  const stun = B.st === 'stun';
+  const body = { x: B.x, y: B.y, w: B.w, h: stun ? 1.6 : 2.4 };
+  if (stun) {
+    const weak = { x: B.x, y: B.y + 1.2, w: B.w, h: 1.2 };
+    if (overlap(p, weak) && p.vy <= 0 && p.y > B.y + 1.2) {
+      B.hp--; B.flash = 0.2; p.vy = JUMP * 0.8; p.dj = false; L.shake = 0.35;
+      burst(B.x + B.w / 2, B.y + 2, '#ffe27a', 18, 8); mood('happy', 1);
+      log(`  └ ✓ SEPARATOR HIT (${B.max - B.hp}/${B.max})`, 'ok');
+      bossHud();
+      if (B.hp <= 0) nextPhase(); else { B.st = 'rise'; B.t = 0; }
+    } else pushOut(body);
+  } else if (B.st !== 'rise' && overlap(p, body)) hurt(B.x + B.w / 2);
+}
+
+function tick2(dt, pc) {
+  const B = L.boss;
+  if ((B.fire -= dt) <= 0) { B.fire = 1.7; dropShot('e', pc + (Math.random() - 0.5) * 3); }
+  const busy = B.halves.some(h => ['land', 'wind', 'charge'].includes(h.st));
+  if ((B.chargeT -= dt) <= 0 && !busy) {
+    const ready = B.halves.filter(h => h.hp > 0 && h.st === 'patrol');
+    if (ready.length) {
+      const h = ready[B.alt++ % ready.length];
+      h.st = 'land'; h.t = 0; h.side = pc > ARENA.cx ? 'L' : 'R';
+      log(`  └ ${h.name} IS CHARGING!`, 'fail');
+    }
+    B.chargeT = 2.2;
+  }
+  for (const h of B.halves) {
+    if (h.hp <= 0) continue;
+    h.t += dt;
+    const edge = side => side === 'L' ? ARENA.a + 0.4 : ARENA.b - h.w - 0.4;
+    if (h.st === 'patrol') {
+      h.ph += dt;
+      const k = Math.min(1, dt * 4);
+      h.x += (patrolX(h) - h.x) * k;
+      h.y += (h.py + Math.sin(h.ph * 2) * 0.3 - h.y) * k;
+    } else if (h.st === 'land') {
+      h.x += (edge(h.side) - h.x) * Math.min(1, dt * 5);
+      h.y += (0 - h.y) * Math.min(1, dt * 5);
+      if (h.t > 0.9) { h.x = edge(h.side); h.y = 0; h.st = 'wind'; h.t = 0; }
+    } else if (h.st === 'wind') {
+      if (h.t > 0.75) { h.st = 'charge'; h.t = 0; h.vx = h.side === 'L' ? 13 : -13; }
+    } else if (h.st === 'charge') {
+      h.x += h.vx * dt;
+      if ((h.vx > 0 && h.x >= edge('R')) || (h.vx < 0 && h.x <= edge('L'))) { h.st = 'rise'; h.t = 0; }
+    } else if (h.st === 'stun') {
+      if (h.t > 3.2) { h.st = 'rise'; h.t = 0; h.shield = true; }
+    } else if (h.st === 'rise') {
+      h.y += (h.py - h.y) * Math.min(1, dt * 3);
+      if (h.t > 1) { h.st = 'patrol'; h.t = 0; }
+    }
+    if (!overlap(p, h)) continue;
+    if (h.shield && h.y < 0.3 && p.dashT > 0) {
+      h.shield = false; h.st = 'stun'; h.t = 0;
+      p.kx = (p.x + p.w / 2 < h.x + h.w / 2 ? -1 : 1) * 10; p.dashT = 0; L.shake = 0.35;
+      burst(h.x + h.w / 2, 0.6, '#d97757', 20, 9);
+      log(`  └ ${h.name} SHIELD BROKEN — 踩它！`, 'ok');
+    } else if (h.st === 'stun' && p.vy <= 0 && p.y > h.y + 0.4) {
+      h.hp--; h.flash = 0.2; p.vy = JUMP * 0.8; p.dj = false; L.shake = 0.3; mood('happy', 1);
+      B.hp = B.halves.reduce((s, x) => s + Math.max(0, x.hp), 0);
+      bossHud();
+      if (h.hp <= 0) {
+        burst(h.x + h.w / 2, 0.5, '#e8e8e8', 26, 10);
+        log(`  └ ✓ ${h.name} RESOLVED`, 'ok');
+      } else { h.st = 'rise'; h.t = 0; h.shield = true; }
+      if (B.hp <= 0) nextPhase();
+    } else if (h.st === 'stun') pushOut(h);
+    else if (h.st !== 'rise') hurt(h.x + h.w / 2);
+  }
+}
+
+function startRound() {
+  const B = L.boss;
+  if (!B.active || B.phase !== 3) return;
+  if (!p.skills.agent) { B.extra = '先去入口捡 SKILL.MD'; bossHud(); later(0.5, startRound); return; }
+  const free = L.tiles.filter(t => !t.off && !t.eating);
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+  const a = pick(free);
+  const rest = free.filter(t => t !== a);
+  const far = rest.filter(t => Math.abs(t.x - a.x) >= 6);
+  const b = pick(far.length ? far : rest);
+  B.plates = [a, b].map((t, i) => {
+    const pl = addPlate(t.x + 0.4);
+    pl.beam = quad(0.24, 1, '#7ee787', 0.35); pl.beam.visible = false; group.add(pl.beam);
+    pl.tag = label(i ? 'THEIRS' : 'OURS', { size: 9, color: '#ffffff', ppu: 44 }); group.add(pl.tag);
+    return pl;
+  });
+  B.charge = 0;
+  log(`+ RESOLVE(HUNK ${B.round + 1}/3) — 同时压住 OURS 和 THEIRS`);
+}
+function resolveHunk() {
+  const B = L.boss;
+  for (const pl of B.plates) {
+    const h = B.y - 0.2;
+    const beam = quad(0.35, h, '#7ee787', 3); beam.position.set(pl.x + 0.6, h / 2, 3);
+    beam.userData = { vx: 0, vy: 0, life: 0.6, g: 0 };
+    scene.add(beam); particles.push(beam);
+    group.remove(pl.mesh, pl.beam, pl.tag); L.plates.splice(L.plates.indexOf(pl), 1);
+  }
+  B.plates = null; B.hp--; B.round++; B.extra = ''; B.flash = 0.3; L.shake = 0.5;
+  burst(B.x + B.w / 2, B.y + 1.2, '#7ee787', 24, 10);
+  log(`  └ ✓ HUNK ${B.round}/3 RESOLVED`, 'ok'); mood('happy', 1);
+  bossHud();
+  if (B.hp <= 0) return L.onVictory();
+  const cand = L.tiles.filter(t => !t.off && !t.eating).sort(() => Math.random() - 0.5);
+  cand.slice(0, 3).forEach(t => t.eating = 1.6);
+  log('  └ × 冲突正在吞掉地板', 'fail');
+  later(2.2, startRound);
+}
+function tick3(dt, pc) {
+  const B = L.boss;
+  B.enter = Math.max(0, B.enter - dt);
+  B.y = 8 + Math.sin(B.t * 1.5) * 0.35 + (B.enter / 1.4) ** 2 * 7;
+  B.x = ARENA.cx - B.w / 2 + Math.sin(B.t * 0.7) * 3;
+  if ((B.fire -= dt * difficulty.bossTempo) <= 0) {
+    B.fire = 1.05;
+    dropShot(B.alt++ % 2 ? 'l' : 'r', Math.random() < 0.5 ? pc : ARENA.a + 1 + Math.random() * (ARENA.b - ARENA.a - 2));
+  }
+  if ((B.wave -= dt * difficulty.bossTempo) <= 0) {
+    B.wave = 5.5;
+    const fromL = Math.random() < 0.5;
+    shoot('w', fromL ? ARENA.a + 0.8 : ARENA.b - 0.8, 0.05, fromL ? 7 : -7, 0);
+  }
+  if (B.plates) {
+    const both = B.plates.every(pl => pl.pressed);
+    B.charge = both ? B.charge + dt / 1.6 : Math.max(0, B.charge - dt * 0.35);
+    B.extra = `HUNK ${B.round + 1}/3 · ${Math.round(B.charge * 100)}%`;
+    bossHud();
+    const top = B.y + 0.4;
+    for (const pl of B.plates) {
+      pl.beam.visible = pl.pressed;
+      pl.beam.scale.y = top - 0.18;
+      pl.beam.position.set(pl.x + 0.6, 0.18 + (top - 0.18) / 2, 0.35);
+      pl.beam.material.opacity = 0.25 + 0.6 * B.charge;
+      pl.tag.position.set(pl.x + 0.6, 1.6 + Math.sin(B.t * 4 + pl.x) * 0.08, 2);
+      pl.tag.material.color.set(pl.pressed ? '#7ee787' : '#d97757');
+    }
+    if (B.charge >= 1) resolveHunk();
+  }
+  if (overlap(p, { x: B.x, y: B.y, w: B.w, h: 2.4 })) hurt(B.x + B.w / 2);
+}
+function updateTiles(dt, time) {
+  for (const t of L.tiles) {
+    if (!t.eating) continue;
+    t.eating -= dt;
+    const warn = Math.floor(time * 10) % 2 ? '#ff5b5b' : '#3c3c3c';
+    t.meshes[0].material.color.set(warn);
+    if (t.eating <= 0) {
+      t.eating = 0; t.off = true; showStatic(t, false);
+      burst(t.x + 1, -0.2, '#ff5b5b', 8, 4);
+    }
+  }
+}
+function renderBoss(dt, time) {
+  const B = L.boss;
+  if (B.dead) return;
+  const k = Math.min(1, dt * 10);
+  const place3 = (x, y, stun) => {
+    B.topOff += ((stun ? 0.8 : 1.6) - B.topOff) * k;
+    B.midOff += ((stun ? 1.6 : 0.8) - B.midOff) * k;
+    B.bot.position.set(x, y + 0.4, 2);
+    B.top.position.set(x, y + B.topOff + 0.4, 2);
+    B.mid.position.set(x, y + B.midOff + 0.4, 2.1);
+    const ey = y + Math.max(B.topOff, B.midOff) + 1.05;
+    lookAt(B.eyes[0], x - 1.2, ey); lookAt(B.eyes[1], x + 1.2, ey);
+  };
+  B.flash = Math.max(0, B.flash - dt);
+  const tint = B.flash > 0 ? '#ff7070' : '#ffffff';
+  B.mid.material.color.set(tint);
+  B.top.material.color.set(tint); B.bot.material.color.set(tint);
+  if (B.phase === 1 || !B.halves && B.phase !== 3) {
+    const stun = B.st === 'stun';
+    const shake = B.st === 'aim' ? (Math.random() - 0.5) * 0.25 : 0;
+    place3(B.x + B.w / 2 + shake, B.y, stun);
+    if (stun) B.mid.material.color.set(Math.floor(time * 8) % 2 ? '#ffe27a' : '#ffffff');
+    if (B.mark) B.mark.material.opacity = Math.floor(time * 12) % 2 ? 0.85 : 0.35;
+  } else if (B.phase === 2 && B.halves) {
+    const km = Math.min(1, dt * 3);
+    B.mid.position.x += (ARENA.cx - B.mid.position.x) * km;
+    B.mid.position.y += (10 + Math.sin(time * 2) * 0.3 - B.mid.position.y) * km;
+    for (const h of B.halves) {
+      const alive = h.hp > 0;
+      h.mesh.visible = alive; h.sh.visible = alive && h.shield; h.eye.visible = alive;
+      if (!alive) continue;
+      h.flash = Math.max(0, h.flash - dt);
+      const shake = h.st === 'wind' ? (Math.random() - 0.5) * 0.25 : 0;
+      h.mesh.position.set(h.x + h.w / 2 + shake, h.y + 0.4, 2);
+      h.sh.position.set(h.x + h.w / 2 + shake, h.y + 0.4, 1.9);
+      h.sh.material.opacity = 0.25 + Math.sin(time * 6) * 0.1;
+      if (h.flash > 0) h.mesh.material.color.set('#ff7070');
+      else if (h.st === 'stun') h.mesh.material.color.set(Math.floor(time * 8) % 2 ? '#ffe27a' : '#ffffff');
+      lookAt(h.eye, h.x + h.w / 2 + (h.st === 'charge' ? Math.sign(h.vx) * 2.4 : 0), h.y + 1.1);
+    }
+  } else {
+    place3(B.x + B.w / 2, B.y, false);
+    const glow = 0.75 + Math.sin(time * 5) * 0.25;
+    if (B.flash <= 0) B.mid.material.color.setRGB(1, glow * 0.5, glow * 0.5);
+  }
+}
+
+// ================= 10 关（普通关 3 房间，Boss 关 2 区域）=================
+const LEVELS = [
+  // 1. NOTE FROM YESTERDAY
+  (re) => {
+    if (!re) log('CLAUDE - ~/MY-APP', 'dim');
+    setCtx(100);
+    L.start = 4;
+    if (!re) p.sleep = true;
+    let note = null;
+    try { note = localStorage.getItem(NOTE_KEY); } catch {}
+    // 房间 1：醒来读信
+    floor(0, 26);
+    plat(16, 1.5, 2); plat(19.5, 3, 2);
+    const g1 = addGate(25.3, 'n1');
+    if (!solved('n1')) {
+      addItem({ x: 12, y: 0, w: 1.4, h: 1, mesh: sprite(envTex, 1.4, 1, 0.5),
+        use() {
+          this.active = false; setItemVisible(this, false);
+          showDialog("NOTE FROM YESTERDAY'S ME:", (note || 'THE USER IS NICE :)\nTASKS ARE IN CLAUDE.MD.') + '\n\n(我的 5 段记忆碎片散落在前面，先把它们找回来。)', () => {
+            log('+ READ(NOTE.MD)'); g1.open();
+          });
+        } });
+    }
+    // 房间 2：5 段记忆碎片
+    addCheckpoint(27.5);
+    floor(26, 33); floor(35, 42); floor(44, 52);
+    pitViz(33, 35); pitViz(42, 44);
+    plat(29.5, 2.5, 2); plat(33.4, 3.6, 1.8); plat(42.3, 2.6, 1.4); plat(48, 3.4, 2.5);
+    addBug(36, 41.5, 0, 1.8);
+    addBlock(45, 0, 1, '{ }');
+    L.onLost = () => log('  └ 箱子掉进 /dev/null 了，按 R 重来', 'fail');
+    const g2 = addGate(51.4, 'n2');
+    if (!solved('n2')) {
+      let got = 0;
+      [[30.1, 2.5], [33.9, 3.6], [38.5, 0], [42.6, 2.6], [48.8, 3.4]].forEach(([x, y], i) =>
+        addFile(x, y, `MEM ${i + 1}`, () => {
+          log(`+ RECALL(MEMORY ${i + 1}/5)`, 'dim');
+          if (++got === 5) { log('  └ ALL MEMORIES RESTORED', 'ok'); g2.open(); }
+        }));
+    }
+    // 房间 3：移动平台过大坑，爬塔
+    addCheckpoint(53);
+    floor(52, 58); pitViz(58, 66); floor(66, 78);
+    mover(plat(58.5, 1.5, 3), 2.6, 1.0);
+    plat(68, 2.5, 3); plat(71.5, 4.5, 2.5); plat(74.5, 6.5, 3.5);
+    addExit(75.6, null, 6.5).unlock();
+  },
+
+  // 2. READ(LOGIN.TSX)
+  (re) => {
+    if (!re) log('> FIX THE LOGIN BUG PLEASE :)', 'me');
+    setCtx(90);
+    L.start = 1;
+    // 房间 1：3 个文件
+    floor(0, 26);
+    plat(5, 2.5, 3); plat(15, 3.3, 4);
+    addBlock(3, 0, 1, '{ }');
+    const g1 = addGate(25.3, 'r1');
+    if (!solved('r1')) {
+      let got = 0;
+      [[10.6, 0, 'LOGIN.TSX', ['+ READ(LOGIN.TSX)', '  └ READ 40 LINES']],
+       [6.1, 2.5, 'TESTS', ['+ TASK(READ TESTS) DONE']],
+       [16.6, 3.3, 'CONFIG', ['+ READ(AUTH.CONFIG.TS)']]].forEach(([x, y, name, lines]) =>
+        addFile(x, y, name, () => {
+          lines.forEach(l => log(l, l.startsWith('  ') ? 'dim' : 'op'));
+          if (++got === 3) g1.open();
+        }));
+    }
+    // 房间 2：穿过 bug 巡逻区，到终端机做代码审查
+    addCheckpoint(27.5);
+    floor(26, 52);
+    plat(29, 2.5, 4); plat(35, 4.5, 4); plat(41, 2.5, 4); plat(47, 4.5, 3);
+    addBug(30, 51, 0, 2.6); addBug(35, 39, 4.5, 1.8); addBug(41, 45, 2.5, 2.2);
+    const g2 = addGate(51.3, 'r2');
+    if (!solved('r2')) {
+      addKiosk(48, 4.5, 'CODE REVIEW', () => {
+        log('+ TASK(REVIEW LOGIN FLOW)');
+        openPanel('CODE REVIEW — 找出所有 BUG', spotGame(SPOT_ROUNDS), () => {
+          log('  └ 10 ISSUES FOUND IN 3 FILES', 'ok');
+          mood('happy', 1.5); g2.open();
+        });
+      });
+    }
+    // 房间 3：叠箱子拿 SESSION
+    addCheckpoint(53);
+    floor(52, 78);
+    wall(56, 1, 3);
+    addBlock(57, 1, 1, '{ }');
+    addBlock(63, 0, 1, '{ }');
+    plat(61.5, 4.6, 3);
+    L.onLost = () => log('  └ 箱子丢了，按 R 重来', 'fail');
+    const exit = addExit(76);
+    addFile(62.6, 4.6, 'SESSION', () => { log('+ TASK(CHECK SESSION) DONE'); exit.unlock(); });
+  },
+
+  // 3. SKILL.MD
+  (re) => {
+    if (!re) { log('+ READ(~/.CLAUDE/SKILLS/)'); p.skills = {}; }
+    updateSkillsHud();
+    setCtx(80);
+    L.start = 1;
+    // 房间 1：二段跳
+    floor(0, 26);
+    addScroll(3, 0, 'djump', 'DOUBLE-JUMP', '在空中再按一次 空格/↑，就能二段跳。\n在最高点按第二下跳得最高。');
+    wall(8, 3.4, 2); wall(13, 4.2, 2); wall(18, 4.8, 2);
+    // 房间 2：冲刺
+    addCheckpoint(27);
+    floor(26, 36); pitViz(36, 46); floor(46, 52);
+    addScroll(28, 0, 'dash', 'DASH', '按 SHIFT 向前冲刺，空中也能用。\n冲刺能撞碎 FIREWALL。\n前面的深坑：跳 → 二段跳 → 冲刺。');
+    addFirewall(31.5);
+    addFirewall(49);
+    // 房间 3：grep 隐藏平台
+    addCheckpoint(53);
+    floor(52, 56); pitViz(56, 74); floor(74, 78);
+    addScroll(54, 0, 'grep', 'GREP', '按 G 执行 grep -r，\n几秒内显示隐藏的平台。\n它们一直都在，只是你看不见。');
+    for (const [x, y] of [[57.5, 1.5], [61, 3], [64.5, 2], [68, 3.5], [71.5, 2]]) plat(x, y, 2).hidden = true;
+    addExit(76).unlock();
+  },
+
+  // 4. WEB_SEARCH
+  (re) => {
+    if (!re) log('> WHY DOES == BREAK LOGIN?', 'me');
+    setCtx(70);
+    L.start = 3;
+    // 房间 1：搜索塔
+    floor(0, 26);
+    const g1 = addGate(25.3, 'w1');
+    if (!solved('w1')) {
+      const c1 = [[4.5, 2.4, 3, false, 'SEO-SPAM.BLOG'], [9, 2.4, 3, true, 'STACKOVERFLOW'], [5.5, 4.5, 3, false, 'AD: BUY NOW'],
+        [12.5, 4.5, 3, true, 'MDN: EQUALITY', 2], [14.8, 6.6, 3, false, 'CLICKBAIT.IO'], [19.5, 6.6, 3, true, 'JS.INFO', 1.2],
+        [21.5, 8.6, 3.5, true, 'ECMA-262']].map(([x, t, w, r, n, a]) => { const s = addCard(x, t, w, r, n); if (a) mover(s, a); return s; });
+      const ans = addFile(23, 8.6, 'ANSWER 1', () => { log('  └ === 不做类型转换', 'dim'); g1.open(); });
+      ans.active = false; setItemVisible(ans, false);
+      addAntenna(1, '== VS ===', c1, () => { ans.active = true; setItemVisible(ans, true); });
+    }
+    // 房间 2：翻页，真假卡片横跨深坑
+    addCheckpoint(27);
+    floor(26, 29); pitViz(29, 50); floor(50, 52);
+    const g2 = addGate(51.3, 'w2');
+    const c2 = [[29.5, 2, 3, true, 'NODEJS.ORG'], [32.5, 4.2, 3, true, 'TC39'], [34, 2, 3, false, 'SPAM.BIZ'],
+      [36.5, 4.2, 3, true, 'V8.DEV'], [40.5, 4.2, 3, false, 'TOP10-HACKS'], [41, 2, 3, true, 'JS.INFO', 1.5],
+      [44.8, 4.2, 3, true, 'MDN'], [46.5, 2, 3, false, 'CLICK ME']].map(([x, t, w, r, n, a]) => { const s = addCard(x, t, w, r, n); if (a) mover(s, a, 1.2); return s; });
+    if (!solved('w2')) addKiosk(50.2, 0, 'TERMINAL', () => {
+      log('+ BASH(INTERACTIVE)');
+      openPanel('TERMINAL — 用命令完成任务', termGame(TERM_STAGES), () => {
+        log('  └ 13 COMMANDS EXECUTED', 'ok'); mood('happy', 1.5); g2.open();
+      });
+    });
+    addAntenna(27.3, 'PAGE 2', c2);
+    // 房间 3：限流，卡片按节奏闪烁
+    addCheckpoint(53);
+    floor(52, 78);
+    const exit = addExit(76);
+    const c3 = [[55.5, 2.3, 3, 0], [59, 4.3, 3, 1], [55.5, 6.3, 3, 2], [59.5, 8.3, 4, -1]].map(([x, t, w, ph]) => {
+      const s = addCard(x, t, w, true, ph < 0 ? 'OFFICIAL DOCS' : `RATE LIMIT ${ph + 1}`);
+      if (ph >= 0) s.blink = { period: 3, phase: ph };
+      return s;
+    });
+    const ans3 = addFile(61, 8.3, 'ANSWER 3', () => { log('+ WEB_FETCH(DOCS)'); log('  └ 用 === 检查 null', 'dim'); exit.unlock(); });
+    ans3.active = false; setItemVisible(ans3, false);
+    addAntenna(53.5, 'NULL CHECK', c3, () => { ans3.active = true; setItemVisible(ans3, true); });
+  },
+
+  // 5. UPDATE(LOGIN.TSX)
+  (re) => {
+    if (!re) log('+ UPDATE(LOGIN.TSX)');
+    setCtx(58);
+    L.start = 10;
+    // 房间 1：=== 与 redirect
+    addStatic(-1, -3, 6, 3); floor(6, 12); floor(13, 20); floor(23, 26);
+    addStatic(14, 0, 6, 2);
+    const g1 = addGate(25.3, 'u1');
+    if (!solved('u1')) {
+      addBlock(2, 0, 1, '=');
+      addBlock(7, 0, 1, '!');
+      addBlock(16.4, 2, 3, "redirect('/login')");
+      diffLabel('12 - if (user == null) return', 13, 8.8, false);
+      const d1 = diffLabel('12 + if (user === null) return', 13, 8.1, true, true);
+      const d2 = diffLabel("13 +   redirect('/login')", 13, 7.4, true, true);
+      const done = { a: false, b: false };
+      const check = () => { if (done.a && done.b) { log('  └ UPDATED LOGIN.TSX (+2 -1)', 'dim'); g1.open(); } };
+      addPit(5, 1, () => {});
+      addPit(12, 1, b => {
+        if (b.text === '=') {
+          b.mesh.material.map = blockTex('=', 1, '#3fbf5a'); d1.material.opacity = 1;
+          log('12 + if (user === null) return', 'add'); done.a = true; check();
+        } else {
+          b.mesh.material.map = blockTex(b.text, 1, '#ff5b5b');
+          log("× 'user !== null' 逻辑反了", 'fail'); mood('angry', 1.4);
+          setTimeout(() => cur === LV.UPDATE && resetLevel(), 1400);
+        }
+      });
+      addPit(20, 3, b => {
+        b.mesh.material.map = blockTex(b.text, 3, '#3fbf5a'); d2.material.opacity = 1;
+        log("13 +   redirect('/login')", 'add'); done.b = true; check();
+      });
+    } else floor(20, 23);
+    L.onLost = () => log('  └ 代码块掉进 /dev/null 了，按 R 重来', 'fail');
+    // 房间 2：const 块，先撞开防火墙
+    addCheckpoint(27);
+    floor(26, 44); floor(46, 52);
+    const g2 = addGate(51.3, 'u2');
+    if (!solved('u2')) {
+      addBlock(29, 0, 2, 'const');
+      addFirewall(35);
+      addBug(37, 43.5, 0, 2);
+      diffLabel('20 - let user = getUser()', 39, 8.8, false);
+      const d3 = diffLabel('20 + const user = getUser()', 39, 8.1, true, true);
+      addPit(44, 2, b => {
+        b.mesh.material.map = blockTex(b.text, 2, '#3fbf5a'); d3.material.opacity = 1;
+        log('20 + const user = getUser()', 'add'); g2.open();
+      });
+    } else floor(44, 46);
+    // 房间 3：移动平台闯关
+    addCheckpoint(53);
+    floor(52, 56); pitViz(56, 74); floor(74, 78);
+    mover(plat(57, 1.5, 3), 2.2, 1.2);
+    mover(plat(63.5, 2.5, 2.5), 1.5, 1.4, 'y');
+    mover(plat(67, 2, 3), 2, 1.0);
+    addBug(74.2, 75.8, 0, 1);
+    addExit(76.2).unlock();
+  },
+
+  // 6. BASH(NPM TEST)
+  (re) => {
+    if (!re) { log('+ BASH(NPM TEST)'); log('  └ × 9 FAILED, 3 PASSED', 'fail'); }
+    setCtx(45);
+    L.start = 1.5;
+    const rooms = ['t1', 't2', 't3'];
+    let pass = 3 + 3 * rooms.filter(solved).length;
+    setTests(pass);
+    const left = { t1: 3, t2: 3, t3: 3 };
+    const gates = {};
+    // 房间 1
+    floor(0, 26);
+    plat(5, 2.5, 5); plat(13, 4.5, 5); plat(20, 2.5, 4);
+    gates.t1 = addGate(25.3, 't1');
+    if (!solved('t1')) [[2, 12, 0, 2.2], [5, 10, 2.5, 1.6], [13, 18, 4.5, 2.8]].forEach(a => addBug(...a, 't1'));
+    addItem({ x: 21.6, y: 2.5, w: 0.8, h: 0.9, bob: false, mesh: sprite(mugTex, 0.8, 0.9, 0.5),
+      use() {
+        this.active = false; setItemVisible(this, false);
+        setCtx(ctxVal + 5);
+        for (let i = 0; i < 4; i++) setTimeout(() => floatUp(quad(0.12, 0.3, '#dddddd'), p.x + 0.7 + (i - 1.5) * 0.2, p.y + 1.2, 1), i * 150);
+        log('~ COFFEE BREAK. CONTEXT +5%', 'dim'); mood('happy', 1.2);
+        egg('coffee', 'COFFEE BREAK');
+      } });
+    // 房间 2：测试节奏
+    addCheckpoint(27);
+    floor(26, 52);
+    plat(33, 2.5, 3); plat(43, 2.5, 3);
+    gates.t2 = addGate(51.3, 't2');
+    if (!solved('t2')) addKiosk(38.5, 0, 'TEST RUNNER', () => {
+      log('+ BASH(NPM TEST -- --WATCH)');
+      openPanel('TEST RUNNER — 跟上测试结果的节奏', rhythmGame(), () => {
+        pass += 3; left.t2 = 0; setTests(pass);
+        log('  ✓ LOGIN / SESSION / AUTH SUITES PASSED', 'ok');
+        mood('happy', 1.5); gates.t2.open();
+      });
+    });
+    // 房间 3：爬塔
+    addCheckpoint(53);
+    floor(52, 78);
+    plat(56, 2.5, 4); plat(62, 4.5, 4); plat(68, 6.5, 4); plat(73.5, 4.5, 3);
+    [[56, 60, 2.5, 2.4], [62, 66, 4.5, 2.8], [68, 72, 6.5, 3.2]].forEach(a => addBug(...a, 't3'));
+    const exit = addExit(76);
+    L.onStomp = b => {
+      setTests(++pass);
+      log(`  ✓ LOGIN.SPEC #${pass} PASSED`, 'ok');
+      if (--left[b.room] === 0 && gates[b.room]) gates[b.room].open();
+      if (pass === 12) {
+        log('+ BASH(NPM TEST)'); log('  └ ✓ 12 PASSED', 'ok');
+        mood('happy', 3);
+        for (let i = 0; i < 6; i++) setTimeout(() => floatUp(sprite(heartTex, 0.7, 0.62), p.x + 0.7 + (Math.random() - 0.5), p.y + 1.4), i * 160);
+        showStage("YOU!! YOU'RE THE BEST<small>♥</small>", 2000).then(() => {
+          log('+ BASH(GIT COMMIT)');
+          showDialog('USER:', 'THANKS! THAT WAS THE BEST COMMIT MESSAGE THAT I EVER READ! :D\n\n$ git commit -m "I LOVE YOU CLAUDE"', () => {
+            log('+ PUSH(REMOTE.GIT)'); log('+ DONE. ANYTHING ELSE?', 'dim'); exit.unlock();
+          });
+        });
+      }
+    };
+  },
+
+  // 7. MERGE CONFLICT（Boss）
+  (re) => {
+    if (!re) {
+      log('+ PUSH(REMOTE.GIT)');
+      log('  └ ! [REJECTED] MAIN -> MAIN (FETCH FIRST)', 'fail');
+      log('+ BASH(GIT PULL)');
+      log('  └ CONFLICT (CONTENT): MERGE CONFLICT IN LOGIN.TSX', 'fail');
+    }
+    setCtx(40);
+    L.W = ARENA.b;
+    L.start = 1;
+    // 房间 1：冲突标记滴落 + bug
+    floor(0, 8); floor(10, 17); floor(19, ARENA.a);
+    pitViz(8, 10); pitViz(17, 19);
+    plat(12, 2.6, 3); plat(21, 2.6, 3);
+    addBug(10.5, 16.5, 0, 2.2); addBug(19.5, 25.5, 0, 2.6);
+    // 房间 2：竞技场
+    addCheckpoint(27);
+    floor(ARENA.a, 30);
+    L.tiles = [];
+    for (let x = 30; x < ARENA.b; x += 2) L.tiles.push(addStatic(x, -3, 2, 3));
+    const gate = addStatic(ARENA.a - 0.6, 0, 0.6, 14, false);
+    const gq = quad(0.6, 14, '#b8402f', 0.2); gq.material.opacity = 0.85; place(gq, ARENA.a - 0.6, 0, 0.6, 14); attach(gate, gq);
+    const gl = label('MERGING', { size: 8, color: '#fff', bg: '#6a1e14', ppu: 44 }); gl.position.set(ARENA.a - 0.3, 2, 2); attach(gate, gl);
+    gate.off = true; showStatic(gate, false);
+    const exit = addExit(ARENA.b - 2.4);
+    const B = L.boss = makeBoss(1);
+    if (solved('b3')) {
+      B.dead = true;
+      [B.top, B.mid, B.bot, ...B.eyes].forEach(m => m.visible = false);
+      exit.unlock();
+    } else setupPhase(solved('b2') ? 3 : solved('b1') ? 2 : 1, false);
+    L.drip = 1; L.di = 0;
+    L.onFall = () => { if (B.active) loseHeart(); };
+    function startFight() {
+      gate.off = false; showStatic(gate, true);
+      if (p.x < ARENA.a) p.x = ARENA.a;
+      L.camX = ARENA.cx;
+      if (solved('bintro')) return activatePhase();
+      showDialog('CONFLICT (CONTENT): SRC/LOGIN.TSX',
+        "<<<<<<< HEAD\n  if (user === null) return;\n=======\n  if (!user) throw new AuthError();\n>>>>>>> origin/main\n\n两边改了同一行，冲突活过来了。\n打败它，完成合并。",
+        () => { persist.solved.add('bintro'); activatePhase(); });
+    }
+    L.onVictory = () => {
+      B.active = false; B.dead = true; clearShots();
+      L.tiles.forEach(t => { t.off = false; t.eating = 0; t.meshes[0].material.color.set('#3c3c3c'); showStatic(t, true); });
+      persist.solved.add('b3');
+      $('boss').hidden = true;
+      const lv = L;
+      for (let i = 0; i < 8; i++) setTimeout(() => {
+        if (L !== lv) return;
+        burst(B.x + Math.random() * B.w, B.y + Math.random() * 2.4, ['#ff5b5b', '#7ee787', '#f2c34c', '#e8e8e8'][i % 4], 16, 10);
+        L.shake = 0.5;
+      }, i * 140);
+      setTimeout(() => { if (L === lv) [B.top, B.mid, B.bot, ...B.eyes].forEach(m => m.visible = false); }, 1100);
+      const lost = persist.bossLost || 0, aborts = persist.aborts || 0;
+      log(`  └ ${lost ? `HEARTS LOST: ${lost}` : 'NO DAMAGE TAKEN'}${aborts ? ` · ABORTS: ${aborts}` : ''}`, 'dim');
+      if (!lost) egg('flawless', 'FLAWLESS MERGE');
+      showStage('CONFLICT RESOLVED<small>git merge --continue</small>', 2000).then(() => {
+        if (L !== lv) return;
+        showDialog('GIT', "$ git add src/login.tsx\n$ git merge --continue\n[main 7f3a9c1] Merge branch 'origin/main'\n$ git push\n   a1b2c3d..7f3a9c1  main -> main", () => {
+          gate.off = true; showStatic(gate, false); L.camX = null;
+          log('+ PUSH(REMOTE.GIT)'); log('  └ ✓ MERGED AND PUSHED', 'ok');
+          exit.unlock();
+        });
+      });
+    };
+    L.update = dt => {
+      const time = clock.elapsedTime;
+      L.shake = Math.max(0, L.shake - dt * 2);
+      renderBoss(dt, time);
+      if (mode !== 'play') return;
+      for (let i = L.timers.length - 1; i >= 0; i--) {
+        const tm = L.timers[i];
+        if ((tm.t -= dt) <= 0) { L.timers.splice(i, 1); tm.fn(); }
+      }
+      updateShots(dt * difficulty.bossTempo);
+      updateTiles(dt, time);
+      if (B.dead) return;
+      if (!B.active) {
+        if (p.x < ARENA.a && (L.drip -= dt) <= 0) { L.drip = 1.5; dropShot('e', [5, 13.5, 22.5][L.di++ % 3]); }
+        if (p.x > ARENA.a + 2.5 && gate.off && !B.started) { B.started = true; startFight(); }
+        return;
+      }
+      B.t += dt * difficulty.bossTempo;
+      const pc = p.x + p.w / 2;
+      if (B.phase === 1) tick1(dt * difficulty.bossTempo, pc);
+      else if (B.phase === 2) tick2(dt * difficulty.bossTempo, pc);
+      else tick3(dt, pc);
+    };
+  },
+
+  // 8. TASK(SUBAGENT)
+  (re) => {
+    if (!re) { log('+ READ(SRC/APP.TSX)'); log('  └ READ 120 LINES — TOO BIG, DELEGATING', 'dim'); }
+    setCtx(33);
+    if (!p.skills.agent) { p.skills.agent = true; updateSkillsHud(); log('+ TASK(SUBAGENT) UNLOCKED — PRESS Q', 'ok'); }
+    L.start = 1;
+    // 房间 1：子代理 + 箱子
+    floor(0, 26);
+    const p1 = addPlate(4);
+    addDoor(8, [p1]);
+    wall(10, 3, 3);
+    addBlock(11.6, 3, 1, '{ }');
+    const p2 = addPlate(13), p3 = addPlate(18);
+    addDoor(22, [p2, p3]);
+    L.onLost = () => log('  └ 箱子丢了，按 R 重来', 'fail');
+    // 房间 2：限时门
+    addCheckpoint(24);
+    floor(26, 52);
+    const a = addPlate(30), b = addPlate(38);
+    wall(41, 2, 1.2);
+    addDoor(47, [a, b], 4.5);
+    // 房间 3：三块开关
+    addCheckpoint(49);
+    floor(52, 78);
+    const x = addPlate(55), y = addPlate(60), z = addPlate(66);
+    plat(57, 2.5, 4);
+    addBlock(57.8, 2.5, 1, '{ }');
+    addFirewall(70);
+    addBlock(72, 0, 1, '{ }');
+    addDoor(75, [x, y, z]);
+    addExit(76.3).unlock();
+  },
+
+  // 9. ADD DARK MODE
+  (re) => {
+    if (!re) { log('> ADD DARK MODE', 'me'); log('+ UPDATE(THEME.CSS)'); }
+    setCtx(21);
+    L.start = 1;
+    const near = (i, N) => [i - 1, i, i + 1].filter(j => j >= 0 && j < N);
+    const ring = (i, N) => [(i + N - 1) % N, i, (i + 1) % N];
+    // 房间 1
+    floor(0, 26);
+    const g1 = addGate(25.3, 'd1');
+    lampRoom('d1', 0, [4, 8, 12, 16, 20], near, {}, () => { log('  └ THEME.CSS ✓', 'ok'); g1.open(); });
+    // 房间 2：环形联动，开关在高台上
+    addCheckpoint(27);
+    floor(26, 52);
+    const g2 = addGate(51.3, 'd2');
+    lampRoom('d2', 26, [3, 7, 11, 15, 19, 23], ring,
+      { sw: [[3, 0], [7, 2.8], [11, 0], [15, 2.8], [19, 0], [23, 2.8]] },
+      () => { log('  └ COMPONENTS.CSS ✓', 'ok'); g2.open(); });
+    // 房间 3：编号打乱 + 会重新亮起
+    addCheckpoint(53);
+    floor(52, 78);
+    const exit = addExit(76.3);
+    lampRoom('d3', 52, [3, 7, 11, 15, 19, 23], (i) => [[3, 0, 5, 1, 4, 2][i]],
+      { allOn: true, numbers: true, relight: 6,
+        sw: [[3, 0], [6.5, 3], [10, 0], [13.5, 3], [17, 0], [21, 3.2]] },
+      () => { log('  └ ✓ 14 PASSED', 'ok'); log('+ READ(SRC/APP.TSX)'); exit.unlock(); });
+    L.update = dt => L.lampRooms.forEach(r => r.tick(dt));
+  },
+
+  // 10. NOTE FOR TOMORROW
+  (re) => {
+    if (!re) log('+ <IN PROGRESS>', 'dim');
+    setCtx(3);
+    L.start = 12;
+    setCarry(persist.carry || null);
+    // 房间 1：铅笔
+    floor(0, 26);
+    wall(8, 1.5, 1.6);
+    plat(2, 3.1, 4);
+    const g1 = addGate(25.3, 'e1');
+    if (!persist.carry) {
+      addItem({ x: 3.5, y: 3.1, w: 1.3, h: 0.3, mesh: sprite(pencilTex, 1.3, 0.3, 0.5),
+        use() {
+          this.active = false; setItemVisible(this, false);
+          persist.carry = 'pencil'; setCarry('pencil');
+          log('+ PICK(PENCIL)'); mood('happy', 0.8); g1.open();
+        } });
+    }
+    // 房间 2：今天的 5 段回忆
+    addCheckpoint(27);
+    floor(26, 30); pitViz(30, 50); floor(50, 52);
+    crumbly(plat(31, 2, 2.5));
+    plat(35, 3.5, 2).hidden = true;
+    mover(plat(39, 2, 3), 1.5);
+    plat(44, 4.5, 2);
+    crumbly(plat(47.5, 2.5, 2));
+    const g2 = addGate(51.3, 'e2');
+    if (!solved('e2')) {
+      let got = 0;
+      [[31.8, 2, 'READ', 'READ 40 LINES OF LOGIN.TSX'], [35.6, 3.5, 'SEARCH', 'LEARNED == VS ==='],
+       [40, 2, 'FIX', 'FIXED THE LOGIN BUG'], [44.6, 4.5, 'TEST', '12 TESTS PASSED'], [48.1, 2.5, 'DARK', 'ADDED DARK MODE']]
+        .forEach(([x, y, n, text]) => addFile(x, y, n, () => {
+          log(`  └ REMEMBER: ${text}`, 'dim');
+          if (++got === 5) g2.open();
+        }));
+    }
+    // 房间 3：写便条，走过崩塌的地板
+    addCheckpoint(53);
+    floor(52, 60); pitViz(60, 74); floor(74, 78);
+    for (let x = 60; x < 74; x += 2) crumbly(addStatic(x, -0.5, 2, 0.5));
+    if (persist.carry !== 'letter') {
+      addItem({ x: 55.5, y: 0, w: 2.4, h: 1.8, bob: false, mesh: sprite(paperTex, 2.4, 1.8, 0.2),
+        use() {
+          if (p.carry !== 'pencil') { log('  └ 需要一支铅笔', 'dim'); mood('angry', 0.6); return; }
+          showInput("NOTE FOR TOMORROW'S ME:", '写一句话留给明天的自己（下次开局会读到）', "THEY SAID YOU'RE THE BEST.", v => {
+            if (v.includes('LOVE')) { L.loveNote = true; egg('love', 'I LOVE YOU CLAUDE'); }
+            try { localStorage.setItem(NOTE_KEY, v); } catch {}
+            log('+ WRITE(NOTE.MD)'); log(`  └ "${v}"`, 'dim');
+            this.active = false; setItemVisible(this, false);
+            persist.carry = 'letter'; setCarry('letter'); mood('happy', 1);
+          });
+        } });
+    }
+    addExit(76, () => {
+      if (p.carry !== 'letter') { log('  └ 还没写便条…', 'dim'); return; }
+      setCarry(null);
+      ending();
+    }).unlock();
+  },
+];
+
+function buildLevel(i, re) {
+  group.clear();
+  L = { statics: [], blocks: [], pits: [], items: [], bugs: [], plates: [], agent: null, start: 2, update: null, onLost: null,
+    W: 78, flags: [], lampRooms: [], shots: [], timers: [], camX: null, shake: 0 };
+  setTests(null);
+  $('boss').hidden = true;
+  p.sleep = p.nap = false; p.vx = p.vy = p.kx = 0; p.inv = 0; p.dashT = p.grepT = 0;
+  if (i !== LV.NOTE) setCarry(null);
+  LEVELS[i](re);
+  addStatic(-1, -3, 1, 20, false);
+  addStatic(L.W, -3, 1, 20, false);
+  L.bar = quad(viewW + 2, 0.06, '#5a5a5a', -1); L.bar.position.set(0, -1.9, -1); group.add(L.bar);
+  L.prompt = label('>', { size: 16, color: '#9a9a9a', ppu: 40 }); L.prompt.position.set(0.5, -2.35, -1); group.add(L.prompt);
+  L.cursor = quad(0.18, 0.4, '#e8e8e8', -1); L.cursor.position.set(0.95, -2.35, -1); group.add(L.cursor);
+  addTurtle();
+  lastInput = clock.elapsedTime;
+  if (persist.cp != null) L.start = persist.cp;
+  p.x = L.start; p.y = 0;
+  camera.position.x = THREE.MathUtils.clamp(p.x, viewW / 2, Math.max(viewW / 2, L.W - viewW / 2));
+  $('hint').textContent = HINTS[i] + ' · H 隐藏/显示提示';
+  showHint(true);
+}
+let hintTimer = null;
+function showHint(on) {
+  clearTimeout(hintTimer);
+  $('hint').classList.toggle('off', !on);
+  if (on) hintTimer = setTimeout(() => $('hint').classList.add('off'), 6000);
+}
+function resetLevel() {
+  if (mode !== 'play') return;
+  buildLevel(cur, true);
+}
+async function nextLevel() {
+  mode = 'busy';
+  await fade(1);
+  cur++;
+  freshPersist();
+  buildLevel(cur, false);
+  await fade(0);
+  mode = 'play';
+  showStage(`${cur + 1}/${LEVELS.length} · ${STAGES[cur][0]}<small>${STAGES[cur][1]}</small>`);
+}
+
+// ================= 开场 / 结尾 =================
+const tweens = [];
+function tween(dur, fn) { return new Promise(res => tweens.push({ t: 0, dur, fn, res })); }
+const ease = k => k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+
+async function startGame() {
+  if (mode !== 'title') return;
+  mode = 'zoom';
+  document.activeElement?.blur();
+  renderDifficulty();
+  $('title').hidden = true;
+  const sc = screenCenter();
+  await tween(1.4, k => {
+    camera.position.set(cx + (sc.x - cx) * k, cy + (sc.y - cy) * k, 10);
+    camera.zoom = 1 + (sc.zoom - 1) * k; camera.updateProjectionMatrix();
+  });
+  await fade(1);
+  camera.zoom = 1; camera.updateProjectionMatrix(); camera.position.set(cx, cy, 10);
+  desk.visible = false; group.visible = p.mesh.visible = true;
+  $('hud').hidden = false; $('lines').innerHTML = '';
+  eggs.clear(); rainbow = false; p.skills = {}; updateSkillsHud();
+  cur = 0;
+  freshPersist();
+  buildLevel(0, false);
+  await fade(0);
+  mode = 'play';
+  showStage(`1/${LEVELS.length} · ${STAGES[0][0]}<small>${STAGES[0][1]}</small>`);
+}
+async function ending() {
+  mode = 'busy';
+  log('~ COMPACTED. SEE YOU TOMORROW', 'dim');
+  setCtx(0);
+  p.sleep = true; p.vx = 0;
+  if (L.loveNote) {
+    for (let i = 0; i < 24; i++) setTimeout(() => {
+      const h = sprite(heartTex, 0.6, 0.53);
+      h.position.set(camera.position.x + (Math.random() - 0.5) * viewW, cy + viewH / 2, 3);
+      h.userData = { vx: 0, vy: -2 - Math.random() * 2, life: 5, g: 0 };
+      scene.add(h); particles.push(h);
+    }, i * 110);
+  }
+  await wait(3200);
+  await fade(1);
+  $('hud').hidden = true; group.visible = p.mesh.visible = false; eBubble.visible = false;
+  scene.background = BG_DARK.clone();
+  desk.material.map = deskNight; desk.visible = true;
+  const sc = screenCenter();
+  mode = 'zoom';
+  camera.position.set(sc.x, sc.y, 10); camera.zoom = sc.zoom; camera.updateProjectionMatrix();
+  await fade(0);
+  await tween(2.6, k => {
+    camera.position.set(sc.x + (cx - sc.x) * k, sc.y + (cy - sc.y) * k, 10);
+    camera.zoom = sc.zoom + (1 - sc.zoom) * k; camera.updateProjectionMatrix();
+  });
+  mode = 'end';
+  $('title').innerHTML = `<div class="box"><h1>CLAUDE'S DAY</h1><p>SEE YOU TOMORROW. · ${difficulty.name}</p><p>你写下的便条，明天的你会读到。</p><p style="color:#f2c34c">EASTER EGGS: ${eggs.size}/${EGG_TOTAL}</p><p class="go">[ PRESS ENTER ]</p><p class="fan">NON-OFFICIAL FAN GAME — CLAWD © ANTHROPIC PBC — NOT AFFILIATED WITH ANTHROPIC</p></div>`;
+  $('title').hidden = false;
+}
+async function toTitle() {
+  mode = 'busy';
+  await fade(1);
+  desk.material.map = deskDay;
+  $('title').innerHTML = titleMarkup;
+  renderDifficulty();
+  $('title').querySelector('.box p').textContent = '新的一天。昨天的你留了一封信。';
+  await fade(0);
+  mode = 'title';
+}
+
+// ================= 输入 =================
+const keys = {};
+let pressE = false, pressJump = false, pressDash = false, pressGrep = false, pressAgent = false;
+addEventListener('keydown', e => {
+  if (mode === 'input') return;
+  if (mode === 'panel') {
+    if (e.code === 'Escape') { panel.close(); log('  └ CANCELLED', 'dim'); }
+    else if (panel.onKey && !e.repeat) panel.onKey(e);
+    return;
+  }
+  const k = e.code;
+  if (mode === 'title') {
+    const ids = Object.keys(DIFFICULTIES);
+    let id = { Digit1: 'sonnet', Digit2: 'opus', Digit3: 'fable' }[k];
+    if (k === 'ArrowLeft' || k === 'ArrowRight') id = ids[(ids.indexOf(difficultyId) + (k === 'ArrowLeft' ? 2 : 1)) % 3];
+    const choice = e.target.closest?.('[data-difficulty]');
+    if (choice && (k === 'Enter' || k === 'Space')) id = choice.dataset.difficulty;
+    if (id) {
+      e.preventDefault();
+      if (!e.repeat) selectDifficulty(id);
+      if (choice) $('difficultyChoices').querySelector('[data-difficulty="' + id + '"]').focus();
+      return;
+    }
+  }
+  if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(k)) e.preventDefault();
+  keys[k] = true;
+  lastInput = clock.elapsedTime;
+  if (e.repeat) return;
+  if (mode === 'play') checkSecrets(k);
+  if (mode === 'title' && (k === 'Enter' || k === 'Space')) startGame();
+  else if (mode === 'end' && k === 'Enter') toTitle();
+  else if (mode === 'dialog' && ['KeyE', 'Enter', 'Space'].includes(k)) advanceDialog();
+  else if (mode === 'play') {
+    if (k === 'KeyE' || k === 'Enter') pressE = true;
+    if (k === 'Space' || k === 'ArrowUp' || k === 'KeyW') pressJump = true;
+    if (k === 'KeyR') resetLevel();
+    if (k === 'Slash' || k === 'NumpadDivide') { e.preventDefault(); cmd.focus(); cmd.value = '/'; }
+    if (k === 'ShiftLeft' || k === 'ShiftRight') pressDash = true;
+    if (k === 'KeyG') pressGrep = true;
+    if (k === 'KeyQ') pressAgent = true;
+    if (k === 'KeyH') showHint($('hint').classList.contains('off'));
+  }
+});
+addEventListener('keyup', e => {
+  keys[e.code] = false;
+  if (mode === 'panel' && panel && panel.onKeyUp) panel.onKeyUp(e);
+});
+$('title').addEventListener('click', e => {
+  const choice = e.target.closest('[data-difficulty]');
+  if (choice) { selectDifficulty(choice.dataset.difficulty); return; }
+  if (e.target.closest('#difficultyChoices, #difficultyDesc')) return;
+  if (mode === 'title') startGame(); else if (mode === 'end') toTitle();
+});
+$('dialog').addEventListener('click', () => { if (mode === 'dialog') advanceDialog(); });
+addEventListener('resize', resize);
+
+// ================= 物理 =================
+function solids(except) {
+  return L.statics.filter(s => !s.off).concat(L.blocks.filter(b => b !== except && !b.dead));
+}
+function supported(b) {
+  return solids(b).some(s => Math.abs(s.y + s.h - b.y) < 0.02 && Math.min(b.x + b.w, s.x + s.w) - Math.max(b.x, s.x) >= 0.3);
+}
+// 方块从平台边缘掉落时，先把它挪出平台，避免下落时被"吸"回平台顶
+function clearLedge(b) {
+  for (const s of solids(b)) {
+    if (Math.abs(s.y + s.h - b.y) > 0.02) continue;
+    if (b.x < s.x + s.w && b.x + b.w > s.x + s.w) b.x = s.x + s.w;
+    else if (b.x + b.w > s.x && b.x < s.x) b.x = s.x - b.w;
+  }
+}
+
+function updatePlayer(dt, time) {
+  const input = p.sleep ? 0 : (keys.ArrowRight || keys.KeyD ? 1 : 0) - (keys.ArrowLeft || keys.KeyA ? 1 : 0);
+  const moving = keys.ArrowRight || keys.ArrowLeft || keys.KeyA || keys.KeyD;
+  if (p.sleep && mode === 'play' && moving && (cur === 0 || p.nap)) {
+    p.sleep = false; mood('happy', 0.8);
+    if (p.nap) { p.nap = false; log('  └ ...HUH? I WASN\'T SLEEPING.', 'dim'); }
+    else log('* WELCOME TO CLAUDE CODE!', 'dim');
+  }
+  if (!p.sleep && mode === 'play' && time - lastInput > 12 && !(L.boss && L.boss.started && !L.boss.dead)) {
+    p.sleep = p.nap = true;
+    log('~ IDLE... ZZZ', 'dim'); egg('afk', 'AFK NAP');
+  }
+  if (input) p.face = input;
+  p.vx = input * SPEED;
+
+  // 技能：冲刺 / grep / 子代理
+  p.dashCD -= dt;
+  if (pressDash && p.skills.dash && p.dashCD <= 0 && !p.sleep) {
+    p.dashT = 0.2; p.dashCD = 0.6; p.kx = p.face * 20;
+  }
+  if (pressGrep && p.skills.grep && !p.sleep) {
+    p.grepT = 3.5;
+    floatUp(label('grep -r', { size: 10, color: '#7ee787', ppu: 44 }), p.x + 0.7, p.y + 1.5, 1.2);
+  }
+  if (pressAgent && p.skills.agent && !p.sleep) spawnAgent();
+  pressDash = pressGrep = pressAgent = false;
+  if (p.dashT > 0) p.dashT -= dt;
+
+  p.kx *= Math.pow(0.02, dt);
+  const dx = (p.vx + p.kx) * dt;
+
+  p.x += dx;
+  for (const s of solids()) {
+    if (!overlap(p, s)) continue;
+    if (s.breakable) {
+      if (p.dashT > 0) {
+        s.off = true; showStatic(s, false);
+        burst(s.x + 0.4, p.y + 0.6, '#b8402f', 24, 10);
+        log('+ BASH(RM -RF FIREWALL)', 'ok'); mood('happy', 1);
+        continue;
+      }
+      if (!s.warned) { s.warned = true; log('  └ × PERMISSION DENIED. TRY DASH (SHIFT)', 'fail'); }
+    }
+    if (s.block && !s.fixed && !s.falling && dx) {
+      const ox = s.x;
+      s.x = dx > 0 ? p.x + p.w : p.x - s.w;
+      if (!solids(s).some(o => overlap(s, o))) continue;
+      s.x = ox;
+    }
+    p.x = dx > 0 ? s.x - p.w : s.x + s.w;
+  }
+
+  if (pressJump && !p.sleep) {
+    if (p.onGround) { p.vy = JUMP; p.squash = -0.2; }
+    else if (p.skills.djump && !p.dj) { p.dj = true; p.vy = JUMP * 0.9; burst(p.x + 0.7, p.y, '#e8e8e8', 6, 3); }
+  }
+  pressJump = false;
+  if (p.dashT > 0) p.vy = Math.max(p.vy, 0);
+  else p.vy -= G * dt;
+  p.y += p.vy * dt;
+  const wasGround = p.onGround;
+  p.onGround = false;
+  for (const s of solids()) {
+    if (!overlap(p, s)) continue;
+    if (p.vy <= 0) { p.y = s.y + s.h; p.onGround = true; } else p.y = s.y - p.h;
+    p.vy = 0;
+  }
+  if (p.onGround) p.dj = false;
+  if (p.onGround && !wasGround) p.squash = 0.22;
+
+  if (p.y < -6) {
+    burst(p.x + 0.7, -1.5, '#d97757', 10);
+    log('× FELL INTO /dev/null', 'fail');
+    p.x = L.start; p.y = 0.5; p.vy = 0; p.kx = 0; setCtx(Math.max(1, ctxVal - 1)); mood('angry', 1);
+    L.onFall && L.onFall();
+  }
+  p.inv = Math.max(0, p.inv - dt);
+}
+
+function occupants() {
+  return [p, L.agent, ...L.blocks.filter(b => !b.dead)].filter(Boolean);
+}
+function updateStatics(dt, time) {
+  p.grepT = Math.max(0, p.grepT - dt);
+  for (const pl of L.plates) {
+    pl.pressed = occupants().some(o => o.x < pl.x + pl.w && o.x + o.w > pl.x && o.y < 0.3 && o.y > -0.1);
+    pl.mesh.material.color.set(pl.pressed ? '#3fbf5a' : '#d97757');
+    pl.mesh.scale.y = pl.pressed ? 0.5 : 1;
+  }
+  for (const s of L.statics) {
+    if (s.hidden) showStatic(s, p.grepT > 1 || (p.grepT > 0 && Math.floor(time * 8) % 2 === 0));
+    if (s.spawned === false) continue;
+    const riding = p.onGround && !s.off && Math.abs(p.y - (s.y + s.h)) < 0.03 && p.x < s.x + s.w && p.x + p.w > s.x;
+    if (s.move) {
+      const v = Math.sin(time * s.move.sp) * s.move.amp;
+      const nx = s.move.axis === 'y' ? s.x : s.move.x0 + v;
+      const ny = s.move.axis === 'y' ? s.move.y0 + v : s.y;
+      if (riding) { p.x += nx - s.x; p.y += ny - s.y; }
+      s.x = nx; s.y = ny;
+    }
+    if (s.blink) {
+      const ph = (time + s.blink.phase) % s.blink.period;
+      const on = ph < s.blink.period * 0.62;
+      if (on === s.off && !(on && overlap(p, s))) { s.off = !on; showStatic(s, on); }
+      s.warn = on && ph > s.blink.period * 0.48;
+    }
+    if (s.crumble) {
+      if (!s.off) {
+        if (riding || s.ct > 0) s.ct = (s.ct || 0) + dt;
+        if (s.ct > 0.55) {
+          s.off = true; s.back = 3; showStatic(s, false);
+          burst(s.x + s.w / 2, s.y, '#d94a3a', 8);
+          if (!L.spamWarned) { L.spamWarned = true; log('  └ × UNRELIABLE SOURCE', 'fail'); }
+        }
+      } else if ((s.back -= dt) <= 0 && !overlap(p, s)) { s.off = false; s.ct = 0; showStatic(s, true); }
+    }
+    if (s.door) {
+      const cond = s.door.every(pl => pl.pressed);
+      if (cond) s.t = s.hold || 0; else s.t = (s.t || 0) - dt;
+      const open = cond || s.t > 0;
+      if (s.timer) { s.timer.visible = !cond && s.t > 0; }
+      if (open && !s.off) {
+        s.off = true; s.meshes.forEach(m => m.material.opacity = 0.15);
+        if (!s.logged) { s.logged = true; log('  └ ✓ PERMISSION GRANTED', 'ok'); }
+      } else if (!open && s.off && !occupants().some(o => overlap(o, s))) {
+        s.off = false; s.meshes.forEach(m => m.material.opacity = 0.85);
+      }
+    }
+    if (s.meshes.length && (s.move || s.crumble || s.blink)) syncStatic(s, (s.crumble && s.ct > 0 && !s.off) || s.warn ? 0.08 : 0);
+  }
+}
+function spawnAgent() {
+  let a = L.agent;
+  if (!a) {
+    a = L.agent = { w: 1, h: 0.75, vy: 0 };
+    a.mesh = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.8), new THREE.MeshBasicMaterial({ map: CT.idle0, transparent: true, color: 0xffd9b8 }));
+    a.mesh.position.z = 1.2;
+    a.tag = label('AGENT', { size: 8, color: '#f2c34c', ppu: 44 });
+    group.add(a.mesh, a.tag);
+    log('+ TASK(SUBAGENT) SPAWNED');
+  } else {
+    burst(a.x + 0.5, a.y + 0.4, '#f2c34c', 6, 3);
+  }
+  a.x = p.x + 0.2; a.y = p.y + 0.3; a.vy = 0;
+  burst(a.x + 0.5, a.y + 0.4, '#f2c34c', 10, 4);
+}
+function updateAgent(dt) {
+  const a = L.agent;
+  if (!a) return;
+  a.vy -= G * dt;
+  a.y += a.vy * dt;
+  for (const s of solids()) {
+    if (!overlap(a, s)) continue;
+    if (a.vy <= 0) a.y = s.y + s.h; else a.y = s.y - a.h;
+    a.vy = 0;
+  }
+  if (a.y < -6) { group.remove(a.mesh, a.tag); L.agent = null; return; }
+  a.mesh.position.set(a.x + a.w / 2, a.y + 0.4, 1.2);
+  a.tag.position.set(a.x + a.w / 2, a.y + 1.1, 2);
+}
+
+function updateBlocks(dt) {
+  for (const b of L.blocks) {
+    if (b.dead || b.fixed) continue;
+    if (!b.falling && !supported(b)) {
+      b.falling = true; b.vy = 0;
+      const c = b.x + b.w / 2;
+      b.pit = L.pits.find(pt => !pt.filled && pt.w === b.w && c > pt.x && c < pt.x + pt.w) || null;
+      if (b.pit) b.x = b.pit.x;
+      else clearLedge(b);
+    }
+    if (b.falling) {
+      b.vy -= G * dt;
+      b.y += b.vy * dt;
+      if (b.pit && b.y <= -1) {
+        b.y = -1; b.fixed = true; b.falling = false; b.pit.filled = true;
+        burst(b.x + b.w / 2, 0.1, '#e8e8e8', 8, 3);
+        b.pit.onFill(b);
+        continue;
+      }
+      for (const s of solids(b)) if (overlap(b, s)) { b.y = s.y + s.h; b.vy = 0; b.falling = false; }
+      if (b.y < -10) { b.dead = true; b.mesh.visible = false; L.onLost && L.onLost(); }
+    }
+  }
+}
+
+function updateBugs(dt, time) {
+  for (const b of L.bugs) {
+    if (b.dead) continue;
+    b.x += b.dir * b.sp * dt * difficulty.enemySpeed;
+    if (b.x < b.min) { b.x = b.min; b.dir = 1; }
+    if (b.x + b.w > b.max) { b.x = b.max - b.w; b.dir = -1; }
+    b.mesh.material.map = bugTex[Math.floor(time * 8) % 2];
+    b.mesh.scale.x = b.dir;
+    place(b.mesh, b.x, b.y, b.w, b.h);
+    if (!overlap(p, b)) continue;
+    if (p.vy < 0 && p.y > b.y + b.h * 0.35) {
+      b.dead = true; b.mesh.visible = false;
+      burst(b.x + 0.6, b.y + 0.4, '#7ee787', 14);
+      p.vy = JUMP * 0.7;
+      mood('happy', 0.6);
+      L.onStomp && L.onStomp(b);
+    } else if (!p.inv) {
+      p.kx = (p.x + p.w / 2 < b.x + b.w / 2 ? -1 : 1) * 12; p.vy = 7; p.inv = difficulty.protection;
+      setCtx(Math.max(1, ctxVal - 2)); mood('angry', 1);
+      log('  └ × TEST FAILED', 'fail');
+    }
+  }
+}
+
+function updateItems(time) {
+  let near = null, best = 1.7;
+  for (const it of L.items) {
+    if (!it.active) continue;
+    if (it.bob) it.mesh.position.y = it.baseY + Math.sin(time * 3 + it.x) * 0.08;
+    if (it.touch) {
+      if (overlap(p, it)) { it.active = false; setItemVisible(it, false); it.use(); }
+      continue;
+    }
+    const d = Math.abs(p.x + p.w / 2 - (it.x + it.w / 2)) + Math.max(0, Math.abs(p.y - it.y) - 0.6);
+    if (d < best) { best = d; near = it; }
+  }
+  eBubble.visible = !!near && mode === 'play' && !p.sleep;
+  if (near) eBubble.position.set(near.x + near.w / 2, near.y + near.h + (near.label ? 0.95 : 0.5) + Math.sin(time * 6) * 0.05, 4);
+  if (pressE && near && !p.sleep) near.use.call(near);
+  pressE = false;
+}
+
+function renderPlayer(dt, time) {
+  let m = 'idle';
+  if (p.sleep) m = 'sleep';
+  else if (p.moodT > 0) m = p.tmpMood;
+  else if (time % 3.2 < 0.12) m = 'sleep';
+  p.moodT -= dt;
+  const walking = Math.abs(p.vx) > 0 && p.onGround;
+  p.mesh.material.map = CT[m + (walking ? Math.floor(time * 10) % 2 : 0)];
+  if (rainbow) p.mesh.material.color.setHSL((time * 0.4) % 1, 1, 0.75);
+  else p.mesh.material.color.set(0xffffff);
+  if (p.dashT > 0 && group.visible) {
+    const ghost = new THREE.Mesh(p.mesh.geometry, new THREE.MeshBasicMaterial({ map: p.mesh.material.map, transparent: true, opacity: 0.4, color: 0xffb080 }));
+    ghost.scale.copy(p.mesh.scale);
+    ghost.position.copy(p.mesh.position); ghost.position.z = 1.4;
+    ghost.userData = { vx: 0, vy: 0, life: 0.25, g: 0 };
+    scene.add(ghost); particles.push(ghost);
+  }
+  p.squash *= Math.pow(0.001, dt);
+  const breathe = p.sleep ? Math.sin(time * 2) * 0.04 : 0;
+  p.mesh.scale.set(p.face * (1 + p.squash), 1 - p.squash + breathe, 1);
+  p.mesh.position.set(p.x + p.w / 2, p.y + 0.6 * (1 - p.squash + breathe), 1.5);
+  p.mesh.visible = group.visible && !(p.inv > 0 && Math.floor(time * 20) % 2);
+  if (p.sleep && group.visible && (p.zT -= dt) < 0) {
+    p.zT = 0.9;
+    floatUp(label('z', { size: 12, color: '#e8e8e8', ppu: 40 }), p.x + 1.2, p.y + 1.3, 1.6);
+  }
+}
+
+// ================= 主循环 =================
+const clock = new THREE.Clock();
+function loop() {
+  requestAnimationFrame(loop);
+  const dt = Math.min(clock.getDelta(), 1 / 30);
+  const time = clock.elapsedTime;
+
+  for (let i = tweens.length - 1; i >= 0; i--) {
+    const tw = tweens[i];
+    tw.t += dt;
+    const k = Math.min(1, tw.t / tw.dur);
+    tw.fn(ease(k));
+    if (k >= 1) { tweens.splice(i, 1); tw.res(); }
+  }
+
+  if (L && group.visible) {
+    if (mode === 'play' || mode === 'busy') {
+      const SUB = 3;
+      updateStatics(dt, time);
+      for (let s = 0; s < SUB; s++) {
+        updatePlayer(dt / SUB, time);
+        updateBlocks(dt / SUB);
+        updateBugs(dt / SUB, time);
+        updateAgent(dt / SUB);
+      }
+      pressJump = false;
+      L.update && L.update(dt);
+      updateTurtle(dt, time);
+    }
+    if (mode === 'play') updateItems(time); else { eBubble.visible = false; pressE = false; }
+    for (const b of L.blocks) place(b.mesh, b.x, b.y, b.w, b.h);
+    updateCheckpoints();
+    // 镜头跟随
+    if (mode === 'play' || mode === 'busy') {
+      const half = viewW / 2;
+      const tx = L.camX != null ? L.camX : L.W <= viewW ? L.W / 2 : THREE.MathUtils.clamp(p.x + p.w / 2, half, L.W - half);
+      camera.position.x += (tx - camera.position.x) * Math.min(1, dt * 6);
+      camera.position.y = cy + (L.shake > 0 ? (Math.random() - 0.5) * L.shake : 0);
+    }
+    const left = camera.position.x - viewW / 2;
+    L.bar.position.x = camera.position.x;
+    L.prompt.position.x = left + 0.5;
+    L.cursor.position.x = left + 0.95;
+    L.prompt.visible = false;
+    L.cursor.visible = false;
+    let bgT = 0;
+    if (cur === LV.DARK) {
+      const room = L.lampRooms.find(r => p.x + 0.7 >= r.o && p.x + 0.7 < r.o + 26);
+      if (room) bgT = room.on.filter(Boolean).length / room.on.length;
+    }
+    scene.background.lerp(cur === LV.DARK ? BG_DARK.clone().lerp(BG_LIGHT, bgT) : BG_DARK, Math.min(1, dt * 4));
+  }
+  renderPlayer(dt, time);
+
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const q = particles[i], u = q.userData;
+    u.vy -= u.g * dt;
+    q.position.x += u.vx * dt; q.position.y += u.vy * dt;
+    u.life -= dt;
+    if (q.material.opacity !== undefined && u.life < 0.4) q.material.opacity = u.life / 0.4;
+    if (u.life <= 0) { scene.remove(q); particles.splice(i, 1); }
+  }
+  renderer.render(scene, camera);
+}
+
+group.visible = false;
+p.mesh.visible = false;
+resize();
+loop();
+</script>
+</body>
+</html>

@@ -1,5 +1,7 @@
 const configuredBase = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
-export const API_BASE = configuredBase ?? "http://127.0.0.1:5000/api";
+// The browser must use the public same-origin proxy in production. Keep the
+// absolute URL override for deployments that host the API separately.
+export const API_BASE = configuredBase ?? "/api";
 
 export class ApiError extends Error {
   status: number;

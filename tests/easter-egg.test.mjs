@@ -14,9 +14,10 @@ test("keyboard entry preserves overlapping starts and can repeat", () => {
   assert.equal(enter([...ENTRY_SEQUENCE, ...ENTRY_SEQUENCE]).completions, 2);
   assert.equal(enter(["ArrowUp", ...ENTRY_SEQUENCE]).completions, 1);
 });
-test("agent is the sole launch command; old provider commands are removed", () => {
+test("agent and the local game are explicit launch commands", () => {
   assert.equal(run(" AGENT ").kind, "agent");
-  for (const command of ["codex", "claude", "cluade", "gemini", "opencode", "qwen", "agent extra"]) assert.equal(run(command).kind, "message");
+  for (const command of ["claudes-day", "claudesday", "play", "game"]) assert.equal(run(command).kind, "game");
+  for (const command of ["codex", "claude", "cluade", "gemini", "opencode", "qwen", "agent extra", "game extra"]) assert.equal(run(command).kind, "message");
   assert.equal(run("clear").kind, "clear");
   assert.equal(run("cls").kind, "clear");
   assert.equal(run("exit").kind, "exit");
@@ -58,4 +59,13 @@ test("the removed footer clue is absent while the keyboard trigger stays availab
   assert.ok(!component.includes("hintGroups"));
   assert.ok(component.includes('window.addEventListener("keydown"'));
   assert.ok(component.includes("<EasterEggTerminal"));
+});
+
+test("the terminal game easter egg ships the difficulty-enabled Claude's Day asset", async () => {
+  const component = await readFile(new URL("../app/components/EasterEggTerminal.tsx", import.meta.url), "utf8");
+  const game = await readFile(new URL("../public/claudes-day/index.html", import.meta.url), "utf8");
+  assert.ok(component.includes('src="/claudes-day/index.html"'));
+  assert.match(game, /id="startButton"/);
+  assert.match(game, /data-difficulty="sonnet"/);
+  assert.match(game, /data-difficulty="fable"/);
 });
