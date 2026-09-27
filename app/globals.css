@@ -141,23 +141,44 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .confirm-dialog footer { border-top: 1px solid var(--line); display: flex; gap: 9px; justify-content: flex-end; margin-top: 23px; padding-top: 17px; }
 
 /* Home */
-.home-hero { display: grid; gap: 72px; grid-template-columns: minmax(0, 1fr) 330px; margin: 0 auto; max-width: 1360px; padding: 70px 50px 64px; }
-.hero-copy h1 { font-family: Georgia, "Times New Roman", serif; font-size: 72px; font-weight: 400; letter-spacing: 0; line-height: .98; margin: 26px 0 20px; }
-.hero-statement { color: var(--coral); font-family: Georgia, "Times New Roman", serif; font-size: 22px; margin: 0 0 15px; }
-.hero-description { color: var(--muted); font-size: 14px; line-height: 1.8; margin: 0; max-width: 620px; }
-.hero-actions { align-items: center; display: flex; gap: 22px; margin-top: 32px; }
-.hero-season { align-self: end; background: var(--ink); color: var(--paper); min-height: 320px; padding: 25px; position: relative; }
-.hero-season::before { border: 1px solid rgba(200, 92, 66, .72); content: ""; inset: 8px; pointer-events: none; position: absolute; }
-.hero-season > * { position: relative; }
+.home-hero { display: grid; gap: 72px; grid-template-columns: minmax(0, 1fr) 330px; isolation: isolate; margin: 0 auto; max-width: 1360px; min-height: 610px; overflow: hidden; padding: 70px 50px 64px; position: relative; }
+.home-hero::before { background: radial-gradient(circle at 69% 43%, rgba(200, 92, 66, .13), transparent 29%), radial-gradient(circle at 48% 72%, rgba(135, 149, 129, .1), transparent 30%), linear-gradient(115deg, rgba(244, 241, 234, .99) 5%, rgba(244, 241, 234, .67) 57%, rgba(244, 241, 234, .94) 100%); content: ""; inset: 0; pointer-events: none; position: absolute; z-index: -1; }
+.home-hero::after { background-image: linear-gradient(rgba(32, 33, 30, .028) 1px, transparent 1px), linear-gradient(90deg, rgba(32, 33, 30, .028) 1px, transparent 1px); background-size: 42px 42px; content: ""; inset: 0; mask-image: linear-gradient(90deg, transparent, #000 36%, #000 82%, transparent); opacity: .62; pointer-events: none; position: absolute; z-index: -1; }
+.hero-copy, .hero-season { position: relative; z-index: 1; }
+.hero-copy { align-self: center; max-width: 690px; }
+.hero-copy > * { animation: hero-fade-up .72s cubic-bezier(.2, .75, .2, 1) both; }
+.hero-copy > :nth-child(2) { animation-delay: .06s; }
+.hero-copy > :nth-child(3) { animation-delay: .12s; }
+.hero-copy > :nth-child(4) { animation-delay: .18s; }
+.hero-copy > :nth-child(5) { animation-delay: .24s; }
+.hero-copy > :nth-child(6) { animation-delay: .3s; }
+.hero-copy h1 { font-family: Georgia, "Times New Roman", serif; font-size: 72px; font-weight: 400; letter-spacing: -.025em; line-height: .98; margin: 26px 0 20px; text-wrap: balance; }
+.hero-copy h1 span { background: linear-gradient(112deg, var(--coral) 0%, #9e4937 44%, var(--ink) 100%); background-clip: text; color: transparent; display: inline-block; filter: drop-shadow(0 8px 20px rgba(200, 92, 66, .13)); }
+.hero-statement { color: var(--coral-dark); font-family: Georgia, "Times New Roman", serif; font-size: 22px; margin: 0 0 15px; }
+.hero-description { color: var(--muted); font-size: 14px; line-height: 1.8; margin: 0; max-width: 610px; }
+.hero-signals { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 23px 0 0; padding: 0; }
+.hero-signals li { align-items: center; backdrop-filter: blur(8px); background: rgba(255, 255, 255, .38); border: 1px solid rgba(32, 33, 30, .11); border-radius: 999px; color: #676a62; display: inline-flex; font-size: 11px; gap: 7px; letter-spacing: .055em; padding: 7px 11px; }
+.hero-signals i { background: var(--coral); border-radius: 50%; box-shadow: 0 0 0 4px rgba(200, 92, 66, .09); height: 5px; width: 5px; }
+.hero-signals li:nth-child(2) i { background: var(--sage); box-shadow: 0 0 0 4px rgba(135, 149, 129, .1); }
+.hero-signals li:nth-child(3) i { background: var(--ink); box-shadow: 0 0 0 4px rgba(32, 33, 30, .08); }
+.hero-actions { align-items: center; display: flex; gap: 22px; margin-top: 29px; }
+.hero-actions .primary-button { box-shadow: 0 11px 28px rgba(32, 33, 30, .14); }
+.hero-actions .primary-button:hover { box-shadow: 0 15px 34px rgba(32, 33, 30, .2); transform: translateY(-2px); }
+.hero-season { align-self: end; animation: hero-card-in .8s .18s cubic-bezier(.2, .75, .2, 1) both; background: linear-gradient(145deg, rgba(42, 44, 39, .98), rgba(28, 30, 27, .99)); box-shadow: 0 28px 60px rgba(32, 33, 30, .23), 0 4px 14px rgba(32, 33, 30, .11); color: var(--paper); min-height: 320px; overflow: hidden; padding: 25px; position: relative; }
+.hero-season::before { border: 1px solid rgba(200, 92, 66, .72); content: ""; inset: 8px; pointer-events: none; position: absolute; z-index: 1; }
+.hero-season::after { background: linear-gradient(125deg, transparent 18%, rgba(255, 255, 255, .06) 48%, transparent 70%); content: ""; inset: -55% -80%; pointer-events: none; position: absolute; transform: rotate(13deg); }
+.hero-season > * { position: relative; z-index: 2; }
 .season-top { align-items: center; color: #9c9f97; display: flex; font-size: 12px; justify-content: space-between; margin-bottom: 45px; }
-.hero-season > svg { color: var(--coral); }
+.hero-season > svg { color: var(--coral); filter: drop-shadow(0 0 10px rgba(200, 92, 66, .32)); }
 .hero-season h2 { font-family: Georgia, "Times New Roman", serif; font-size: 29px; font-weight: 400; letter-spacing: 0; margin: 17px 0 9px; }
 .hero-season p { color: #b8b9b2; font-size: 12px; line-height: 1.7; margin: 0; }
 .season-dates { align-items: end; border-top: 1px solid #474943; display: flex; justify-content: space-between; margin-top: 28px; padding-top: 14px; }
 .season-dates span { color: #969990; font-size: 12px; }
-.season-dates strong { font-family: Georgia, serif; font-size: 22px; font-weight: 400; }
-.hero-season > a { align-items: center; color: #dedbd2; display: flex; font-size: 12px; gap: 7px; margin-top: 18px; }
-.hero-season > a:hover { color: var(--coral); }
+.season-dates strong { color: #f2e8dc; font-family: Georgia, serif; font-size: 22px; font-weight: 400; }
+.hero-season > a { align-items: center; color: #dedbd2; display: flex; font-size: 12px; gap: 7px; margin-top: 18px; transition: color .18s ease, gap .18s ease; }
+.hero-season > a:hover { color: var(--coral); gap: 11px; }
+@keyframes hero-fade-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes hero-card-in { from { opacity: 0; transform: translateY(22px) scale(.975); } to { opacity: 1; transform: translateY(0) scale(1); } }
 .hero-season-loading { display: grid; gap: 15px; }
 .season-skeleton { animation: season-pulse 1.5s ease-in-out infinite; background: #3d3f3a; display: block; height: 10px; position: relative; }
 .season-skeleton.short { height: 22px; width: 42%; }
@@ -172,8 +193,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .home-sections { margin: 0 auto; max-width: 1360px; padding: 57px 50px 82px; }
 .home-section + .home-section { padding-top: 72px; }
 .track-grid { display: grid; gap: 9px; grid-template-columns: 1.1fr 1fr 1fr 1.08fr; margin-top: 24px; }
-.track-card { display: flex; flex-direction: column; min-height: 276px; padding: 18px; transition: box-shadow .22s ease, transform .22s ease; }
-.track-card:hover { box-shadow: 0 13px 28px rgba(32, 33, 30, .13); transform: translateY(-4px); }
+.track-card { display: flex; flex-direction: column; isolation: isolate; min-height: 276px; overflow: hidden; padding: 18px; position: relative; transform-style: preserve-3d; transition: box-shadow .28s ease, transform .28s cubic-bezier(.2, .75, .2, 1); }
+.track-card::before { background: linear-gradient(118deg, transparent 22%, rgba(255, 255, 255, .2) 48%, transparent 72%); content: ""; inset: -45% -85%; opacity: 0; pointer-events: none; position: absolute; transform: translateX(-30%) rotate(10deg); transition: opacity .28s ease, transform .55s ease; }
+.track-card::after { border: 1px solid rgba(255, 255, 255, .12); content: ""; inset: 7px; pointer-events: none; position: absolute; }
+.track-card > * { position: relative; z-index: 1; }
+.track-card:hover { box-shadow: 0 18px 34px rgba(32, 33, 30, .16); transform: perspective(900px) translateY(-6px) rotateX(1.2deg); }
+.track-card:hover::before { opacity: 1; transform: translateX(30%) rotate(10deg); }
 .track-card-top, .track-card footer { align-items: center; display: flex; justify-content: space-between; }
 .track-card-top { font-size: 12px; opacity: .72; }
 .track-card > div:nth-child(2) { margin-top: auto; }
@@ -902,8 +927,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .page-title-band h1 { font-size: 30px; }
   .app-content { padding: 29px 18px 55px; }
   .app-footer { align-items: start; flex-direction: column; gap: 6px; margin: 0 18px; }
-  .home-hero { display: block; padding: 42px 18px 38px; }
+  .home-hero { display: block; min-height: 0; padding: 42px 18px 38px; }
+  .home-hero::after { background-size: 32px 32px; }
   .hero-copy h1 { font-size: 50px; }
+  .hero-signals { gap: 6px; }
+  .hero-signals li { font-size: 10px; padding: 6px 9px; }
   .hero-statement { font-size: 19px; }
   .hero-actions { align-items: stretch; flex-direction: column; gap: 8px; }
   .hero-season { margin-top: 38px; min-height: 290px; }

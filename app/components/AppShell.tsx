@@ -9,6 +9,9 @@ import {
   PenLine, Scale, Trophy, UserRound, Users, X,
 } from "lucide-react";
 import { useSession } from "@/app/components/SessionProvider";
+import { ScrollFeedback } from "@/app/components/ScrollFeedback";
+import { EasterEggEntrance } from "@/app/components/EasterEggEntrance";
+import { FooterCodeDivider } from "@/app/components/FooterCodeDivider";
 import { useToast } from "@/app/components/ToastProvider";
 import { formatApiError } from "@/app/lib/api";
 
@@ -18,6 +21,7 @@ type AppShellProps = {
   eyebrow?: string;
   actions?: React.ReactNode;
   contained?: boolean;
+  variant?: "detail";
 };
 
 const baseNavigation = [
@@ -27,10 +31,11 @@ const baseNavigation = [
   { href: "/works", label: "作品", icon: FolderArchive },
   { href: "/leaderboard", label: "榜单", icon: Scale },
   { href: "/news", label: "资讯", icon: Newspaper },
+  { href: "/about", label: "关于我们", icon: Users },
   { href: "/dashboard", label: "工作台", icon: FileText },
 ];
 
-export function AppShell({ children, title, eyebrow, actions, contained = true }: AppShellProps) {
+export function AppShell({ children, title, eyebrow, actions, contained = true, variant }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, loading, signOut } = useSession();
@@ -82,7 +87,8 @@ export function AppShell({ children, title, eyebrow, actions, contained = true }
   }
 
   return (
-    <div className={`app-shell ${isWorkspace ? "workspace-shell" : ""}`}>
+    <div className={`app-shell ${isWorkspace ? "workspace-shell" : "public-shell"}${variant === "detail" && !isWorkspace ? " public-detail-shell" : ""}`}>
+      {!isWorkspace && <ScrollFeedback />}
       <aside className={`app-sidebar ${menuOpen ? "is-open" : ""}`}>
         <div className="sidebar-head">
           <Link className="brand-lockup" href="/" onClick={() => setMenuOpen(false)}>
@@ -119,7 +125,7 @@ export function AppShell({ children, title, eyebrow, actions, contained = true }
         </div>
       </aside>
       {menuOpen && <button className="sidebar-scrim" onClick={() => setMenuOpen(false)} aria-label="关闭导航遮罩" />}
-      <main className="app-main">
+      <main id="main-content" tabIndex={-1} className="app-main">
         <header className="app-topbar">
           <button className="icon-button mobile-menu" aria-label="打开导航" onClick={() => setMenuOpen(true)}><Menu size={20} /></button>
           <div className="topbar-context"><span>UESTC AI</span><i>/</i><strong>{title ?? "AI 社平台"}</strong></div>
@@ -130,11 +136,49 @@ export function AppShell({ children, title, eyebrow, actions, contained = true }
         </header>
         {(title || eyebrow) && (
           <div className="page-title-band">
-            <div>{eyebrow && <span className="eyebrow"><i />{eyebrow}</span>}{title && <h1>{title}</h1>}</div>
+            <div className="page-title-inner">{eyebrow && <span className="eyebrow"><i />{eyebrow}</span>}{title && <h1>{title}</h1>}{variant === "detail" && actions && <div className="page-title-actions">{actions}</div>}</div>
           </div>
         )}
         <div className={contained ? "app-content" : "app-content app-content-full"}>{children}</div>
-        <footer className="app-footer"><span>电子科技大学 AI 社</span><span>信息发布与通用比赛平台 · 2026</span></footer>
+        {isWorkspace ? (
+          <footer className="app-footer"><span>电子科技大学 AI 社</span><span>信息发布与通用比赛平台 · 2026</span></footer>
+        ) : (
+          <footer className="app-footer app-footer-rich">
+            <div className="footer-main">
+              <div className="footer-brand">
+                <span className="footer-brand-mark">UESTC / AI</span>
+                <strong>让灵感被看见。</strong>
+                <p>面向电子科技大学 AI 创作者的信息发布、赛事与作品社区。</p>
+                <span className="footer-location">CHENGDU · 2026</span>
+              </div>
+              <nav className="footer-column" aria-label="探索">
+                <strong>探索</strong>
+                <Link href="/competitions">比赛</Link>
+                <Link href="/problems">题库</Link>
+                <Link href="/works">作品</Link>
+                <Link href="/leaderboard">榜单</Link>
+              </nav>
+              <nav className="footer-column" aria-label="社区">
+                <strong>社区</strong>
+                <Link href="/news">最新动态</Link>
+                <Link href="/about">关于我们</Link>
+                <Link href="/dashboard">个人工作台</Link>
+                <Link href="/login">登录账户</Link>
+              </nav>
+              <nav className="footer-column" aria-label="参与">
+                <strong>参与</strong>
+                <Link href="/competitions">加入赛事</Link>
+                <Link href="/works">浏览作品</Link>
+                <Link href="/news">分享方法</Link>
+              </nav>
+            </div>
+            <div className="footer-bottom">
+              <FooterCodeDivider />
+              <span>© 2026 UESTC AI 社</span>
+              <div className="egg-footer-entry"><span>COMPETE · PUBLISH · BUILD</span><EasterEggEntrance /></div>
+            </div>
+          </footer>
+        )}
       </main>
     </div>
   );

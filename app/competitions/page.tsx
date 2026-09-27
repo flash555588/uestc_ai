@@ -16,7 +16,7 @@ export default function CompetitionsPage() {
   const { data, loading, error, reload } = useApiResource<Competition[]>("/competitions");
   return (
     <AppShell title="比赛" eyebrow="COMPETITIONS">
-      <div className="page-intro"><p>赛事、赛道、题目和提交规则均由后台配置。同一套平台可以承载下一届完全不同的比赛结构。</p></div>
+      <div className="page-intro"><p>找到感兴趣的赛道，和队友一起把想法变成作品。赛事时间、题目与参赛规则，都从这里开始。</p></div>
       {loading ? <PageLoading /> : error ? <PageError message={error} retry={reload} /> : !data?.length ? <EmptyState title="暂无赛事" description="公开赛事会显示在这里。" /> : (
         <div className="competition-list">
           {data.map((competition, index) => (

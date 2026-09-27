@@ -39,6 +39,9 @@ export function jsonBody(value: unknown): Pick<RequestInit, "body"> {
 }
 
 export function formatApiError(error: unknown): string {
+  if (error instanceof TypeError && /failed to fetch|networkerror|load failed/i.test(error.message)) {
+    return "暂时无法连接服务，请稍后重试。";
+  }
   if (error instanceof ApiError) {
     const translations: Record<string, string> = {
       "authentication required": "请先登录后继续。",

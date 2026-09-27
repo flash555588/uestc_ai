@@ -1,15 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowRight, BookOpen, CalendarDays, Code2, Newspaper, Trophy } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ArrowRight, BookOpen, CalendarDays, Code2 } from "lucide-react";
 import { AppShell } from "@/app/components/AppShell";
+import { RevealSection } from "@/app/components/RevealSection";
+import { ScrollFilmIntro } from "@/app/components/ScrollFilmIntro";
 import { EmptyState, PageError, PageLoading, StatusPill } from "@/app/components/ui";
 import { api, formatApiError } from "@/app/lib/api";
 import type { Competition, ContentItem, Track } from "@/app/lib/domain";
 import { formatBeijing } from "@/app/lib/time";
 
 const accents = ["coral", "ink", "sage", "sand"];
+const homeUpdatesLimit = 6;
 
 function trackAccent(track: Track, index: number) {
   const value = track.config?.accent;
@@ -21,25 +24,26 @@ function shortDate(value?: string | null) {
   return formatBeijing(value, { month: "2-digit", day: "2-digit" });
 }
 
-function competitionPhase(competition: Competition): { label: string; tone: "live" | "warm" | "muted" } {
-  if (competition.status !== "published") return { label: competition.status, tone: "muted" };
-  const now = Date.now();
-  const registrationOpen = competition.registration_opens_at ? new Date(competition.registration_opens_at).getTime() : null;
-  const registrationClose = competition.registration_closes_at ? new Date(competition.registration_closes_at).getTime() : null;
-  const starts = competition.starts_at ? new Date(competition.starts_at).getTime() : null;
-  const ends = competition.ends_at ? new Date(competition.ends_at).getTime() : null;
-  if (ends && now > ends) return { label: "已结束", tone: "muted" };
-  if (starts && now >= starts) return { label: "比赛进行中", tone: "live" };
-  if ((!registrationOpen || now >= registrationOpen) && (!registrationClose || now <= registrationClose)) return { label: "报名中", tone: "warm" };
-  return { label: "已发布", tone: "live" };
+function UpdatesFallback({ error, retry }: { error: string; retry: () => void }) {
+  return <div className="updates-fallback">
+    <div className="updates-fallback-feature" role={error ? "alert" : undefined}>
+      <span className="updates-fallback-kicker">COMMUNITY / NEXT</span>
+      <h3>{error ? "动态暂时无法载入。" : "下一条灵感，正在路上。"}</h3>
+      <p>{error || "公告、技术笔记与创作故事会在这里出现。现在也可以先探索社区的其他入口。"}</p>
+      {error ? <button type="button" onClick={retry}>重新载入 <ArrowRight size={16} /></button>
+        : <Link href="/news">进入资讯档案 <ArrowRight size={16} /></Link>}
+    </div>
+    <Link className="updates-fallback-link" href="/competitions"><span>01 / COMPETE</span><strong>探索赛事</strong><ArrowRight size={18} /></Link>
+    <Link className="updates-fallback-link" href="/works"><span>02 / BUILD</span><strong>浏览作品</strong><ArrowRight size={18} /></Link>
+  </div>;
 }
-
 export default function Home() {
   const [competition, setCompetition] = useState<Competition | null>(null);
   const [articles, setArticles] = useState<ContentItem[]>([]);
   const [articleError, setArticleError] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const updatesShowcaseRef = useRef<HTMLDivElement>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -54,7 +58,7 @@ export default function Home() {
       ]);
       if (detailResult.status === "fulfilled") setCompetition(detailResult.value);
       else setError(formatApiError(detailResult.reason));
-      if (contentResult.status === "fulfilled") setArticles(contentResult.value.slice(0, 4));
+      if (contentResult.status === "fulfilled") setArticles(contentResult.value.slice(0, homeUpdatesLimit));
       else setArticleError(formatApiError(contentResult.reason));
     } catch (requestError) {
       setError(formatApiError(requestError));
@@ -69,6 +73,44 @@ export default function Home() {
     return () => { active = false; };
   }, [load]);
 
+  useEffect(() => {
+    const showcase = updatesShowcaseRef.current;
+    if (!showcase || articles.length < 3) return;
+
+    const rail = showcase.querySelector<HTMLElement>(".updates-featured-rail");
+    const featured = rail?.querySelector<HTMLElement>(".update-featured");
+    const featuredInfo = featured?.querySelector<HTMLElement>(".update-featured-info");
+    const featuredVisual = featured?.querySelector<HTMLElement>(".update-featured-visual");
+    const sidebar = showcase.querySelector<HTMLElement>(".updates-sidebar");
+    const lastVisual = sidebar?.querySelector<HTMLElement>(".update-small:last-child .update-small-visual");
+    if (!rail || !featured || !featuredInfo || !featuredVisual || !sidebar || !lastVisual) return;
+
+    const desktop = window.matchMedia("(min-width: 1101px)");
+    const alignImageEnds = () => {
+      if (!desktop.matches) {
+        rail.style.removeProperty("height");
+        return;
+      }
+      const railTop = rail.getBoundingClientRect().top;
+      const lastImageBottom = lastVisual.getBoundingClientRect().bottom;
+      const captionHeight = featuredInfo.getBoundingClientRect().height;
+      const railHeight = Math.max(featured.getBoundingClientRect().height, lastImageBottom - railTop + captionHeight);
+      rail.style.height = `${railHeight}px`;
+    };
+
+    const resizeObserver = new ResizeObserver(alignImageEnds);
+    resizeObserver.observe(sidebar);
+    resizeObserver.observe(featuredInfo);
+    resizeObserver.observe(featuredVisual);
+    desktop.addEventListener("change", alignImageEnds);
+    alignImageEnds();
+    return () => {
+      resizeObserver.disconnect();
+      desktop.removeEventListener("change", alignImageEnds);
+      rail.style.removeProperty("height");
+    };
+  }, [articles]);
+
   const featuredProblems = useMemo(
     () => competition?.tracks?.flatMap((track) => (track.problems ?? []).map((problem) => ({ problem, track }))).slice(0, 5) ?? [],
     [competition],
@@ -76,50 +118,75 @@ export default function Home() {
 
   return (
     <AppShell contained={false}>
-      <section className="home-hero">
-        <div className="hero-copy">
-          <span className="eyebrow"><i />UESTC / AI COMMUNITY</span>
-          <h1>电子科技大学<br />AI 社</h1>
-          <p className="hero-statement">从一个问题出发，做出值得被看见的作品。</p>
-          <p className="hero-description">在这里浏览社内赛事与技术内容，组队参赛、提交成果，也分享实践中的方法、经验与思考。</p>
-          <div className="hero-actions">
-            <Link className="primary-button" href="/competitions">查看正在进行的比赛 <ArrowRight size={16} /></Link>
-            <Link className="text-button" href="/news">阅读最近发布</Link>
-          </div>
-        </div>
-        {loading ? <aside className="hero-season hero-season-loading" aria-label="正在读取当前赛事"><span className="season-skeleton short" /><span className="season-skeleton icon" /><span className="season-skeleton title" /><span className="season-skeleton line" /><span className="season-skeleton line narrow" /></aside> : competition ? (() => {
-          const phase = competitionPhase(competition);
-          return <aside className="hero-season" aria-label="当前赛事">
-            <div className="season-top"><StatusPill tone={phase.tone}>{phase.label}</StatusPill><span>{competition.slug}</span></div>
-            <Trophy size={24} strokeWidth={1.4} />
-            <h2>{competition.name}</h2>
-            <p>{competition.summary}</p>
-            <div className="season-dates"><span>报名截止</span><strong>{shortDate(competition.registration_closes_at)}</strong></div>
-            <Link href={`/competitions/${competition.slug}`}>进入赛事 <ArrowRight size={15} /></Link>
-          </aside>;
-        })() : <aside className="hero-season hero-season-error" aria-label="赛事数据状态"><div className="season-top"><StatusPill tone={error ? "danger" : "muted"}>{error ? "连接失败" : "暂无赛事"}</StatusPill><span>DATABASE</span></div><Trophy size={24} strokeWidth={1.4} /><h2>{error ? "赛事数据不可用" : "暂无公开赛事"}</h2><p>{error || "主办方发布赛事后，这里会自动显示。"}</p>{error && <button className="season-retry" onClick={() => void load()}>重新连接 <ArrowRight size={15} /></button>}</aside>}
-      </section>
+      <ScrollFilmIntro />
 
-      <div className="home-sections">
-        {loading ? <PageLoading label="正在读取赛事" /> : error ? <PageError message={error} retry={load} /> : competition ? (
-          <section className="home-section">
+      <RevealSection className="home-updates" aria-label="最新动态" reveal="slide">
+        <header className="section-header">
+          <div><span className="eyebrow"><i />LATEST</span><h2>最新动态</h2></div>
+          <Link href="/news">全部动态 <ArrowRight size={15} /></Link>
+        </header>
+        {loading ? <PageLoading label="正在读取动态" /> : articles.length ? <div className="news-cards news-showcase" ref={updatesShowcaseRef}>
+          <div className="updates-featured-rail">
+            <Link data-reveal-item className="update-card update-featured" data-kind={articles[0].kind} href={`/news/${articles[0].slug}`}>
+              <div className="update-visual update-featured-visual" aria-hidden="true"><span>UESTC AI</span><i /></div>
+              <div className="update-featured-info">
+                <div className="update-card-top"><time>{articles[0].published_at ? shortDate(articles[0].published_at) : "草稿"}</time><span>{articles[0].kind}</span></div>
+                <strong>{articles[0].title}</strong>
+                <p>{articles[0].excerpt || "进入资讯档案查看完整内容。"}</p>
+                <ArrowRight size={18} />
+              </div>
+            </Link>
+          </div>
+          {articles.length > 1 && <div className="updates-sidebar">
+            {articles.slice(1).map((article, index) => (
+              <Link data-reveal-item className="update-card update-small" data-kind={article.kind} href={`/news/${article.slug}`} key={article.id}>
+                <div className="update-visual update-small-visual" aria-hidden="true"><span>{String(index + 2).padStart(2, "0")}</span><i /></div>
+                <div className="update-small-info">
+                  <div className="update-card-top"><time>{article.published_at ? shortDate(article.published_at) : "草稿"}</time><span>{article.kind}</span></div>
+                  <strong>{article.title}</strong>
+                  <p>{article.excerpt || "进入资讯档案查看完整内容。"}</p>
+                  <ArrowRight size={17} />
+                </div>
+              </Link>
+            ))}
+          </div>}
+        </div> : <UpdatesFallback error={articleError} retry={() => void load()} />}
+      </RevealSection>
+
+      <RevealSection className="home-manifesto" aria-label="产品矩阵">
+        <div className="manifesto-intro"><span>01 / PLATFORM</span><h2>从想法，到<br />被看见。</h2><p>选择一个入口，开始下一次探索。</p></div>
+        <div className="manifesto-cards" role="group" aria-label="产品入口">
+          <Link data-reveal-item className="manifesto-card" href="/competitions"><span>01 / COMPETE</span><strong>真实挑战</strong><p>进入赛题，在约束中验证想法。</p><ArrowRight size={19} /></Link>
+          <Link data-reveal-item className="manifesto-card" href="/news"><span>02 / PUBLISH</span><strong>公开方法</strong><p>记录过程，让知识持续流动。</p><ArrowRight size={19} /></Link>
+          <Link data-reveal-item className="manifesto-card" href="/works"><span>03 / BUILD</span><strong>共同创造</strong><p>找到同行者，把原型推进为作品。</p><ArrowRight size={19} /></Link>
+        </div>
+      </RevealSection>
+
+      <div className="home-sections" id="discover">
+        {loading ? <PageLoading label="正在读取赛事" /> : error ? (
+          <RevealSection className="home-section flagship-section">
+            <header className="section-header"><div><span className="eyebrow"><i />FLAGSHIP</span><h2>旗舰系列</h2></div></header>
+            <PageError message={error} retry={load} />
+          </RevealSection>
+        ) : competition ? (
+          <RevealSection className="home-section flagship-section">
             <header className="section-header">
-              <div><span className="eyebrow"><i />TRACKS</span><h2>从赛道进入题目</h2></div>
+              <div><span className="eyebrow"><i />FLAGSHIP</span><h2>旗舰系列</h2><span className="mobile-swipe-hint" aria-hidden="true">左右滑动查看赛道 <ArrowRight size={14} /></span></div>
               <Link href={`/competitions/${competition.slug}`}>完整赛事说明 <ArrowRight size={15} /></Link>
             </header>
             <div className="track-grid">
               {(competition.tracks ?? []).map((track, index) => (
-                <Link className={`track-card track-${trackAccent(track, index)}`} key={track.id} href={`/competitions/${competition.slug}/tracks/${track.slug}`}>
+                <Link data-reveal-item className={`track-card track-${trackAccent(track, index)}`} key={track.id} href={`/competitions/${competition.slug}/tracks/${track.slug}`}>
                   <div className="track-card-top"><span>{String(index + 1).padStart(2, "0")}</span><Code2 size={18} strokeWidth={1.5} /></div>
                   <div><small>{track.config?.short ?? "TRACK"}</small><h3>{track.name}</h3><p>{track.description}</p></div>
                   <footer><span>{track.problems?.length ?? 0} 个题目</span><ArrowRight size={16} /></footer>
                 </Link>
               ))}
             </div>
-          </section>
+          </RevealSection>
         ) : <EmptyState title="暂无公开赛事" description="赛事发布后会在这里显示。" />}
 
-        <section className="home-section split-section">
+        <RevealSection className="home-section split-section">
           <div className="problem-feature">
             <header className="section-header compact-header">
               <div><span className="eyebrow"><i />PROBLEM LIBRARY</span><h2>本期题目</h2></div>
@@ -127,7 +194,7 @@ export default function Home() {
             </header>
             {featuredProblems.length ? <div className="line-list">
               {featuredProblems.map(({ problem, track }) => (
-                <Link className="problem-line" key={problem.id} href={`/competitions/${competition!.slug}/tracks/${track.slug}/problems/${problem.slug}`}>
+                <Link data-reveal-item className="problem-line" key={problem.id} href={`/competitions/${competition!.slug}/tracks/${track.slug}/problems/${problem.slug}`}>
                   <span className="mono-label">{problem.code}</span>
                   <div><strong>{problem.title}</strong><span>{track.name} · 难度 {problem.difficulty}/5</span></div>
                   <StatusPill tone={problem.status === "published" ? "live" : "warm"}>{problem.status === "published" ? "正式赛题" : "候选"}</StatusPill>
@@ -137,30 +204,14 @@ export default function Home() {
             </div> : <EmptyState title="题库正在整理" description="公开题目会按赛道显示。" />}
           </div>
           {competition && <aside className="deadline-block">
-            <CalendarDays size={20} />
-            <span>关键日期</span>
-            <strong>{shortDate(competition?.registration_closes_at)}</strong>
-            <p>报名与组队截止</p>
-            <hr />
-            <strong>{shortDate(competition?.ends_at)}</strong>
-            <p>赛事结束</p>
+            <div className="deadline-heading"><CalendarDays size={20} /><span>关键日期</span></div>
+            <div className="deadline-dates">
+              <div className="deadline-date"><strong>{shortDate(competition.registration_closes_at)}</strong><p>报名与组队截止</p></div>
+              <div className="deadline-date"><strong>{shortDate(competition.ends_at)}</strong><p>赛事结束</p></div>
+            </div>
           </aside>}
-        </section>
+        </RevealSection>
 
-        <section className="home-section news-home">
-          <header className="section-header">
-            <div><span className="eyebrow"><i />PUBLISHING</span><h2>最近发布</h2></div>
-            <Link href="/news"><Newspaper size={15} />进入资讯档案</Link>
-          </header>
-          {articleError ? <PageError message={articleError} retry={load} /> : articles.length ? <div className="news-lines">{articles.map((article) => (
-            <Link className="news-line" href={`/news/${article.slug}`} key={article.id}>
-              <time>{article.published_at ? shortDate(article.published_at) : "草稿"}</time>
-              <span>{article.kind}</span>
-              <strong>{article.title}</strong>
-              <ArrowRight size={16} />
-            </Link>
-          ))}</div> : <EmptyState title="暂无文章" description="公告、博客与技术笔记会出现在这里。" />}
-        </section>
       </div>
     </AppShell>
   );
