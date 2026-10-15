@@ -18,14 +18,15 @@ from ..captcha import numeric_image
 
 auth_bp = Blueprint("auth", __name__)
 EMAIL_PATTERN = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+STUDENT_ID_EMAIL_PATTERN = re.compile(r"^\d{8,12}@std\.uestc\.edu\.cn$")
 
 
 def normalized_email(value) -> str:
     return str(value or "").strip().lower()
 
 
-def is_campus_email(email: str) -> bool:
-    return email.rpartition("@")[2] == "std.uestc.edu.cn"
+def is_student_id_email(email: str) -> bool:
+    return bool(STUDENT_ID_EMAIL_PATTERN.fullmatch(email))
 
 
 def normalized_invite_code(value) -> str:
@@ -141,7 +142,7 @@ def register():
     if User.query.filter_by(email=email).first():
         return jsonify({"error": "email already registered"}), 409
     invite = None
-    if not is_campus_email(email):
+    if not is_student_id_email(email):
         invite = active_invite(data.get("invite_code"))
         if not invite:
             return jsonify({"error": "valid registration invite required"}), 403
@@ -190,7 +191,7 @@ def request_verification_code():
     registered_user = User.query.filter_by(email=email).first()
     if purpose == "register" and registered_user:
         return jsonify({"error": "email already registered"}), 409
-    if purpose == "register" and not is_campus_email(email) and not active_invite(data.get("invite_code")):
+    if purpose == "register" and not is_student_id_email(email) and not active_invite(data.get("invite_code")):
         return jsonify({"error": "valid registration invite required"}), 403
 
     captcha_error = consume_captcha(data, email, purpose)

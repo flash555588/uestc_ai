@@ -24,13 +24,13 @@
 
 ## 策略与 harness 接口
 
-ZIP 根目录含 `agent.py`、`config.json`。定义 `Agent.act(observation)`，可选 configure 和 reset。`reset(goal)` 接收 `instruction`、`suite`、`task_name`、`max_steps`，不提供测试种子或初始状态编号。
+ZIP 根目录含 `agent.py`、`config.json`。定义 `Agent.act(observation)`，可选 configure 和 reset。`reset(goal)` 接收 `instruction`、`suite`、`task_name`、`max_steps`，不提供测试种子或初始状态编号。`config.json` 中的 `memory` 控制评测时的跨场景记忆策略：`same-test-only` 表示记忆仅在单次测试运行（同一场景组）内保留，测试之间重置。
 
 观察提供 `images_jpeg_base64`（agentview、robot0_eye_in_hand）、`eef_position`、`eef_quaternion`、`gripper_position`、`joint_position`、`step`、`last_action_valid`、`control`。画面为正向JPEG，策略自行预处理；不提供物体真值、奖励或成功标志。
 
 每次 act 返回原生七维浮点列表 `[dx,dy,dz,rx,ry,rz,g]`，各项有限且在[-1,1]，g=1关闭夹爪，g=-1打开。一次对应一个控制步；非法动作执行安全空动作并计数。开发包的 Policy 可替换为学习策略、视觉策略或 harness，不沿用旧积木环境的 `{target,gripper,repeat}` 动作。
 
-模型使用 `model_api.py`，测评注入 `EVALUATION_API_URL`、`EVALUATION_API_TOKEN`，请求头 `X-Evaluation-API-Token`；允许模型见资源面板。最多300次调用由全部任务共享。环境与选手程序处于独立容器，私有场景和结果目录不挂载给选手。
+模型使用 `model_api.py`，测评注入 `EVALUATION_API_URL`、`EVALUATION_API_TOKEN`，请求头 `X-Evaluation-API-Token`；允许模型见 API 平台（原题目资源面板，含允许模型、算力额度与用量）。最多300次调用由全部任务共享。环境与选手程序处于独立容器，私有场景和结果目录不挂载给选手。
 
 ## 提交与运行限制
 

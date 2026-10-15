@@ -28,8 +28,12 @@ export function EmailCodeField({ email, purpose, inviteCode, value, onChange }: 
     setBusy(true); setError("");
     try {
       const result = await api<{ retry_after: number }>("/auth/verification-codes", { method: "POST", ...jsonBody({ email, purpose, invite_code: inviteCode, captcha_id: challenge.id, captcha_code: digits }) });
-      setCooldown(result.retry_after); setSent(true); setChallenge(null); setDigits("");
-    } catch (failure) { setError(formatApiError(failure)); setChallenge(null); setDigits(""); }
+      setCooldown(result.retry_after); setSent(true);
+    } catch (failure) {
+      const message = formatApiError(failure);
+      setError(message);
+      if (message.includes("数字验证码")) { setChallenge(null); setDigits(""); }
+    }
     finally { setBusy(false); }
   }
   return <div className="email-code-fields"><div className="captcha-row">
@@ -40,7 +44,7 @@ export function EmailCodeField({ email, purpose, inviteCode, value, onChange }: 
     </button></div>
     <div className="verification-control"><label className="form-field"><span>邮箱验证码</span><input inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={value} onChange={(event) => onChange(event.target.value.replace(/\D/g, ""))} placeholder="邮件中的 6 位数字" required /></label><button type="button" className="outline-button" disabled={busy || cooldown > 0 || !challenge || !/^\d{6}$/.test(digits)} onClick={() => void send()}>{busy ? "正在处理" : cooldown > 0 ? `${cooldown} 秒后重发` : "发送邮件验证码"}</button></div>
     <small className={`email-code-feedback${error ? " is-error" : ""}`} role={error ? "alert" : "status"} aria-live="polite">
-      {error || (sent ? `${purpose === "reset" ? "如果该邮箱已注册，找回邮件已发送。" : "验证码已发送，请检查邮箱。"}验证码 10 分钟内有效。` : challenge ? "输入图片中的 6 位数字，再发送邮件验证码。" : "先获取图片验证码，填写其中的 6 位数字，再发送邮件验证码。")}
+      {error || (sent ? (purpose === "reset" ? "如果该邮箱已注册，找回邮件已发送。邮箱验证码 10 分钟内有效。" : "邮箱验证码已发送，请检查邮箱。邮箱验证码 10 分钟内有效。") : challenge ? "输入图片中的 6 位数字，再发送邮件验证码。" : "先获取图片中的数字验证码，填写其中的 6 位数字，再发送邮件验证码。")}
     </small>
   </div>;
 }

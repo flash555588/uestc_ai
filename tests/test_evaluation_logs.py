@@ -55,7 +55,7 @@ class LogApiTests(unittest.TestCase):
         self.login(self.reviewer, 'reviewer@uestc.ai')
         self.assertEqual(self.reviewer.get(endpoint).status_code, 404)
         other = self.app.test_client()
-        self.register(other, 'log-other@std.uestc.edu.cn', 'Other')
+        self.register(other, '20260138@std.uestc.edu.cn', 'Other')
         self.assertEqual(other.get(endpoint).status_code, 404)
         self.assertEqual(self.app.test_client().get(endpoint).status_code, 401)
         self.complete(self.job)

@@ -10,7 +10,7 @@
 
 数据来源：[CUHK-X 官方项目](https://github.com/openaiotlab/CUHK-X)及[官方挑战赛](https://openaiotlab.github.io/CUHK-X-Challenge/)。组织方已确认取得覆盖本届参赛队伍的数据分发授权，使用官方带标签数据按被试重新划分：训练1,995段、验证466段、测试470段，各集合均覆盖40类。数据源标签公开，本届结合评委代码审查，不宣称严格独立盲测。原赛事成绩、样例数据结果不得替代本届统一测评。
 
-本届统一训练镜像内置训练集、验证集和类别映射，不需要重新下载44.6GB多模态原始压缩包。数据路径为 `/opt/uestc-classification/training-data/train` 和 `/opt/uestc-classification/training-data/validation`。队伍可使用题目资源面板提供的RTX4080SUPER32GB渠道，每队本题10GPU卡时、参考运行费用上限16.8元；实际可用余量以资源面板为准。也可在获得相应数据授权后自行配置训练环境。
+本届统一训练镜像内置训练集、验证集和类别映射，不需要重新下载44.6GB多模态原始压缩包。数据路径为 `/opt/uestc-classification/training-data/train` 和 `/opt/uestc-classification/training-data/validation`。队伍可使用 API 平台（原题目资源面板，含允许模型、算力额度与用量）提供的RTX4080SUPER32GB渠道，每队本题10GPU卡时、参考运行费用上限16.8元；实际可用余量以 API 平台为准。也可在获得相应数据授权后自行配置训练环境。
 
 输入为官方伪彩色深度图，按帧序号排序后均匀取16帧，经Pillow亮度转换和双线性缩放至112×112，输出float32 `[16,1,112,112]` NPY，范围[0,1]，不代表物理深度距离。类别顺序位于 `/opt/uestc-classification/depth-class-mapping.csv`，并与各集合的 `manifest.json` 一致。训练、验证、测试按12/3/3被试隔离，跨集合重复检查已通过。
 

@@ -66,7 +66,7 @@ class IndependentTrialTests(unittest.TestCase):
         self.assertEqual(self.reviewer.get(f"/api/evaluation-runs/{run['id']}").status_code, 200)
         # Other members cannot see either private history or the selected metrics.
         other = self.app.test_client()
-        self.register(other, "peer@std.uestc.edu.cn", "Peer")
+        self.register(other, "20260137@std.uestc.edu.cn", "Peer")
         history = f"/api/problems/{self.problem['id']}/evaluation-runs?team_id={self.team['id']}"
         self.assertEqual(other.get(history).status_code, 403)
         self.assertIsNone(other.get(url).get_json()["evaluation"])

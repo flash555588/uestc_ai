@@ -1,5 +1,5 @@
 /* Public editorial layer: original opening animation and account UI are preserved. */
-.public-shell { --surface:#fff; }
+.public-shell { --surface:#fbf7ef; }
 .public-shell .brand-mark { width:48px; height:48px; background:transparent; border:0; }
 .public-shell .brand-mark img { width:46px; height:46px; object-fit:contain; }
 .public-shell .footer-brand-mark { display:flex; align-items:center; gap:16px; }
@@ -12,7 +12,7 @@
 .public-shell .rule-band :is(p, span, a) { color:#d6ddd2; }
 .public-shell .rule-band > svg,
 .public-shell .rule-band a svg { color:#d6ddd2; }
-.public-shell .markdown-body { background:#fff; color:#39453d; line-height:1.95; padding:clamp(22px,3.5vw,50px); border:1px solid #e5e9e2; border-radius:10px; }
+.public-shell .markdown-body { background:#fbf7ef; color:#39453d; line-height:1.95; padding:clamp(22px,3.5vw,50px); border:1px solid #e5e2d6; border-radius:10px; }
 .public-shell .markdown-body p { margin:0 0 1.3em; }
 .public-shell .markdown-body h2 { color:#263d2e; font-weight:750; margin:2.1em 0 .85em; padding-bottom:12px; border-bottom:1px solid #e1e8df; }
 .public-shell .markdown-body h3 { color:#354b3b; font-weight:700; margin:1.65em 0 .7em; }
@@ -39,16 +39,16 @@
 .public-shell .update-visual .article-cover,.public-shell .update-visual .club-track-visual { width:100%; height:100%; min-height:280px; }
 .public-shell .update-featured-visual .article-cover img { object-fit:contain; padding:22px; background:linear-gradient(115deg,#e5ecd8,#f2f1e5); }
 .public-shell .update-featured-info strong { font-weight:750; }
-.public-shell .update-featured-info { background:#fff; }
+.public-shell .update-featured-info { background:#fbf7ef; padding:18px 22px 22px; }
 .public-shell .update-visual .article-cover.cover-icon { min-height:100%; background:radial-gradient(circle at 78% 22%,#dce8d5,#eef3e8 48%,#e6eee0); color:#1f5440; }
 .public-shell .update-visual .article-cover.cover-icon svg { width:72px; height:72px; }
-.public-shell .update-featured { border:1px solid #e1e7df; border-radius:10px; overflow:hidden; }
+.public-shell .update-featured { border:1px solid var(--line); border-radius:9px; overflow:hidden; background:#fbf7ef; }
 .public-shell .home-manifesto .manifesto-card > span { display:flex; align-items:center; gap:12px; color:#496650; }
 .public-shell .home-manifesto .manifesto-card > span svg { position:static; }
 .public-shell .home-manifesto .manifesto-card strong { font-weight:750; }
 .public-shell .home-manifesto .manifesto-intro h2 { font-weight:750; }
 .club-track-visual { position:relative; margin:0; overflow:hidden; background:var(--paper-2); }
-.club-track-visual > img { width:100%; height:100%; display:block; object-fit:cover; }
+.club-track-visual > img { width:100%; height:100%; display:block; object-fit:cover; object-position:center; }
 .visual-deep-learning { background:#101718; }
 .visual-deep-learning > img { object-fit:contain; }
 .visual-embodied-agent > img { object-position:center 43%; }
@@ -56,7 +56,7 @@
 .club-track-visual figcaption { position:absolute; right:12px; bottom:14px; font-size:12px; background:#ffffffed; border-radius:4px; padding:6px 9px; }
 .club-track-visual figcaption a { color:#334b40; }
 .public-shell:has(.home-updates) .flagship-section .track-card:is(.track-coral,.track-ink,.track-sage,.track-sand) { background:#fff; border:1px solid var(--line); color:var(--ink); border-radius:9px; padding:0 0 22px; overflow:hidden; gap:18px; }
-.public-shell .track-card > .club-track-visual { height:208px; min-height:208px; width:100%; }
+.public-shell .track-card > .club-track-visual { aspect-ratio:16/9; height:auto; min-height:0; width:100%; }
 .public-shell .track-card > div,.public-shell .track-card > footer { margin-left:24px; margin-right:24px; }
 .public-shell .track-card > div { margin-top:0 !important; }
 .public-shell .track-card > .track-card-top { justify-content:flex-start !important; align-items:center; flex-direction:row !important; gap:14px; text-align:left; }
@@ -82,12 +82,15 @@
 .competition-overview > .competition-poster { grid-column:1; grid-row:1 / 3; }
 .competition-overview:has(.competition-poster) > div,.competition-overview:has(.competition-poster) > dl { grid-column:2; }
 .public-shell .track-directory { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px; }
-.public-shell .track-directory .track-entry { display:flex; flex-direction:column; align-items:stretch; background:white; padding:0 0 22px; gap:13px; border:1px solid var(--line); border-radius:8px; overflow:hidden; position:relative; }
-.track-directory .club-track-visual { height:190px; }
+.public-shell .track-directory > a,
+.public-shell .track-directory .track-entry { display:flex; flex-direction:column; align-items:stretch; background:white; padding:0 0 22px; gap:13px; border:1px solid var(--line); border-radius:8px; overflow:hidden; position:relative; min-height:0; grid-template-columns:none; text-align:left; text-decoration:none; }
+.track-directory .club-track-visual { aspect-ratio:16/9; height:auto; min-height:0; }
+.public-shell .track-directory > a > :not(.club-track-visual),
 .public-shell .track-directory .track-entry > :not(.club-track-visual) { margin-left:22px; margin-right:22px; }
 .public-shell .track-directory .track-number { display:none; }
 .public-shell .track-directory h3 { color:var(--ink); font-weight:750; }
 .public-shell .track-directory p { color:var(--muted); line-height:1.8; font-size:15px; }
+.public-shell .track-directory > a > svg,
 .public-shell .track-directory .track-entry > svg { align-self:flex-end; }
 .track-detail-hero { height:clamp(210px,32vw,390px); border-radius:9px; margin-bottom:25px; }
 .track-detail-hero.visual-deep-learning > img { object-fit:contain; }
@@ -129,7 +132,7 @@
  .competition-feature-copy p { font-size:16px; }
  .competition-topics { margin:20px 0; gap:8px; }
  .competition-topics span { font-size:12px; padding:8px; }
- .public-shell .track-card > .club-track-visual { height:180px; min-height:180px; }
+ .public-shell .track-card > .club-track-visual { aspect-ratio:16/9; height:auto; min-height:0; }
  .public-shell:has(.home-updates) .flagship-section .track-card:is(.track-coral,.track-ink,.track-sage,.track-sand) { padding:0 0 20px; }
  .public-shell .competition-row { display:flex; flex-direction:column; align-items:stretch; gap:18px; padding:20px; }
  .competition-list-poster { width:min(100%,300px); align-self:center; }
@@ -137,7 +140,7 @@
  .competition-overview > .competition-poster { grid-column:1; grid-row:auto; width:min(100%,340px); justify-self:center; }
  .competition-overview:has(.competition-poster) > div,.competition-overview:has(.competition-poster) > dl { grid-column:1; }
  .public-shell .track-directory { grid-template-columns:1fr; }
- .track-directory .club-track-visual { height:200px; }
+ .track-directory .club-track-visual { aspect-ratio:16/9; height:auto; min-height:0; }
  .public-shell .problem-directory.standalone > a { grid-template-columns:1fr; gap:16px; }
  .problem-list-image { width:100%; height:180px; }
  .club-about-intro { display:block; margin-bottom:25px; }
@@ -174,7 +177,8 @@
 .public-shell:has(.home-updates) .news-showcase .update-featured-visual::after,
 .public-shell:has(.home-updates) .news-showcase .update-featured-visual > span,
 .public-shell:has(.home-updates) .news-showcase .update-featured-visual > i { display:none !important; }
-.public-shell:has(.home-updates) .news-showcase .update-featured-visual { overflow:hidden; border-radius:10px 10px 0 0; }
+.public-shell:has(.home-updates) .news-showcase .update-featured-visual { overflow:hidden; border-radius:0; }
+.public-shell:has(.home-updates) .news-showcase .update-featured .update-visual { border-radius:0 !important; }
 @media(max-width:700px){
  .public-shell:has(.home-updates) .flagship-section .track-grid { display:grid; overflow:visible; }
  .public-shell:has(.home-updates) .news-showcase .update-featured-visual { height:240px; }
@@ -208,6 +212,7 @@
 .public-shell .competition-overview:has(.competition-poster) > div > p:first-of-type { font-size:18px; line-height:1.9; }
 .public-shell .competition-feature-copy .wujie-audience { font-size:15px; }
 .public-shell .page-intro:has(.wujie-task-documents) { display:block; }
+.public-shell .track-directory > a,
 .public-shell .track-directory .track-entry { background:var(--surface); }
 @media(max-width:700px){
  .public-shell .competition-overview:has(.competition-poster) > .wujie-prizes { grid-column:1; }

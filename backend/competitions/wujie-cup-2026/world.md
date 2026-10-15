@@ -22,6 +22,8 @@
 
 ZIP 根目录含 `agent.py`、`config.json`，定义 `Agent`。必需 `act(observation)`，可选 `reset(goal)`、`configure(config)`。每场景 reset 接收目标物品列表。
 
+`config.json` 中的 `memory` 控制评测时的跨场景记忆策略：`same-test-only` 表示记忆仅在单次测试运行（同一场景组）内保留，测试之间重置；跨测试不携带记忆。开发包默认取 `same-test-only`，与正式测评口径一致。
+
 观察保持 `image_jpeg_base64`、`inventory`、`position`、`health`、`noop_action` 五项；act 返回原生八维整数动作。规划、模型、代码执行、记忆与技能可放在 Agent 内部；控制器只提供观察和执行合法动作，不接受选手自报成绩。
 
 动作索引遵循 [MineDojo 官方动作说明](https://docs.minedojo.org/sections/core_api/action_space.html)。先复制 `observation["noop_action"]`，只修改需要的维度，避免把摄像机静止值12误写成0。
@@ -39,7 +41,7 @@ ZIP 根目录含 `agent.py`、`config.json`，定义 `Agent`。必需 `act(obser
 
 选手程序使用 Python3.11、NumPy、Pillow、requests 和标准库。纯 Python 模块可随 ZIP 提交，额外依赖须提前登记运行镜像。`/tmp` 和同一进程状态可在本次测试内保留，reset 时自行清理或更新；测试结束后删除，不跨测试保存。
 
-模型调用使用 `model_api.py`：`ModelClient(model="资源面板中的允许模型").chat(text, images=[jpeg_base64])`。测评注入 `EVALUATION_API_URL`、`EVALUATION_API_TOKEN`，请求头为 `X-Evaluation-API-Token`；允许模型见题目资源面板。300次调用由全部场景共享，同时受本队本题总额度约束。禁止包内放密钥或绕过代理联网；渠道未配置时不放行正式自测。
+模型调用使用 `model_api.py`：`ModelClient(model="API 平台（原题目资源面板）中的允许模型").chat(text, images=[jpeg_base64])`。测评注入 `EVALUATION_API_URL`、`EVALUATION_API_TOKEN`，请求头为 `X-Evaluation-API-Token`；允许模型见 API 平台（原题目资源面板，含允许模型、算力额度与用量）。300次调用由全部场景共享，同时受本队本题总额度约束。禁止包内放密钥或绕过代理联网；渠道未配置时不放行正式自测。
 
 ## 提交与运行限制
 

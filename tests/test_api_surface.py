@@ -12,7 +12,7 @@ class ApiSurfaceTests(unittest.TestCase):
 
     def test_admin_lists_roles_invites_and_audit(self):
         self.login(self.admin, "admin@uestcai.top")
-        self.register(self.member, "surface@std.uestc.edu.cn", "Surface")
+        self.register(self.member, "20260101@std.uestc.edu.cn", "Surface")
         paths = ["/admin/users", "/admin/audit", "/ai/manage/teams", "/manage/checkpoints", "/manage/problem-runtimes", "/manage/registrations", "/manage/score-batches", "/manage/submissions"]
         for path in paths:
             with self.subTest(path=path):
@@ -38,7 +38,7 @@ class ApiSurfaceTests(unittest.TestCase):
     def test_team_join_track_update_health_and_csv_batch(self):
         self.assertEqual(self.member.get("/api/health").status_code, 200)
         self.login(self.admin, "admin@uestcai.top")
-        self.register(self.member, "captain@std.uestc.edu.cn", "Captain")
+        self.register(self.member, "20260102@std.uestc.edu.cn", "Captain")
         comp = self.member.get("/api/competitions/paper-city-2027").get_json()
         track = next(t for t in comp["tracks"] if t["slug"] == "story-maps")
         problem = track["problems"][0]
@@ -51,7 +51,7 @@ class ApiSurfaceTests(unittest.TestCase):
         self.assertEqual(team_response.status_code, 201)
         team = team_response.get_json()
         second = self.app.test_client()
-        self.register(second, "joining@std.uestc.edu.cn", "Joining")
+        self.register(second, "20260103@std.uestc.edu.cn", "Joining")
         self.assertEqual(second.post("/api/teams/join", json={"invite_code":"MISSING"}).status_code, 404)
         joined = second.post("/api/teams/join", json={"invite_code":team["invite_code"]})
         self.assertEqual(joined.status_code, 200, joined.get_json())

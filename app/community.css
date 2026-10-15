@@ -182,7 +182,7 @@
 .checkpoint-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 18px; }
 .checkpoint-tabs button { border: 1px solid #dbe3d6; padding: 12px 18px; background: transparent; color: #334c3d; cursor: pointer; }
 .checkpoint-tabs button.active { background: #263f2f; color: white; border-color: #263f2f; }
-.checkpoint-form { padding: 28px; border: 1px solid #dbe3d6; background: #fffefa; max-width: 1040px; min-width: 0; }
+.checkpoint-form { padding: 28px; border: 1px solid #dbe3d6; background: #fbf7ef; max-width: 1040px; min-width: 0; }
 .checkpoint-form header, .checkpoint-footer { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
 .checkpoint-form .form-field { margin: 20px 0; }
 .checkpoint-form input, .checkpoint-form textarea { width: 100%; min-width: 0; }

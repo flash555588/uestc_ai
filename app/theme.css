@@ -1,6 +1,6 @@
 /* Editorial identity: ink, vermilion, and typographic contrast. */
 :root {
-  --paper: #f8f7f3; --paper-2: #eeede7; --surface: #fffefa;
+  --paper: #f5efe3; --paper-2: #ebe3d2; --surface: #fbf7ef;
   --ink: #24241f; --ink-2: #494940; --muted: #68685f; --quiet: #74746a;
   --line: #d8d7ce; --line-dark: #b3b2a7; --coral: #bd3826; --coral-dark: #982c1d;
   --sage: #52634f; --sand: #a17732; --danger: #a83226;
@@ -268,16 +268,16 @@ body { font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; fo
 
 /* Homepage skin: reference colors are restrained to accents and sectional contrast. */
 .public-shell:has(.home-updates) {
-  --home-paper: #f3f4ee;
-  --home-paper-2: #e9eee8;
-  --home-slate: #58666c;
-  --home-deep: #405553;
-  --home-deeper: #344746;
+  --home-paper: #f5efe3;
+  --home-paper-2: #ebe3d2;
+  --home-slate: #6b5d4d;
+  --home-deep: #5a4d3e;
+  --home-deeper: #4a3f33;
   --home-lime: #8fa93a;
   --home-mint: #78c9bc;
   --home-warm: #fff8ee;
-  --home-ink: #334442;
-  --home-muted: #6c7772;
+  --home-ink: #3d3428;
+  --home-muted: #7a7060;
   --home-line: rgba(64, 85, 83, .18);
   background: var(--home-paper);
   color: var(--home-ink);
@@ -722,8 +722,8 @@ body:has(.home-updates),
 body:has(.home-updates),
 .public-shell:has(.home-updates) .app-main,
 .public-shell:has(.home-updates) .app-content {
-  background: #e9e7e5;
-  color: #171312;
+  background: #f5efe3;
+  color: #3d3428;
 }
 .public-shell:has(.home-updates) .app-sidebar {
   background: #000;

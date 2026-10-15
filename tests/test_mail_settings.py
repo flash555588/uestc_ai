@@ -114,7 +114,7 @@ class MailSettingsTestCase(unittest.TestCase):
         failure = MailDeliveryError("email provider rejected the request", provider="smtp",
                                     detail="authentication failed (535)")
         with patch.object(mailer, "_send_smtp", side_effect=failure):
-            response = self.admin.post("/api/manage/mail/test", json={"recipient": "captain@std.uestc.edu.cn"})
+            response = self.admin.post("/api/manage/mail/test", json={"recipient": "20260102@std.uestc.edu.cn"})
         self.assertEqual(response.status_code, 200)
         body = response.get_json()
         self.assertFalse(body["ok"])
@@ -123,7 +123,7 @@ class MailSettingsTestCase(unittest.TestCase):
         self.assertEqual(body["provider"], "smtp")
 
         with patch.object(mailer, "_send_smtp") as sender:
-            body = self.admin.post("/api/manage/mail/test", json={"recipient": "captain@std.uestc.edu.cn"}).get_json()
+            body = self.admin.post("/api/manage/mail/test", json={"recipient": "20260102@std.uestc.edu.cn"}).get_json()
         self.assertEqual(sender.call_count, 1)
         self.assertTrue(body["ok"])
         self.assertFalse(body["fallback_used"])
@@ -136,7 +136,7 @@ class MailSettingsTestCase(unittest.TestCase):
     def test_draft_config_is_tested_before_saving(self):
         with patch.object(mailer, "_send_smtp") as sender:
             response = self.admin.post("/api/manage/mail/test",
-                                       json={"recipient": "captain@std.uestc.edu.cn", "draft": self.smtp_payload()})
+                                       json={"recipient": "20260102@std.uestc.edu.cn", "draft": self.smtp_payload()})
         self.assertEqual(response.status_code, 200, response.get_json())
         self.assertTrue(response.get_json()["ok"])
         self.assertEqual(sender.call_count, 1)
@@ -150,7 +150,7 @@ class MailSettingsTestCase(unittest.TestCase):
         with patch.object(mailer, "_send_resend", side_effect=unavailable), \
                 patch.object(mailer, "_send_smtp") as smtp_sender:
             body = self.admin.post("/api/manage/mail/test",
-                                   json={"recipient": "captain@std.uestc.edu.cn"}).get_json()
+                                   json={"recipient": "20260102@std.uestc.edu.cn"}).get_json()
         self.assertEqual(smtp_sender.call_count, 1)
         self.assertTrue(body["ok"])
         self.assertEqual(body["provider"], "smtp")
@@ -164,7 +164,7 @@ class MailSettingsTestCase(unittest.TestCase):
         try:
             with patch.object(mailer, "_deliver", side_effect=lambda provider, *args, **kwargs: used.append(provider)):
                 with self.app.app_context():
-                    mailer.send_verification_email("captain@std.uestc.edu.cn", "123456")
+                    mailer.send_verification_email("20260102@std.uestc.edu.cn", "123456")
         finally:
             self.app.config["TESTING"] = True
         self.assertEqual(used, ["smtp"])

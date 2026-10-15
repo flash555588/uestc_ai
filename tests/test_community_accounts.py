@@ -23,12 +23,12 @@ class CommunityAccountsTestCase(unittest.TestCase):
         return result.get_json()
 
     def test_captcha_binding_attempts_expiry_and_single_use(self):
-        email = "captcha@std.uestc.edu.cn"
+        email = "20260125@std.uestc.edu.cn"
         self.assertEqual(self.member.post("/api/auth/verification-codes", json={"email": email}).status_code, 400)
         challenge = self.challenge(self.member, email)
         self.assertTrue(challenge["image"].startswith("data:image/png;base64,"))
         data = {"email": email, "captcha_id": challenge["id"], "captcha_code": challenge["debug_code"]}
-        self.assertEqual(self.member.post("/api/auth/verification-codes", json={**data, "email": "other@std.uestc.edu.cn"}).status_code, 400)
+        self.assertEqual(self.member.post("/api/auth/verification-codes", json={**data, "email": "20260126@std.uestc.edu.cn"}).status_code, 400)
         self.assertEqual(self.member.post("/api/auth/verification-codes", json={**data, "purpose": "reset"}).status_code, 400)
         self.assertEqual(self.member.post("/api/auth/verification-codes", json=data, environ_overrides={"REMOTE_ADDR": "10.0.0.2"}).status_code, 400)
         self.assertEqual(self.member.post("/api/auth/verification-codes", json=data).status_code, 202)
@@ -47,12 +47,12 @@ class CommunityAccountsTestCase(unittest.TestCase):
             self.assertIsNotNone(db.session.get(EmailVerificationCode, challenge["id"]).consumed_at)
 
     def test_reset_verifies_email_revokes_sessions_and_cannot_replay(self):
-        registered = self.register(self.member, "recovery@std.uestc.edu.cn", "Recovery").get_json()
+        registered = self.register(self.member, "20260127@std.uestc.edu.cn", "Recovery").get_json()
         second = self.app.test_client()
-        self.login(second, "recovery@std.uestc.edu.cn", "secure-pass-123")
+        self.login(second, "20260127@std.uestc.edu.cn", "secure-pass-123")
         token = registered["token"]
-        sent = self.code_request(self.app.test_client(), "recovery@std.uestc.edu.cn", purpose="reset").get_json()
-        data = {"email": "recovery@std.uestc.edu.cn", "verification_code": sent["debug_code"], "new_password": "New-secure-pass!", "confirm_password": "New-secure-pass!"}
+        sent = self.code_request(self.app.test_client(), "20260127@std.uestc.edu.cn", purpose="reset").get_json()
+        data = {"email": "20260127@std.uestc.edu.cn", "verification_code": sent["debug_code"], "new_password": "New-secure-pass!", "confirm_password": "New-secure-pass!"}
         self.assertEqual(self.app.test_client().post("/api/auth/reset-password", json={**data, "confirm_password": "Mismatch!"}).status_code, 400)
         self.assertEqual(self.app.test_client().post("/api/auth/reset-password", json={**data, "verification_code": "invalid"}).status_code, 400)
         response = self.app.test_client().post("/api/auth/reset-password", json=data)
@@ -75,20 +75,20 @@ class CommunityAccountsTestCase(unittest.TestCase):
         self.assertEqual(self.member.post("/api/auth/reset-password", json={"email": "unregistered@example.com", "verification_code": result["debug_code"], "new_password": "secure-new!", "confirm_password": "secure-new!"}).status_code, 400)
 
     def test_mail_failure_does_not_allow_captcha_replay_and_production_hides_digits(self):
-        challenge = self.challenge(self.member, "mail@std.uestc.edu.cn")
-        data = {"email": "mail@std.uestc.edu.cn", "captcha_id": challenge["id"], "captcha_code": challenge["debug_code"]}
+        challenge = self.challenge(self.member, "20260128@std.uestc.edu.cn")
+        data = {"email": "20260128@std.uestc.edu.cn", "captcha_id": challenge["id"], "captcha_code": challenge["debug_code"]}
         with patch("platform_api.routes.auth.send_verification_email", side_effect=MailDeliveryError("email provider is unavailable")):
             self.assertEqual(self.member.post("/api/auth/verification-codes", json=data).status_code, 503)
         self.assertEqual(self.member.post("/api/auth/verification-codes", json=data).status_code, 400)
         self.app.config.update(TESTING=False, EXPOSE_VERIFICATION_CODE=True)
-        challenge = self.member.post("/api/auth/captcha", json={"email": "hidden@std.uestc.edu.cn"}).get_json()
+        challenge = self.member.post("/api/auth/captcha", json={"email": "20260129@std.uestc.edu.cn"}).get_json()
         self.assertNotIn("debug_code", challenge)
         self.assertEqual(self.member.post("/api/auth/verification-codes", json=[]).status_code, 400)
         self.assertEqual(self.member.post("/api/auth/register", json=[]).status_code, 400)
         self.assertEqual(self.member.post("/api/auth/reset-password", json=[]).status_code, 400)
 
     def test_registration_requires_matching_confirmation(self):
-        email = "confirmation@std.uestc.edu.cn"
+        email = "20260130@std.uestc.edu.cn"
         code = self.code_request(self.member, email).get_json()["debug_code"]
         data = {"email": email, "name": "Student", "password": "secure-pass!", "verification_code": code}
         self.assertEqual(self.member.post("/api/auth/register", json=data).status_code, 400)
@@ -96,9 +96,9 @@ class CommunityAccountsTestCase(unittest.TestCase):
         self.assertEqual(self.member.post("/api/auth/register", json={**data, "confirm_password": data["password"]}).status_code, 201)
 
     def test_contributions_review_ownership_and_public_profile(self):
-        user_id = self.register(self.member, "writer@std.uestc.edu.cn", "Writer").get_json()["user"]["id"]
+        user_id = self.register(self.member, "20260131@std.uestc.edu.cn", "Writer").get_json()["user"]["id"]
         other = self.app.test_client()
-        self.register(other, "other@std.uestc.edu.cn", "Other")
+        self.register(other, "20260126@std.uestc.edu.cn", "Other")
         anonymous = self.app.test_client()
         data = {"kind": "work", "title": "Independent project", "excerpt": "My project", "body_md": "# Original work", "status": "pending"}
         self.assertEqual(anonymous.post("/api/me/contributions", json=data).status_code, 401)
@@ -128,8 +128,8 @@ class CommunityAccountsTestCase(unittest.TestCase):
         self.assertEqual(anonymous.get(f"/api/profiles/{user_id}").get_json()["contributions"], [])
 
     def test_private_attachments_follow_publication_and_cannot_be_stolen(self):
-        self.register(self.member, "files@std.uestc.edu.cn", "Files")
-        self.register(self.reviewer, "files-other@std.uestc.edu.cn", "Other")
+        self.register(self.member, "20260132@std.uestc.edu.cn", "Files")
+        self.register(self.reviewer, "20260133@std.uestc.edu.cn", "Other")
         anonymous = self.app.test_client()
         asset = self.member.post("/api/markdown-assets", data={"scope": "contribution", "file": (io.BytesIO(b"private-notes"), "notes.txt")}, content_type="multipart/form-data").get_json()
         self.assertEqual(anonymous.get(asset["url"]).status_code, 404)
@@ -148,7 +148,7 @@ class CommunityAccountsTestCase(unittest.TestCase):
         self.assertEqual(anonymous.get(asset["url"]).status_code, 404)
 
     def test_profile_has_real_registration_and_hides_private_competitions(self):
-        user_id = self.register(self.member, "history@std.uestc.edu.cn", "History").get_json()["user"]["id"]
+        user_id = self.register(self.member, "20260134@std.uestc.edu.cn", "History").get_json()["user"]["id"]
         competition = self.member.get("/api/competitions/paper-city-2027").get_json()
         team = self.member.post("/api/teams", json={"competition_id": competition["id"], "name": "History team"}).get_json()
         registered = self.member.post("/api/registrations", json={"competition_id": competition["id"], "team_id": team["id"], "track_id": competition["tracks"][0]["id"], "fields": {"phone": "private"}})
@@ -161,6 +161,43 @@ class CommunityAccountsTestCase(unittest.TestCase):
             db.session.get(Competition, competition["id"]).status = "draft"
             db.session.commit()
         self.assertEqual(self.app.test_client().get(f"/api/profiles/{user_id}").get_json()["competitions"], [])
+
+    def test_student_id_email_registers_without_invite_code(self):
+        for email in ("20230101@std.uestc.edu.cn", "2023010101@std.uestc.edu.cn", "123456789012@std.uestc.edu.cn"):
+            with self.subTest(email=email):
+                client = self.app.test_client()
+                response = self.register(client, email, "Student")
+                self.assertEqual(response.status_code, 201, response.get_json())
+
+    def test_campus_alias_requires_invite_code_for_verification_and_register(self):
+        alias_emails = (
+            "alias@std.uestc.edu.cn",
+            "2023010@std.uestc.edu.cn",       # 7 digits: too short
+            "2023010101234@std.uestc.edu.cn", # 13 digits: too long
+            "abc12345@std.uestc.edu.cn",      # non-digit student ID
+        )
+        for email in alias_emails:
+            with self.subTest(email=email):
+                client = self.app.test_client()
+                rejected = client.post("/api/auth/verification-codes", json={"email": email})
+                self.assertEqual(rejected.status_code, 403, rejected.get_json())
+                self.assertEqual(rejected.get_json()["error"], "valid registration invite required")
+                # Register endpoint also rejects without invite code.
+                register_rejected = client.post("/api/auth/register", json={
+                    "email": email, "name": "Alias", "password": "secure-pass-123",
+                    "confirm_password": "secure-pass-123", "verification_code": "000000",
+                })
+                self.assertEqual(register_rejected.status_code, 403, register_rejected.get_json())
+                self.assertEqual(register_rejected.get_json()["error"], "valid registration invite required")
+
+    def test_campus_alias_with_invite_code_registers_successfully(self):
+        self.login(self.admin, "admin@uestcai.top")
+        created = self.admin.post("/api/admin/registration-invites", json={"note": "alias", "expires_in_days": 7})
+        self.assertEqual(created.status_code, 201, created.get_json())
+        invite_code = created.get_json()["code"]
+        client = self.app.test_client()
+        response = self.register(client, "alias-user@std.uestc.edu.cn", "Alias", invite_code=invite_code)
+        self.assertEqual(response.status_code, 201, response.get_json())
 
 
 if __name__ == "__main__":

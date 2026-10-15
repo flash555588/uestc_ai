@@ -55,7 +55,7 @@ class ParticipantJourneyTests(unittest.TestCase):
         url = "/api/evaluation-runs/"+run["id"]
         self.assertEqual(self.app.test_client().get(url).status_code,401)
         other = self.app.test_client()
-        self.register(other,"other@std.uestc.edu.cn","Other")
+        self.register(other,"20260126@std.uestc.edu.cn","Other")
         self.assertEqual(other.get(url).status_code,403)
         public = self.member.get(url).get_data(as_text=True)
         self.assertNotIn("init_state_id",public)

@@ -191,7 +191,7 @@ class ProblemSetupTests(unittest.TestCase):
         invalid = self.document(); invalid["runtime"]["image"] = "python:latest"
         self.assertEqual(self.admin.put(self.url, json=invalid).status_code, 400)
         with self.app.app_context():
-            user = User.query.filter_by(email="limits@std.uestc.edu.cn").one(); user.role = "organizer"; db.session.commit()
+            user = User.query.filter_by(email="20260135@std.uestc.edu.cn").one(); user.role = "organizer"; db.session.commit()
         self.assertEqual(self.member.put(self.url, json=self.document()).status_code, 403)
         self.assertEqual(self.admin.put(self.url, json=self.document()).status_code, 200)
         self.assertEqual(self.member.put(self.url, json=self.document()).status_code, 200)

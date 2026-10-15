@@ -90,7 +90,7 @@ class PlatformApiTestCase(unittest.TestCase):
         problem_id = created.get_json()["id"]
         invalid = self.admin.patch(f"/api/manage/problems/{problem_id}", json={"submission_schema": {"fields": ["a", "a"]}})
         self.assertEqual(invalid.status_code, 400)
-        self.register(self.member, "materials@std.uestc.edu.cn", "材料测试")
+        self.register(self.member, "20260104@std.uestc.edu.cn", "材料测试")
         team = self.member.post("/api/teams", json={"competition_id": competition["id"], "name": "材料测试队"}).get_json()
         registered = self.member.post("/api/registrations", json={"competition_id": competition["id"], "track_id": track["id"], "team_id": team["id"]})
         self.assertEqual(registered.status_code, 201)
@@ -190,7 +190,7 @@ class PlatformApiTestCase(unittest.TestCase):
         self.login(other, "reviewer@uestc.ai")
         for role in ("admin", "member"):
             first, second = self.app.test_client(), self.app.test_client()
-            email = "admin@uestcai.top" if role == "admin" else "password-change@std.uestc.edu.cn"
+            email = "admin@uestcai.top" if role == "admin" else "20260105@std.uestc.edu.cn"
             old_password = "ChangeMe123!" if role == "admin" else "member-old-pass-123"
             if role == "member":
                 self.register(first, email, "改密测试", password=old_password)
@@ -220,7 +220,7 @@ class PlatformApiTestCase(unittest.TestCase):
 
     def test_email_verification_and_external_registration_invites(self):
         campus_client = self.app.test_client()
-        campus_email = "verified-student@std.uestc.edu.cn"
+        campus_email = "20260106@std.uestc.edu.cn"
         verification = self.code_request(campus_client, campus_email)
         self.assertEqual(verification.status_code, 202, verification.get_json())
         verification_code = verification.get_json()["debug_code"]
@@ -244,7 +244,7 @@ class PlatformApiTestCase(unittest.TestCase):
         self.assertTrue(registered.get_json()["user"]["email_verified"])
 
         rate_client = self.app.test_client()
-        rate_email = "rate-limit@std.uestc.edu.cn"
+        rate_email = "20260107@std.uestc.edu.cn"
         first = self.code_request(rate_client, rate_email)
         second = self.code_request(rate_client, rate_email)
         self.assertEqual(first.status_code, 202, first.get_json())
@@ -280,7 +280,7 @@ class PlatformApiTestCase(unittest.TestCase):
     def test_configured_evaluation_is_observable_without_creating_scores(self):
         self.app.config["EVALUATION_WORKER_TOKEN"] = "test-worker-secret"
         self.app.config["EVALUATION_ENABLED_ADAPTERS"] = "minecraft-agent-v1"
-        self.register(self.member, "observer@std.uestc.edu.cn", "Observer")
+        self.register(self.member, "20260108@std.uestc.edu.cn", "Observer")
         self.login(self.admin, "admin@uestcai.top")
         competition = self.member.get("/api/competitions/paper-city-2027").get_json()
         track = next(item for item in competition["tracks"] if item["slug"] == "story-maps")
@@ -443,7 +443,7 @@ class PlatformApiTestCase(unittest.TestCase):
         self.assertEqual(public.get("/api/competitions/private-challenge/tracks/private-track").status_code, 404)
         self.assertEqual(public.get("/api/problems?status=draft").get_json(), [])
         self.assertEqual(public.get(f"/api/problems/{problem['id']}").status_code, 404)
-        self.register(self.member, "private-reader@std.uestc.edu.cn", "Reader")
+        self.register(self.member, "20260109@std.uestc.edu.cn", "Reader")
         self.assertEqual(self.member.get(f"/api/problems/{problem['id']}").status_code, 404)
         self.assertEqual(self.member.post("/api/teams", json={
             "competition_id": competition["id"], "name": "No early access",
@@ -557,7 +557,7 @@ class PlatformApiTestCase(unittest.TestCase):
         self.assertEqual(remove.call_args.args[0], ["docker", "rm", "-f", "evaluation-example"])
 
     def test_submission_review_score_and_leaderboard_workflow(self):
-        self.register(self.member, "member@std.uestc.edu.cn", "参赛同学")
+        self.register(self.member, "20260110@std.uestc.edu.cn", "参赛同学")
 
         competition = self.member.get("/api/competitions/paper-city-2027").get_json()
         track = next(item for item in competition["tracks"] if item["slug"] == "story-maps")
@@ -699,7 +699,7 @@ class PlatformApiTestCase(unittest.TestCase):
         self.assertEqual(rows[0]["total_score"], 69.0)
 
     def test_competition_reviewer_weights_auto_split_and_review_progress(self):
-        self.register(self.member, "weighted-member@std.uestc.edu.cn", "权重测试成员")
+        self.register(self.member, "20260111@std.uestc.edu.cn", "权重测试成员")
         competition = self.member.get("/api/competitions/paper-city-2027").get_json()
         track = next(item for item in competition["tracks"] if item["slug"] == "story-maps")
         problem = track["problems"][0]
@@ -819,7 +819,7 @@ class PlatformApiTestCase(unittest.TestCase):
         self.assertEqual(updated_review.status_code, 201, updated_review.get_json())
 
     def test_team_must_register_for_problem_track(self):
-        self.register(self.member, "member2@std.uestc.edu.cn", "另一位同学")
+        self.register(self.member, "20260112@std.uestc.edu.cn", "另一位同学")
         competition = self.member.get("/api/competitions/paper-city-2027").get_json()
         paper_track = next(item for item in competition["tracks"] if item["slug"] == "paper-machines")
         story_track = next(item for item in competition["tracks"] if item["slug"] == "story-maps")
@@ -850,7 +850,7 @@ class PlatformApiTestCase(unittest.TestCase):
         )
         self.assertEqual(anonymous.status_code, 401)
 
-        self.register(self.member, "markdown@std.uestc.edu.cn", "Markdown 作者")
+        self.register(self.member, "20260113@std.uestc.edu.cn", "Markdown 作者")
 
         upload = self.member.post(
             "/api/markdown-assets",
@@ -886,7 +886,7 @@ class PlatformApiTestCase(unittest.TestCase):
         self.assertEqual(rejected_size.get_json()["error"], "markdown asset exceeds size limit")
 
     def test_submission_assets_stage_immediately_and_carry_into_new_drafts(self):
-        self.register(self.member, "staged-assets@std.uestc.edu.cn", "附件流程测试成员")
+        self.register(self.member, "20260114@std.uestc.edu.cn", "附件流程测试成员")
         competition = self.member.get("/api/competitions/paper-city-2027").get_json()
         track = next(item for item in competition["tracks"] if item["slug"] == "story-maps")
         problem = track["problems"][0]
@@ -1041,7 +1041,7 @@ class PlatformApiTestCase(unittest.TestCase):
         protected_track = next(track for track in protected_competition["tracks"] if any(problem["status"] == "published" for problem in track["problems"]))
         protected_problem = next(problem for problem in protected_track["problems"] if problem["status"] == "published")
         self.admin.post("/api/auth/logout")
-        self.register(self.member, "delete-protection@std.uestc.edu.cn", "记录保护测试成员")
+        self.register(self.member, "20260115@std.uestc.edu.cn", "记录保护测试成员")
         team = self.member.post("/api/teams", json={
             "competition_id": protected_competition["id"],
             "name": "不可删除记录队伍",
@@ -1091,7 +1091,7 @@ class PlatformApiTestCase(unittest.TestCase):
             "status": "published",
         }).get_json()
 
-        self.register(self.member, "member-delete@std.uestc.edu.cn", "草稿清理成员")
+        self.register(self.member, "20260116@std.uestc.edu.cn", "草稿清理成员")
         team = self.member.post("/api/teams", json={
             "competition_id": competition["id"],
             "name": "草稿清理队伍",
@@ -1124,11 +1124,11 @@ class PlatformApiTestCase(unittest.TestCase):
     def test_team_captain_manages_members_and_members_can_leave(self):
         competition = self.member.get("/api/competitions/paper-city-2027").get_json()
 
-        self.register(self.member, "captain@std.uestc.edu.cn", "队长同学")
+        self.register(self.member, "20260102@std.uestc.edu.cn", "队长同学")
         teammate = self.app.test_client()
-        self.register(teammate, "teammate@std.uestc.edu.cn", "队友同学")
+        self.register(teammate, "20260117@std.uestc.edu.cn", "队友同学")
         outsider = self.app.test_client()
-        self.register(outsider, "outsider@std.uestc.edu.cn", "队外同学")
+        self.register(outsider, "20260118@std.uestc.edu.cn", "队外同学")
 
         team = self.member.post("/api/teams", json={
             "competition_id": competition["id"],
@@ -1139,7 +1139,7 @@ class PlatformApiTestCase(unittest.TestCase):
         self.assertEqual(team["members"][0]["name"], "队长同学")
 
         # Members join themselves with the invite code; captains cannot add accounts by email.
-        self.assertEqual(self.member.post(f"/api/teams/{team['id']}/members", json={"email": "teammate@std.uestc.edu.cn"}).status_code, 404)
+        self.assertEqual(self.member.post(f"/api/teams/{team['id']}/members", json={"email": "20260117@std.uestc.edu.cn"}).status_code, 404)
 
         joined = teammate.post("/api/teams/join", json={"invite_code": team["invite_code"]})
         self.assertEqual(joined.status_code, 200, joined.get_json())
@@ -1194,11 +1194,11 @@ class PlatformApiTestCase(unittest.TestCase):
         track_two = self.admin.post("/api/competitions/limited-cup-2027/tracks",
                                     json={"slug": "limit-track-two", "name": "Two"}).get_json()
 
-        self.register(self.member, "limit-captain@std.uestc.edu.cn", "Limit captain")
+        self.register(self.member, "20260119@std.uestc.edu.cn", "Limit captain")
         teammate = self.app.test_client()
-        self.register(teammate, "limit-mate@std.uestc.edu.cn", "Limit mate")
+        self.register(teammate, "20260120@std.uestc.edu.cn", "Limit mate")
         spare = self.app.test_client()
-        self.register(spare, "limit-spare@std.uestc.edu.cn", "Limit spare")
+        self.register(spare, "20260121@std.uestc.edu.cn", "Limit spare")
 
         team = self.member.post("/api/teams", json={"competition_id": competition["id"], "name": "Limited squad"})
         self.assertEqual(team.status_code, 201, team.get_json())
@@ -1239,7 +1239,7 @@ class PlatformApiTestCase(unittest.TestCase):
         track_two = self.admin.post("/api/competitions/staff-exempt-cup/tracks",
                                     json={"slug": "staff-track-two", "name": "Two"}).get_json()
 
-        self.register(self.member, "limits-member@std.uestc.edu.cn", "Limits member")
+        self.register(self.member, "20260122@std.uestc.edu.cn", "Limits member")
         member_team = self.member.post("/api/teams", json={"competition_id": competition["id"], "name": "Member squad"})
         self.assertEqual(member_team.status_code, 201, member_team.get_json())
         member_team = member_team.get_json()
@@ -1289,9 +1289,9 @@ class PlatformApiTestCase(unittest.TestCase):
     def test_one_team_per_person_inside_a_competition(self):
         self.login(self.admin, "admin@uestcai.top")
         competition = self.member.get("/api/competitions/paper-city-2027").get_json()
-        self.register(self.member, "solo-captain@std.uestc.edu.cn", "Solo captain")
+        self.register(self.member, "20260123@std.uestc.edu.cn", "Solo captain")
         rival_client = self.app.test_client()
-        self.register(rival_client, "rival-captain@std.uestc.edu.cn", "Rival captain")
+        self.register(rival_client, "20260124@std.uestc.edu.cn", "Rival captain")
 
         first = self.member.post("/api/teams", json={"competition_id": competition["id"], "name": "First squad"})
         self.assertEqual(first.status_code, 201, first.get_json())

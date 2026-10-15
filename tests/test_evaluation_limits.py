@@ -22,7 +22,7 @@ class EvaluationLimitTests(unittest.TestCase):
     def fixture(self, adapter="minecraft-agent-v1", limit=2):
         self.app.config.update(EVALUATION_WORKER_TOKEN="test-worker", EVALUATION_ENABLED_ADAPTERS=adapter)
         self.login(self.admin, "admin@uestcai.top")
-        self.register(self.member, "limits@std.uestc.edu.cn", "Limits")
+        self.register(self.member, "20260135@std.uestc.edu.cn", "Limits")
         competition = self.member.get("/api/competitions/paper-city-2027").get_json()
         track = next(item for item in competition["tracks"] if item["slug"] == "story-maps")
         self.problem = track["problems"][0]
@@ -119,7 +119,7 @@ class EvaluationLimitTests(unittest.TestCase):
         self.fixture(adapter="classification-v1", limit=1)
         self.assertEqual(self.submit().status_code, 201)
         other = self.app.test_client()
-        self.register(other, "other-limits@std.uestc.edu.cn", "Other")
+        self.register(other, "20260136@std.uestc.edu.cn", "Other")
         self.assertEqual(other.get(self.budget_url).status_code, 403)
         self.assertEqual(self.app.test_client().get(self.budget_url).status_code, 401)
         second_team = other.post("/api/teams", json={"competition_id": self.team["competition_id"], "name": "Other"}).get_json()

@@ -3,19 +3,19 @@
   max-width: 1440px;
   margin: 0 auto;
   padding: 84px clamp(24px, 5vw, 80px) 72px;
-  background: #e9e7e5;
-  color: #101010;
+  background: #f5efe3;
+  color: #3d3428;
 }
-.public-shell:has(.home-updates) .home-updates .section-header { border-color: #101010; }
+.public-shell:has(.home-updates) .home-updates .section-header { border-color: #3d3428; }
 .public-shell:has(.home-updates) .home-updates .section-header h2,
-.public-shell:has(.home-updates) .home-updates .section-header > a { color: #101010; }
+.public-shell:has(.home-updates) .home-updates .section-header > a { color: #3d3428; }
 .news-cards {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1px;
   margin-top: 28px;
-  border: 1px solid #d8d5ca;
-  background: #d8d5ca;
+  border: 1px solid #d8cfc0;
+  background: #d8cfc0;
 }
 .update-card {
   min-height: 238px;
@@ -1453,6 +1453,16 @@
   background: transparent;
   box-shadow: none !important;
 }
+/* Featured card keeps community-card chrome (see issue #26). */
+.public-shell:has(.home-updates) .news-showcase .update-card.update-featured {
+  border: 1px solid var(--line) !important;
+  border-radius: 9px;
+  background: #fbf7ef;
+  overflow: hidden;
+}
+.public-shell:has(.home-updates) .news-showcase .update-card.update-featured:hover {
+  background: #fbf7ef;
+}
 .public-shell:has(.home-updates) .news-showcase .update-card > * { position: relative; z-index: 1; }
 .public-shell:has(.home-updates) .news-showcase .update-visual {
   display: block;
@@ -1611,6 +1621,21 @@
 }
 .public-shell:has(.home-updates) .news-showcase .update-featured-info,
 .public-shell:has(.home-updates) .news-showcase .update-small-info { position: relative; padding-top: 18px; }
+.public-shell:has(.home-updates) .news-showcase .update-featured-info {
+  padding: 18px 22px 22px;
+  background: #fbf7ef;
+}
+/* Small blog cards need their own shell (issue #26). */
+.public-shell:has(.home-updates) .news-showcase .update-small {
+  border: 1px solid var(--line) !important;
+  border-radius: 9px;
+  background: #fbf7ef;
+  overflow: hidden;
+}
+.public-shell:has(.home-updates) .news-showcase .update-small-info {
+  padding: 14px 18px 18px;
+  background: #fbf7ef;
+}
 .public-shell:has(.home-updates) .news-showcase .update-card-top {
   justify-content: flex-start;
   gap: 12px;
