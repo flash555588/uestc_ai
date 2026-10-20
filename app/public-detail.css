@@ -187,7 +187,7 @@
 .public-detail-shell .markdown-body h1,
 .public-detail-shell .markdown-body h2,
 .public-detail-shell .markdown-body h3 { color: var(--detail-ink); }
-.public-detail-shell .markdown-body h2 { border-color: var(--detail-line); }
+.public-detail-shell .markdown-body h2 { border-color: var(--detail-line); scroll-margin-top: 5.5rem; }
 .public-detail-shell .markdown-body p,
 .public-detail-shell .markdown-body li,
 .public-detail-shell .markdown-body blockquote { color: #4c5d51; font-size: 15px; line-height: 1.9; }
@@ -196,9 +196,16 @@
 .public-detail-shell .markdown-body pre { border-radius: 12px; background: #263b2c; }
 .public-detail-shell .markdown-body code { border-radius: 4px; background: #e5eee1; color: #345d40; }
 .public-detail-shell .markdown-body pre code { background: transparent; color: inherit; }
-.public-detail-shell .markdown-body table { display: block; max-width: 100%; overflow-x: auto; }
+.public-detail-shell .markdown-body table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  font-variant-numeric: tabular-nums;
+}
 .public-detail-shell .markdown-body th,
 .public-detail-shell .markdown-body td { border-color: var(--detail-line); }
+.public-detail-shell .markdown-body tbody tr:nth-child(2n) { background: rgba(237, 243, 233, 0.55); }
+.public-detail-shell .markdown-body tbody tr:hover { background: #edf3e9; }
 
 .public-detail-shell .article-layout { align-items: start; gap: clamp(30px, 5vw, 72px); grid-template-columns: 210px minmax(0, 770px); }
 .public-detail-shell .article-layout > aside {

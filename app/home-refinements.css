@@ -1,0 +1,319 @@
+/* Quiet newsprint: warm paper, fine grain and restrained ink rules. */
+.public-shell:has(.home-updates) {
+  --editorial-paper: #f1eee6;
+  --editorial-sheet: #faf8f1;
+  --editorial-line: #d5cfc1;
+  --editorial-ink: #2c302b;
+  --editorial-muted: #50594f;
+  --editorial-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.045' filter='url(%23grain)'/%3E%3C/svg%3E");
+}
+body:has(.home-updates),
+.public-shell:has(.home-updates) .app-main {
+  background-color: var(--editorial-paper, #f1eee6);
+  background-image: var(--editorial-grain);
+  background-size: 180px 180px;
+}
+.public-shell:has(.home-updates) .app-content { background: transparent; }
+.public-shell:has(.home-updates) .home-updates::before { background: none; }
+.public-shell:has(.home-updates) .home-updates > .section-header,
+.public-shell:has(.home-updates) .news-showcase .update-featured,
+.public-shell:has(.home-updates) .news-showcase .update-featured-info,
+.public-shell:has(.home-updates) .news-showcase .update-featured:is(:hover, :focus-visible) {
+  background: transparent;
+}
+
+/* Keep the news title visible until the complete story rail has passed. */
+@media (min-width: 1101px) {
+  .public-shell:has(.home-updates) .home-updates > .section-header {
+    position: sticky;
+    top: var(--updates-nav-height, 88px);
+    z-index: 5;
+    translate: 0 var(--updates-heading-shift, 0px);
+    padding: 18px 0 20px;
+    border-bottom: 1px solid var(--editorial-line);
+  }
+  .public-shell:has(.home-updates) .news-showcase:has(.updates-sidebar .update-small:nth-child(2)) .updates-featured-rail > .update-featured {
+    top: var(--updates-card-top, 220px);
+  }
+}
+
+/* A compact directory breaks up the repeated image-card rhythm. */
+.public-shell:has(.home-updates) .home-manifesto {
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.55fr);
+  align-items: center;
+  gap: clamp(32px, 5vw, 88px);
+  padding-top: 24px;
+  padding-bottom: 64px;
+  background: transparent;
+}
+.public-shell:has(.home-updates) .home-manifesto > .manifesto-intro {
+  grid-column: auto;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+}
+.public-shell:has(.home-updates) .manifesto-intro > span { color: var(--editorial-muted); }
+.public-shell:has(.home-updates) .manifesto-intro h2 {
+  margin: 20px 0 18px;
+  color: var(--editorial-ink);
+  font-size: clamp(32px, 3vw, 48px);
+  line-height: 1.35;
+  letter-spacing: -.02em;
+}
+.public-shell:has(.home-updates) .manifesto-intro p {
+  max-width: 340px;
+  margin: 0;
+  color: var(--editorial-muted);
+  font-size: 16px;
+  line-height: 1.85;
+}
+.public-shell:has(.home-updates) .home-manifesto > .manifesto-cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  gap: 0;
+  padding: 0;
+  border: 1px solid var(--editorial-line);
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: var(--editorial-sheet);
+  background-image: var(--editorial-grain);
+  background-size: 180px 180px;
+}
+.public-shell:has(.home-updates) .home-manifesto .manifesto-cards > .manifesto-card {
+  display: grid;
+  grid-template-columns: 116px minmax(0, 1fr) 24px;
+  grid-template-rows: auto auto;
+  grid-column: auto;
+  align-content: center;
+  align-items: center;
+  column-gap: 22px;
+  min-height: 118px;
+  padding: 24px 28px;
+  border: 0;
+  border-bottom: 0;
+  box-shadow: inset 0 -1px var(--editorial-line);
+  border-radius: 0;
+  background: transparent;
+  transform: none;
+}
+.public-shell:has(.home-updates) .home-manifesto .manifesto-card:last-child { box-shadow: none; }
+.public-shell:has(.home-updates) .home-manifesto .manifesto-card > span {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  color: var(--editorial-muted);
+  font-size: 11px;
+  letter-spacing: .04em;
+}
+.public-shell:has(.home-updates) .home-manifesto .manifesto-card strong {
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+  color: var(--editorial-ink);
+  font-size: 24px;
+  line-height: 1.4;
+}
+.public-shell:has(.home-updates) .home-manifesto .manifesto-card p {
+  grid-column: 2;
+  grid-row: 2;
+  min-height: 0;
+  margin: 5px 0 0;
+  color: var(--editorial-muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+.public-shell:has(.home-updates) .home-manifesto .manifesto-card > svg {
+  position: static;
+  grid-column: 3;
+  grid-row: 1 / 3;
+  margin: 0;
+  color: #685a43;
+}
+.public-shell:has(.home-updates) .home-manifesto .manifesto-card:is(:hover, :focus-visible) { background: #eae5d8; }
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .public-shell:has(.home-updates) .home-manifesto .manifesto-cards > .manifesto-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    transition: background-color .25s ease;
+    transform: none;
+  }
+  .public-shell:has(.home-updates) .home-manifesto .manifesto-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: var(--pointer-active, 0);
+    background: radial-gradient(ellipse 260px 150px at var(--pointer-x, 50%) var(--pointer-y, 50%), #d8ccb280, transparent 100%);
+    transition: opacity .3s ease;
+  }
+  .public-shell:has(.home-updates) .home-manifesto .manifesto-card :is(strong, p, svg) {
+    transform: translate(var(--pointer-dx, 0px), var(--pointer-dy, 0px));
+    transition: transform .2s ease-out;
+  }
+  .public-shell:has(.home-updates) .home-manifesto .manifesto-card > svg {
+    transform: translate(calc(var(--pointer-dx, 0px) + var(--pointer-active, 0) * 5px), var(--pointer-dy, 0px));
+  }
+  .public-shell:has(.home-updates) .home-manifesto .manifesto-cards > .manifesto-card:hover {
+    box-shadow: inset 0 -1px var(--editorial-line) !important;
+    background: #f1ecdf;
+  }
+  .public-shell:has(.home-updates) .home-manifesto .manifesto-card:last-child:hover { box-shadow: none !important; }
+}
+
+/* The container and its columns read as one printed sheet. */
+.public-shell:has(.home-updates) #discover {
+  --ink: var(--editorial-ink);
+  --muted: var(--editorial-muted);
+  --quiet: #5b6357;
+  --line: var(--editorial-line);
+  background: transparent;
+  padding-bottom: 64px;
+}
+.public-shell:has(.home-updates) #discover > .home-section {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(22px, 2.5vw, 36px);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.public-shell:has(.home-updates) #discover > .home-section::before {
+  --edge-fade: clamp(32px, 4vw, 64px);
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: linear-gradient(90deg, transparent, var(--editorial-sheet) var(--edge-fade), var(--editorial-sheet) calc(100% - var(--edge-fade)), transparent), var(--editorial-grain);
+  mask-image: linear-gradient(transparent, #000 var(--edge-fade), #000 calc(100% - var(--edge-fade)), transparent);
+}
+.public-shell:has(.home-updates) #discover .flagship-section { margin-bottom: 32px; }
+.public-shell:has(.home-updates) #discover .section-header {
+  border-top: 0;
+  border-bottom: 1px solid #9d9c8e;
+  padding-bottom: 20px;
+}
+.public-shell:has(.home-updates) #discover .section-header h2 { color: var(--editorial-ink); }
+.public-shell:has(.home-updates) #discover .section-header > a,
+.public-shell:has(.home-updates) #discover .eyebrow { color: var(--editorial-muted); }
+.public-shell:has(.home-updates) #discover .track-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 20px;
+}
+.public-shell:has(.home-updates) #discover .track-card {
+  min-width: 0;
+  min-height: 220px;
+  padding: 0 0 22px;
+  border: 0;
+  border-radius: 0;
+  background: transparent !important;
+  color: var(--editorial-ink);
+}
+.public-shell:has(.home-updates) #discover .track-card:is(:hover, :focus-visible) { background: #eae5d8 !important; }
+.public-shell:has(.home-updates) #discover .track-card > div:not(.track-card-top) {
+  min-height: 0;
+  padding: 22px 0;
+}
+.public-shell:has(.home-updates) #discover .track-card small { color: var(--editorial-muted); }
+.public-shell:has(.home-updates) #discover .track-card h3 {
+  margin: 10px 0;
+  color: var(--editorial-ink);
+  font-size: 24px;
+  line-height: 1.4;
+}
+.public-shell:has(.home-updates) #discover .track-card p {
+  min-height: 0;
+  margin: 0;
+  color: var(--editorial-muted);
+  font-size: 16px;
+  line-height: 1.8;
+}
+.public-shell:has(.home-updates) #discover .track-card footer { margin-top: auto; color: var(--editorial-muted); border-color: var(--editorial-line); }
+.public-shell:has(.home-updates) #discover .problem-line { border-color: var(--editorial-line); }
+.public-shell:has(.home-updates) #discover .problem-line:is(:hover, :focus-visible) { background: #eae5d8; }
+.public-shell:has(.home-updates) #discover .problem-line strong { color: var(--editorial-ink); }
+.public-shell:has(.home-updates) #discover .problem-line :is(.mono-label, div > span) { color: var(--editorial-muted); }
+.public-shell:has(.home-updates) #discover .status-warm { background: #f6edda; color: #704a16; }
+.public-shell:has(.home-updates) #discover .deadline-block { background: #eee9dd; border-color: var(--editorial-line); border-radius: 4px; }
+.public-shell:has(.home-updates) #discover .deadline-heading,
+.public-shell:has(.home-updates) #discover .deadline-heading svg { color: #685a43; }
+.public-shell:has(.home-updates) #discover .deadline-date strong { color: var(--editorial-ink); }
+.public-shell:has(.home-updates) #discover .deadline-date p { color: var(--editorial-muted); }
+.public-shell:has(.home-updates) #discover .deadline-date + .deadline-date { border-color: var(--editorial-line); }
+
+/* A pale linen footer closes the page with readable dark ink. */
+.app-shell.public-shell .app-footer.app-footer-rich {
+  min-height: 540px;
+  padding: 84px clamp(24px, 6vw, 112px) 32px;
+  border-top: 1px solid #c5bbaa;
+  background-color: #ded5c6;
+  background-image: var(--editorial-grain);
+  background-size: 180px 180px;
+  color: #433c33;
+}
+.app-shell.public-shell .app-footer-rich .footer-main,
+.app-shell.public-shell .app-footer-rich .footer-bottom { max-width: 1556px; margin: 0 auto; }
+.app-shell.public-shell .app-footer-rich .footer-main {
+  grid-template-columns: minmax(0, 1.8fr) repeat(3, minmax(0, .7fr));
+  gap: clamp(28px, 4vw, 64px);
+  min-height: 330px;
+  padding-bottom: 48px;
+}
+.app-shell.public-shell .app-footer-rich .footer-brand { max-width: 540px; }
+.app-shell.public-shell .app-footer-rich .footer-brand strong {
+  color: #332f29;
+  font-size: clamp(30px, 3vw, 44px);
+  line-height: 1.4;
+}
+.app-shell.public-shell .app-footer-rich .footer-brand p {
+  max-width: 460px;
+  margin: 24px 0 36px;
+  color: #514a40;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.app-shell.public-shell .app-footer-rich :is(.footer-brand-mark, .footer-location) { color: #5b5143; }
+.app-shell.public-shell .app-footer-rich .footer-column strong { color: #332f29; }
+.app-shell.public-shell .app-footer-rich .footer-column a { color: #514a40; font-size: 15px; }
+.app-shell.public-shell .app-footer-rich .footer-column a:hover { color: #26231e; }
+.app-shell.public-shell .app-footer-rich .footer-bottom {
+  padding-top: 24px;
+  border-top: 1px solid #b7aa96;
+  color: #5b5143;
+  line-height: 1.7;
+}
+.app-shell.public-shell .app-footer-rich .footer-bottom > span a { color: #594622; }
+.app-shell.public-shell .app-footer-rich .footer-bottom > span a:hover { color: #26231e; }
+.app-shell.public-shell .app-footer-rich .footer-code-rule { color: #5b5143; opacity: 1; }
+
+@media (max-width: 1100px) {
+  .public-shell:has(.home-updates) .home-manifesto { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .public-shell:has(.home-updates) .manifesto-intro h2 br { display: none; }
+  .public-shell:has(.home-updates) .manifesto-intro p { max-width: none; }
+}
+@media (max-width: 680px) {
+  .public-shell:has(.home-updates) .home-manifesto { padding-top: 8px; padding-bottom: 40px; }
+  .public-shell:has(.home-updates) .home-manifesto .manifesto-cards > .manifesto-card {
+    grid-template-columns: minmax(0, 1fr) 24px;
+    column-gap: 12px;
+    min-height: 0;
+    padding: 22px;
+  }
+  .public-shell:has(.home-updates) .home-manifesto .manifesto-card > span { grid-column: 1; grid-row: 1; }
+  .public-shell:has(.home-updates) .home-manifesto .manifesto-card strong { grid-column: 1; grid-row: 2; margin-top: 10px; }
+  .public-shell:has(.home-updates) .home-manifesto .manifesto-card p { grid-column: 1; grid-row: 3; }
+  .public-shell:has(.home-updates) .home-manifesto .manifesto-card > svg { grid-column: 2; grid-row: 1 / 4; }
+  .public-shell:has(.home-updates) #discover > .home-section { padding: 20px 16px; }
+  .public-shell:has(.home-updates) #discover .track-grid { display: flex; overflow-x: auto; }
+  .public-shell:has(.home-updates) #discover .track-card { flex: 0 0 100%; }
+  .public-shell:has(.home-updates) #discover .track-card h3 { font-size: 22px; }
+  .public-shell:has(.home-updates) #discover .track-card p { font-size: 15px; }
+  .public-shell:has(.home-updates) #discover .section-header h2 { font-size: 30px; }
+  .app-shell.public-shell .app-footer.app-footer-rich { min-height: 0; padding: 52px 22px 28px; }
+  .app-shell.public-shell .app-footer-rich .footer-main { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 34px 24px; min-height: 0; }
+  .app-shell.public-shell .app-footer-rich .footer-brand { grid-column: 1 / -1; }
+}

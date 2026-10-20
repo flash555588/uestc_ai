@@ -12,16 +12,51 @@
 .public-shell .rule-band :is(p, span, a) { color:#d6ddd2; }
 .public-shell .rule-band > svg,
 .public-shell .rule-band a svg { color:#d6ddd2; }
-.public-shell .markdown-body { background:#fff; color:#39453d; line-height:1.95; padding:clamp(22px,3.5vw,50px); border:1px solid #e5e9e2; border-radius:10px; }
+.public-shell .markdown-body {
+  background:#fff;
+  color:#39453d;
+  letter-spacing:.012em;
+  line-height:1.95;
+  padding:clamp(22px,3.5vw,50px);
+  border:1px solid #e5e9e2;
+  border-radius:10px;
+  text-wrap:pretty;
+  text-autospace:normal;
+}
 .public-shell .markdown-body p { margin:0 0 1.3em; }
-.public-shell .markdown-body h2 { color:#263d2e; font-weight:750; margin:2.1em 0 .85em; padding-bottom:12px; border-bottom:1px solid #e1e8df; }
-.public-shell .markdown-body h3 { color:#354b3b; font-weight:700; margin:1.65em 0 .7em; }
+.public-shell .markdown-body h2 {
+  color:#263d2e;
+  font-weight:750;
+  margin:2.1em 0 .85em;
+  padding-bottom:12px;
+  border-bottom:1px solid #e1e8df;
+  text-wrap:balance;
+  scroll-margin-top:5.5rem;
+}
+.public-shell .markdown-body h3 {
+  color:#354b3b;
+  font-weight:700;
+  margin:1.65em 0 .7em;
+}
 .public-shell .markdown-body strong { color:#25392c; font-weight:750; }
-.public-shell .markdown-body a { color:#3c6f52; text-decoration-color:#b9d1c0; text-underline-offset:4px; }
+.public-shell .markdown-body a {
+  color:#3c6f52;
+  text-decoration-color:#b9d1c0;
+  text-underline-offset:4px;
+}
 .public-shell .markdown-body img { border-radius:6px; max-height:none; object-fit:contain; }
-.public-shell .markdown-body blockquote { border-left:3px solid #8cab92; background:#f6f8f4; border-radius:0 6px 6px 0; }
+.public-shell .markdown-body blockquote {
+  border-left:3px solid #8cab92;
+  background:#f6f8f4;
+  border-radius:0 6px 6px 0;
+  margin:1.25em 0;
+  padding:.85em 1.15em;
+}
 .public-shell .markdown-body :is(th,td) { line-height:1.7; padding:12px 14px; }
 .public-shell .markdown-body th { color:#294834; background:#f0f5ed; font-weight:700; }
+.public-shell .markdown-body tbody tr:nth-child(2n) { background:#f7faf4; }
+.public-shell .markdown-body tbody tr:hover { background:#eef5ea; }
+.public-shell .markdown-body table { font-variant-numeric:tabular-nums; }
 .public-shell .article-body { max-width:900px; }
 .public-shell .problem-summary p,.public-shell .competition-overview p,.public-shell .track-overview p { font-size:18px; line-height:1.85; color:#394b40; }
 .public-shell .page-title-band { background:linear-gradient(115deg,#f5f7f0,#fafbf8); }
@@ -59,7 +94,7 @@
 .visual-project-label { position:absolute; display:flex; align-items:center; gap:8px; left:16px; bottom:14px; background:#fffef4f2; color:#263d2e; padding:6px 11px; border-radius:4px; font-size:13px; font-weight:700; }
 .club-track-visual figcaption { position:absolute; right:12px; bottom:14px; font-size:12px; background:#ffffffed; border-radius:4px; padding:6px 9px; }
 .club-track-visual figcaption a { color:#334b40; }
-.public-shell:has(.home-updates) .flagship-section .track-card:is(.track-coral,.track-ink,.track-sage,.track-sand) { background:#fff; border:1px solid var(--line); color:var(--ink); border-radius:9px; padding:0 0 22px; overflow:hidden; gap:18px; }
+.public-shell:has(.home-updates) .flagship-section .track-card:is(.track-coral,.track-ink,.track-sage,.track-sand) { background:transparent; border:1px solid var(--line); color:var(--ink); border-radius:9px; padding:0 0 22px; overflow:hidden; gap:18px; }
 .public-shell .track-card > .club-track-visual { height:208px; min-height:208px; width:100%; }
 .public-shell .track-card > div,.public-shell .track-card > footer { margin-left:24px; margin-right:24px; }
 .public-shell .track-card > div { margin-top:0 !important; }
@@ -157,7 +192,7 @@
 
 .public-shell:has(.home-updates) .flagship-section .track-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px; }
 .public-shell:has(.home-updates) .flagship-section .track-card > .club-track-visual { margin:0; }
-.public-shell:has(.home-updates) .flagship-section .track-card:hover { background:var(--paper); }
+.public-shell:has(.home-updates) .flagship-section .track-card:hover { background:color-mix(in srgb, var(--home-paper-2, #e9eee8) 70%, transparent); }
 .public-shell:has(.home-updates) .flagship-section .track-card p { opacity:1; font-size:15px; }
 .public-shell:has(.home-updates) .flagship-section .track-card h3 { line-height:1.5; }
 .public-shell:has(.home-updates) .flagship-section .track-card::after { display:none; }
@@ -165,20 +200,24 @@
 .public-shell .home-manifesto .manifesto-card:first-child > span { color:var(--coral); }
 @media(max-width:700px) { .public-shell:has(.home-updates) .flagship-section .track-grid { grid-template-columns:1fr; } }
 
-/* Override the earlier alternating card colors. */
-.public-shell:has(.home-updates) .flagship-section .track-card:is(.track-coral,.track-ink,.track-sage,.track-sand) { background:#fff !important; }
+/* Text block matches the page background so only the visual reads as a card. */
+.public-shell:has(.home-updates) .flagship-section .track-card:is(.track-coral,.track-ink,.track-sage,.track-sand) { background:transparent !important; }
 .public-shell:has(.home-updates) .flagship-section .track-card .track-card-top { display:none; }
 .public-shell:has(.home-updates) .flagship-section .track-card > div { margin-top:0; padding-top:0; }
 .public-shell:has(.home-updates) .news-showcase .update-visual > .article-cover { position:absolute; inset:0; min-height:0; }
 .public-shell:has(.home-updates) .news-showcase .update-visual > .article-cover img { height:100%; min-height:0; }
-.public-shell:has(.home-updates) .news-showcase .update-featured-visual { height:360px; min-height:0; aspect-ratio:auto; }
-.public-shell:has(.home-updates) .news-showcase .update-featured-visual { height:190px; }
-.public-shell:has(.home-updates) .news-showcase .update-featured-visual { display:block !important; height:190px; }
+.public-shell:has(.home-updates) .news-showcase .update-featured-visual {
+  display:block !important;
+  height:auto;
+  min-height:0;
+  aspect-ratio:2.4 / 1;
+  overflow:hidden;
+  border-radius:10px 10px 0 0;
+}
 .public-shell:has(.home-updates) .news-showcase .update-featured-visual::before,
 .public-shell:has(.home-updates) .news-showcase .update-featured-visual::after,
 .public-shell:has(.home-updates) .news-showcase .update-featured-visual > span,
 .public-shell:has(.home-updates) .news-showcase .update-featured-visual > i { display:none !important; }
-.public-shell:has(.home-updates) .news-showcase .update-featured-visual { overflow:hidden; border-radius:10px 10px 0 0; }
 @media(max-width:700px){
  .public-shell:has(.home-updates) .flagship-section .track-grid { display:grid; overflow:visible; }
  .public-shell:has(.home-updates) .news-showcase .update-featured-visual { height:240px; }

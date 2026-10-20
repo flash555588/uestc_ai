@@ -89,8 +89,8 @@ test("about content lives on its own linked page", async () => {
   const shell = await readFile(new URL("../app/components/AppShell.tsx", import.meta.url), "utf8");
   assert.doesNotMatch(home, /home-about|从浩瀚数据中提炼世界规律/);
   assert.match(about, /title="关于我们"/);
-  assert.match(about, /从浩瀚数据中提炼世界规律/);
-  assert.match(about, /我们相信智能的核心是同理心/);
+  assert.match(about, /UESTC AI 社/);
+  assert.match(about, /aria-labelledby="about-page-statement"/);
   assert.match(shell, /href: "\/about", label: "关于我们"/);
   assert.match(shell, /<Link href="\/about">关于我们<\/Link>/);
 });
@@ -107,7 +107,7 @@ test("public detail pages expose desktop actions and mobile reading styles", asy
     "../app/competitions/[competitionSlug]/tracks/[trackSlug]/problems/[problemSlug]/page.tsx",
   ];
   for (const path of paths) {
-    assert.match(await readFile(new URL(path, import.meta.url), "utf8"), /<AppShell variant="detail"/);
+    assert.match(await readFile(new URL(path, import.meta.url), "utf8"), /<AppShell\b[^>]*\bvariant="detail"/);
   }
   assert.match(shell, /className="page-title-actions"/);
   assert.match(layout, /import "\.\/public-detail\.css"/);
@@ -179,7 +179,7 @@ test("homepage follows the reference video sequence with kinetic type", async ()
   assert.match(sectionCss, /Balanced homepage grids and a consistent reading rhythm/);
   assert.match(sectionCss, /grid-template-columns: minmax\(300px, 1\.25fr\) repeat\(3/);
   assert.match(sectionCss, /track-card:is\(\.track-coral, \.track-ink, \.track-sage, \.track-sand\)/);
-  assert.match(page, /从想法，到<br \/>被看见。/);
+  assert.match(page, /把好奇心，<br \/>变成下一步。/);
   assert.match(sectionCss, /grid-template-columns: minmax\(330px, 1\.25fr\) repeat\(3/);
   assert.match(sectionCss, /grid-template-columns: repeat\(4, minmax\(0, 1fr\)\)/);
   assert.match(sectionCss, /Unified public typography scale/);

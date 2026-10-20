@@ -9,7 +9,12 @@
   --display-font: "Bodoni MT", "Didot", "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", "SimSun", serif;
 }
 html, body, .app-main { background: var(--paper); color: var(--ink); }
-body { font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 16px; line-height: 1.65; }
+body {
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  text-autospace: normal;
+}
 ::selection { background: #eac1b7; color: var(--ink); }
 .app-content.app-content-full { max-width: none; padding: 0; }
 .app-content { max-width: 1400px; }

@@ -1,0 +1,20 @@
+[Unit]
+Description=Block public LLMNR access without changing SSH or web policy
+After=network-pre.target
+Before=network.target
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/sbin/nft -f /etc/nftables.d/uestc-llmnr-guard.nft
+ExecStop=/usr/sbin/nft delete table inet uestc_llmnr_guard
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+CapabilityBoundingSet=CAP_NET_ADMIN
+RestrictAddressFamilies=AF_NETLINK AF_UNIX
+
+[Install]
+WantedBy=multi-user.target

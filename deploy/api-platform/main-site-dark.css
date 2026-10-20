@@ -1,0 +1,41 @@
+/* API platform dark palette, matched to app/night-mode.css on the main site.
+   Loaded after the platform stylesheet. Light mode keeps its existing palette. */
+html.dark {
+  color-scheme: dark;
+  --ui-paper: #141416;
+  --ui-sheet: #1b1b1f;
+  --ui-surface: #1c1c1f;
+  --ui-ink: #f1f1f3;
+  --ui-muted: #aaabb3;
+  --ui-line: #333438;
+  --ui-accent: #bed0b0;
+  --ui-navigation: #19191ded;
+}
+html.dark body { background-color: var(--ui-paper); color: var(--ui-ink); }
+html.dark :is(.workspace-shell, .archive-home, .archive-compact, .auth-shell) {
+  background: var(--ui-paper);
+}
+html.dark :is(.sidebar, .workspace-header, .archive-nav) {
+  background: var(--ui-navigation);
+  border-color: var(--ui-line);
+}
+html.dark :is(.brand-artwork, .archive-platform-art) {
+  background: linear-gradient(115deg, #1c1c1f, #27272c 58%, #222226);
+  border-color: var(--ui-line);
+  box-shadow: none;
+}
+html.dark .brand-artwork-type { color: #d0d0d5; }
+html.dark .brand-artwork-corner { color: var(--ui-muted); }
+html.dark .archive-opening h1 { color: var(--ui-ink); }
+html.dark .archive-platform-card { background: var(--ui-surface); border-color: var(--ui-line); }
+html.dark :is(.archive-outline-link, .archive-footer-inner > p) { border-color: var(--ui-line); }
+html.dark .archive-outline-link:hover { background: #2c2c33; }
+html.dark :is(.sidebar-link-active, .tab-active),
+html.dark .archive-nav-links > a:is(:hover, .is-current) { background: #2c2c33; color: var(--ui-ink); }
+html.dark :is(.archive-login, .btn-primary) { background: #e4e4e7; color: #18181b; }
+html.dark :is(.archive-login, .btn-primary):hover { background: #f4f4f5; }
+html.dark .archive-footer { background: #111113; color: var(--ui-muted); border-color: var(--ui-line); }
+html.dark .brand-source-link { text-decoration-color: #687560; }
+html.dark :is(.card, .glass-card, .card-glass) {
+  box-shadow: 0 2px 4px #0000000d, 0 14px 36px -28px #00000040;
+}

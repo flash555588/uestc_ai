@@ -1,0 +1,8 @@
+# Add only our own table. Never flush the host ruleset or change SSH policy.
+table inet uestc_llmnr_guard {
+    chain input {
+        type filter hook input priority -10; policy accept;
+        iifname != "lo" tcp dport 5355 counter drop
+        iifname != "lo" udp dport 5355 counter drop
+    }
+}

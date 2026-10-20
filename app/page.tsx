@@ -11,6 +11,8 @@ import { EmptyState, PageError, PageLoading, StatusPill } from "@/app/components
 import { useApiResource } from "@/app/lib/useApiResource";
 import type { Competition, ContentItem, Track } from "@/app/lib/domain";
 import { formatBeijing } from "@/app/lib/time";
+import { contentKindLabels } from "@/app/lib/contentKinds";
+import { usePointerHighlight } from "@/app/lib/usePointerHighlight";
 
 const accents = ["coral", "ink", "sage", "sand"];
 const homeUpdatesLimit = 6;
@@ -47,44 +49,81 @@ export default function Home() {
   const loading = listLoading || detailLoading;
   const error = listError || detailError;
   const updatesShowcaseRef = useRef<HTMLDivElement>(null);
+  const manifestoRef = usePointerHighlight();
 
   const load = useCallback(() => Promise.all([reloadList(), reloadDetail(), reloadContent()]), [reloadList, reloadDetail, reloadContent]);
 
   useEffect(() => {
     const showcase = updatesShowcaseRef.current;
-    if (!showcase || articles.length < 3) return;
+    if (!showcase) return;
 
+    const section = showcase.closest<HTMLElement>(".home-updates");
+    const header = section?.querySelector<HTMLElement>(".section-header");
+    const navigation = document.querySelector<HTMLElement>(".app-sidebar");
     const rail = showcase.querySelector<HTMLElement>(".updates-featured-rail");
     const featured = rail?.querySelector<HTMLElement>(".update-featured");
     const featuredInfo = featured?.querySelector<HTMLElement>(".update-featured-info");
     const featuredVisual = featured?.querySelector<HTMLElement>(".update-featured-visual");
     const sidebar = showcase.querySelector<HTMLElement>(".updates-sidebar");
     const lastVisual = sidebar?.querySelector<HTMLElement>(".update-small:last-child .update-small-visual");
-    if (!rail || !featured || !featuredInfo || !featuredVisual || !sidebar || !lastVisual) return;
+    if (!section || !header || !rail || !featured || !featuredInfo || !featuredVisual) return;
 
     const desktop = window.matchMedia("(min-width: 1101px)");
+    let stickyCardTop = 0;
+    const alignHeading = () => {
+      const shift = desktop.matches && articles.length >= 3
+        ? Math.min(0, rail.getBoundingClientRect().bottom - stickyCardTop - featured.offsetHeight)
+        : 0;
+      section.style.setProperty("--updates-heading-shift", `${shift}px`);
+    };
     const alignImageEnds = () => {
-      if (!desktop.matches) {
+      const navigationHeight = desktop.matches ? navigation?.getBoundingClientRect().height ?? 0 : 0;
+      stickyCardTop = navigationHeight + header.getBoundingClientRect().height + 18;
+      section.style.setProperty("--updates-nav-height", `${navigationHeight}px`);
+      section.style.setProperty("--updates-card-top", `${stickyCardTop}px`);
+      if (!desktop.matches || articles.length < 3 || !sidebar || !lastVisual) {
         rail.style.removeProperty("height");
+        section.style.removeProperty("--updates-heading-shift");
         return;
       }
       const railTop = rail.getBoundingClientRect().top;
       const lastImageBottom = lastVisual.getBoundingClientRect().bottom;
       const captionHeight = featuredInfo.getBoundingClientRect().height;
-      const railHeight = Math.max(featured.getBoundingClientRect().height, lastImageBottom - railTop + captionHeight);
+      const railHeight = Math.max(featured.getBoundingClientRect().height, lastImageBottom - railTop + captionHeight,
+        sidebar.getBoundingClientRect().bottom - railTop);
       rail.style.height = `${railHeight}px`;
+      alignHeading();
     };
 
-    const resizeObserver = new ResizeObserver(alignImageEnds);
-    resizeObserver.observe(sidebar);
+    let resizeFrame = 0;
+    let scrollFrame = 0;
+    const onScroll = () => {
+      if (scrollFrame) return;
+      scrollFrame = requestAnimationFrame(() => { scrollFrame = 0; alignHeading(); });
+    };
+    const scheduleAlignment = () => {
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(alignImageEnds);
+    };
+    const resizeObserver = new ResizeObserver(scheduleAlignment);
+    resizeObserver.observe(header);
+    if (navigation) resizeObserver.observe(navigation);
+    if (sidebar) resizeObserver.observe(sidebar);
     resizeObserver.observe(featuredInfo);
     resizeObserver.observe(featuredVisual);
     desktop.addEventListener("change", alignImageEnds);
+    window.addEventListener("scroll", onScroll, { passive: true });
     alignImageEnds();
     return () => {
       resizeObserver.disconnect();
+      cancelAnimationFrame(resizeFrame);
+      cancelAnimationFrame(scrollFrame);
       desktop.removeEventListener("change", alignImageEnds);
+      window.removeEventListener("scroll", onScroll);
       rail.style.removeProperty("height");
+      section.style.removeProperty("--updates-nav-height");
+      section.style.removeProperty("--updates-card-top");
+      section.style.removeProperty("--updates-heading-shift");
     };
   }, [articles]);
 
@@ -107,7 +146,7 @@ export default function Home() {
             <Link data-reveal-item className="update-card update-featured" data-kind={articles[0].kind} href={`/news/${articles[0].slug}`}>
               <div className="update-visual update-featured-visual"><ArticleVisual title={articles[0].title} slug={articles[0].slug} /></div>
               <div className="update-featured-info">
-                <div className="update-card-top"><time>{articles[0].published_at ? shortDate(articles[0].published_at) : "草稿"}</time><span>{articles[0].kind}</span></div>
+                <div className="update-card-top"><time>{articles[0].published_at ? shortDate(articles[0].published_at) : "草稿"}</time><span>{contentKindLabels[articles[0].kind] ?? "文章"}</span></div>
                 <strong>{articles[0].title}</strong>
                 <p>{articles[0].excerpt || "进入资讯档案查看完整内容。"}</p>
                 <ArrowRight size={18} />
@@ -115,11 +154,11 @@ export default function Home() {
             </Link>
           </div>
           {articles.length > 1 && <div className="updates-sidebar">
-            {articles.slice(1).map((article, index) => (
+            {articles.slice(1).map((article) => (
               <Link data-reveal-item className="update-card update-small" data-kind={article.kind} href={`/news/${article.slug}`} key={article.id}>
                 <div className="update-visual update-small-visual"><ArticleVisual title={article.title} slug={article.slug} /></div>
                 <div className="update-small-info">
-                  <div className="update-card-top"><time>{article.published_at ? shortDate(article.published_at) : "草稿"}</time><span>{article.kind}</span></div>
+                  <div className="update-card-top"><time>{article.published_at ? shortDate(article.published_at) : "草稿"}</time><span>{contentKindLabels[article.kind] ?? "文章"}</span></div>
                   <strong>{article.title}</strong>
                   <p>{article.excerpt || "进入资讯档案查看完整内容。"}</p>
                   <ArrowRight size={17} />
@@ -131,8 +170,8 @@ export default function Home() {
       </RevealSection>
 
       <RevealSection className="home-manifesto" aria-label="产品矩阵">
-        <div className="manifesto-intro"><span>01 / PLATFORM</span><h2>从想法，到<br />被看见。</h2><p>选择一个入口，开始下一次探索。</p></div>
-        <div className="manifesto-cards" role="group" aria-label="产品入口">
+        <div className="manifesto-intro"><span>01 / PLATFORM</span><h2>把好奇心，<br />变成下一步。</h2><p>参加挑战、分享方法，或找到一起创作的人。</p></div>
+        <div className="manifesto-cards" ref={manifestoRef} role="group" aria-label="产品入口">
           <Link data-reveal-item className="manifesto-card" href="/competitions"><span>01 / COMPETE</span><strong>真实挑战</strong><p>进入赛题，在约束中验证想法。</p><ArrowRight size={19} /></Link>
           <Link data-reveal-item className="manifesto-card" href="/news"><span>02 / PUBLISH</span><strong>公开方法</strong><p>记录过程，让知识持续流动。</p><ArrowRight size={19} /></Link>
           <Link data-reveal-item className="manifesto-card" href="/works"><span>03 / BUILD</span><strong>共同创造</strong><p>找到同行者，把原型推进为作品。</p><ArrowRight size={19} /></Link>

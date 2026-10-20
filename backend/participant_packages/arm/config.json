@@ -1,0 +1,12 @@
+{
+  "model": {
+    "name": "",
+    "api_url": "",
+    "api_key": ""
+  },
+  "agent": {
+    "max_output_tokens": 4096,
+    "api_timeout": 135,
+    "thinking": false
+  }
+}
